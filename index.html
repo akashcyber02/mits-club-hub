@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MITS Club Hub</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <header class="navbar">
+    <h1 class="logo">MITS Club Hub</h1>
+
+    <div class="nav-right">
+      <!-- Shown only when logged OUT -->
+      <button id="loginBtn" class="btn btn-primary">Login with College Email</button>
+
+      <!-- Shown only when logged IN -->
+      <div id="userBox" class="user-box hidden">
+        <span id="userEmail"></span>
+        <button id="addClubBtn" class="btn btn-accent" title="Create a new club">+ New Club</button>
+        <button id="logoutBtn" class="btn btn-ghost">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== PROFESSOR APPROVAL PANEL (only visible to coordinator professors) ===== -->
+  <section id="approvalPanel" class="approval-panel hidden">
+    <h2>Clubs Waiting For Your Approval</h2>
+    <div id="pendingList" class="pending-list"></div>
+  </section>
+
+  <!-- ===== CLUB GRID ===== -->
+  <main>
+    <h2 class="section-title">All Clubs</h2>
+    <div id="clubGrid" class="club-grid">
+      <!-- Club cards get inserted here by app.js -->
+    </div>
+  </main>
+
+  <!-- ===== CREATE CLUB MODAL ===== -->
+  <div id="createClubModal" class="modal hidden">
+    <div class="modal-box">
+      <button id="closeModalBtn" class="modal-close">&times;</button>
+      <h2>Create a New Club</h2>
+      <form id="createClubForm">
+        <label>Club Name *</label>
+        <input type="text" id="clubName" required />
+
+        <label>Description / Features *</label>
+        <textarea id="clubDescription" required></textarea>
+
+        <label>WhatsApp Group Link</label>
+        <input type="url" id="clubWhatsapp" placeholder="https://chat.whatsapp.com/..." />
+
+        <label>Instagram Link</label>
+        <input type="url" id="clubInsta" placeholder="https://instagram.com/..." />
+
+        <label>President Name *</label>
+        <input type="text" id="presidentName" required />
+
+        <label>President Phone Number *</label>
+        <input type="tel" id="presidentPhone" required />
+
+        <label>President College Email * (used for edit access later)</label>
+        <input type="email" id="presidentEmail" required placeholder="name@mitsgwl.ac.in" />
+
+        <label>Fee</label>
+        <div class="fee-row">
+          <select id="feeType">
+            <option value="free">Free</option>
+            <option value="paid">Paid</option>
+          </select>
+          <input type="number" id="feeAmount" placeholder="Amount (₹)" class="hidden" />
+        </div>
+
+        <label>Coordinator Professor Email * (they must approve this club)</label>
+        <input type="email" id="coordinatorEmail" required placeholder="professor@mitsgwl.ac.in" />
+
+        <button type="submit" class="btn btn-primary full-width">Submit for Approval</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== EDIT CLUB MODAL ===== -->
+  <div id="editClubModal" class="modal hidden">
+    <div class="modal-box">
+      <button id="closeEditModalBtn" class="modal-close">&times;</button>
+      <h2>Edit Club</h2>
+      <form id="editClubForm">
+        <input type="hidden" id="editClubId" />
+        <label>Description / Features</label>
+        <textarea id="editDescription" required></textarea>
+
+        <label>WhatsApp Group Link</label>
+        <input type="url" id="editWhatsapp" />
+
+        <label>Instagram Link</label>
+        <input type="url" id="editInsta" />
+
+        <label>President Name</label>
+        <input type="text" id="editPresidentName" required />
+
+        <label>President Phone</label>
+        <input type="tel" id="editPresidentPhone" required />
+
+        <button type="submit" class="btn btn-primary full-width">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Firebase SDKs (compat version = simplest for beginners, no build tools needed) ===== -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
