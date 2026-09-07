@@ -1,0 +1,66 @@
+// =========================================================================
+// MITS CLUB HUB — Firestore Security Rules
+// =========================================================================
+// Architecture & Security Designed by Akash (Team Lead & Security Architect)
+//
+// Role-Based Access Control (RBAC):
+// 1. Public / Students: Read-only access to "approved" clubs.
+// 2. Verified Students (@mitsgwl.ac.in): Can submit new clubs ("pending" status).
+// 3. Coordinator Professors: Can review, approve, or reject clubs assigned to their email.
+// 4. Club Presidents: Can update club details, announcements, and recruitment status.
+// =========================================================================
+
+rules_version = "2";
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions for security validation
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isCollegeEmail() {
+      return isAuthenticated() && request.auth.token.email.matches(".*@mitsgwl[.]ac[.]in$");
+    }
+
+    function isPresident(clubData) {
+      return isAuthenticated() && request.auth.token.email == clubData.presidentEmail;
+    }
+
+    function isCoordinator(clubData) {
+      return isAuthenticated() && request.auth.token.email == clubData.coordinatorEmail;
+    }
+
+    // --- Clubs Collection ---
+    match /clubs/{clubId} {
+      // Anyone can view approved clubs; coordinators and creators can view pending clubs
+      allow read: if resource.data.status == "approved" 
+                  || (isAuthenticated() && (
+                      request.auth.token.email == resource.data.coordinatorEmail ||
+                      request.auth.token.email == resource.data.presidentEmail ||
+                      request.auth.token.email == resource.data.createdBy
+                  ));
+
+      // Any authenticated MITS user can submit a club request in "pending" status
+      allow create: if isCollegeEmail() 
+                    && request.resource.data.status == "pending"
+                    && request.resource.data.createdBy == request.auth.token.email;
+
+      // Updates:
+      // - Coordinator Professor can update status (approve/reject) and reviewRemarks
+      // - President can update club details (description, links, announcements, recruitment)
+      allow update: if isAuthenticated() && (
+        isCoordinator(resource.data) || isPresident(resource.data)
+      );
+
+      // Only coordinator professor or super-admin can delete
+      allow delete: if isAuthenticated() && isCoordinator(resource.data);
+    }
+
+    // --- Events Collection (For Club Events & Workshops) ---
+    match /events/{eventId} {
+      allow read: if true;
+      allow create, update, delete: if isCollegeEmail();
+    }
+  }
+}

@@ -3,114 +3,364 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MITS Club Hub</title>
+  <title>MITS Club Hub — Madhav Institute of Technology & Science</title>
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
+  <!-- ===== TOAST NOTIFICATION CONTAINER ===== -->
+  <div id="toastContainer" class="toast-container"></div>
+
   <!-- ===== NAVBAR ===== -->
   <header class="navbar">
-    <h1 class="logo">MITS Club Hub</h1>
+    <div class="nav-left">
+      <div class="logo-group">
+        <div class="logo-icon"><i class="fa-solid fa-shapes"></i></div>
+        <div>
+          <h1 class="logo-title">MITS Club Hub</h1>
+          <span class="logo-subtitle">Madhav Institute of Technology & Science, Gwalior</span>
+        </div>
+      </div>
+    </div>
 
     <div class="nav-right">
       <!-- Shown only when logged OUT -->
-      <button id="loginBtn" class="btn btn-primary">Login with College Email</button>
+      <button id="loginBtn" class="btn btn-primary">
+        <i class="fa-brands fa-google"></i> Login with College Email
+      </button>
 
       <!-- Shown only when logged IN -->
       <div id="userBox" class="user-box hidden">
-        <span id="userEmail"></span>
-        <button id="addClubBtn" class="btn btn-accent" title="Create a new club">+ New Club</button>
-        <button id="logoutBtn" class="btn btn-ghost">Logout</button>
+        <div class="user-info">
+          <span id="userEmail" class="user-email"></span>
+          <span id="userRoleBadge" class="badge badge-role">🎓 Student</span>
+        </div>
+        <button id="addClubBtn" class="btn btn-accent" title="Submit a new club for approval">
+          <i class="fa-solid fa-plus"></i> + New Club
+        </button>
+        <button id="logoutBtn" class="btn btn-ghost" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- ===== PROFESSOR APPROVAL PANEL (only visible to coordinator professors) ===== -->
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge"><i class="fa-solid fa-sparkles"></i> Centralized Campus Life Portal</div>
+      <h2 class="hero-heading">Discover, Join & Lead College Clubs at <span class="highlight">MITS</span></h2>
+      <p class="hero-text">
+        From coding hackathons to cultural festivals, sports meets, and robotics innovations — explore all official college clubs in one verified place.
+      </p>
+
+      <!-- Search & Filters Container -->
+      <div class="search-bar-wrapper">
+        <div class="search-input-group">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="searchInput" placeholder="Search clubs by name, technology, activities..." />
+          <button id="clearSearchBtn" class="clear-search-btn hidden">&times;</button>
+        </div>
+
+        <div class="filter-controls">
+          <select id="feeFilter" class="select-filter">
+            <option value="all">All Fees</option>
+            <option value="free">Free Only</option>
+            <option value="paid">Paid</option>
+          </select>
+
+          <select id="recruitmentFilter" class="select-filter">
+            <option value="all">All Status</option>
+            <option value="open">🔥 Recruiting Now</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category Pills -->
+      <div class="category-pills" id="categoryPills">
+        <button class="pill active" data-category="all"><i class="fa-solid fa-globe"></i> All Clubs</button>
+        <button class="pill" data-category="Technical"><i class="fa-solid fa-code"></i> Technical</button>
+        <button class="pill" data-category="Cultural"><i class="fa-solid fa-masks-theater"></i> Cultural & Arts</button>
+        <button class="pill" data-category="Sports"><i class="fa-solid fa-volleyball"></i> Sports</button>
+        <button class="pill" data-category="Social"><i class="fa-solid fa-hands-holding-child"></i> Social & NSS</button>
+        <button class="pill" data-category="Literary"><i class="fa-solid fa-book-open"></i> Literary & Media</button>
+        <button class="pill" data-category="Innovation"><i class="fa-solid fa-lightbulb"></i> E-Cell & Innovation</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROFESSOR APPROVAL PANEL (Visible to Coordinator Professors) ===== -->
   <section id="approvalPanel" class="approval-panel hidden">
-    <h2>Clubs Waiting For Your Approval</h2>
+    <div class="panel-header">
+      <div class="panel-title-group">
+        <span class="panel-icon"><i class="fa-solid fa-user-graduate"></i></span>
+        <div>
+          <h2>Coordinator Approval Portal</h2>
+          <p class="panel-desc">Clubs assigned to your MITS email waiting for review & formal authorization.</p>
+        </div>
+      </div>
+      <div class="panel-stats" id="pendingCountBadge">0 Pending</div>
+    </div>
     <div id="pendingList" class="pending-list"></div>
   </section>
 
-  <!-- ===== CLUB GRID ===== -->
-  <main>
-    <h2 class="section-title">All Clubs</h2>
+  <!-- ===== PRESIDENT MANAGE BAR (Visible if User is President of any club) ===== -->
+  <section id="presidentBanner" class="president-banner hidden">
+    <div class="president-banner-content">
+      <div class="pres-icon"><i class="fa-solid fa-crown"></i></div>
+      <div>
+        <h3>President Control Access</h3>
+        <p>You are recognized as the President/Lead of active club(s). Click "Edit" on your club cards below to update notices, links & recruitment status.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MAIN CLUB SHOWCASE ===== -->
+  <main class="main-container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Official Clubs Directory</h2>
+        <p class="section-subtitle" id="resultsCount">Showing all active clubs</p>
+      </div>
+      <!-- Demo Data Loader for Testing/Viva -->
+      <button id="seedDataBtn" class="btn btn-seed" title="Populate realistic MITS sample clubs for testing or demo">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Load MITS Sample Clubs
+      </button>
+    </div>
+
+    <!-- Empty / No Results State -->
+    <div id="noResultsState" class="empty-state hidden">
+      <i class="fa-solid fa-folder-open empty-icon"></i>
+      <h3>No Clubs Found</h3>
+      <p>Try clearing your search filters or click "Load MITS Sample Clubs" to populate default clubs.</p>
+    </div>
+
+    <!-- Grid of Approved Clubs -->
     <div id="clubGrid" class="club-grid">
-      <!-- Club cards get inserted here by app.js -->
+      <!-- Club cards dynamically rendered here by app.js -->
     </div>
   </main>
 
   <!-- ===== CREATE CLUB MODAL ===== -->
   <div id="createClubModal" class="modal hidden">
     <div class="modal-box">
-      <button id="closeModalBtn" class="modal-close">&times;</button>
-      <h2>Create a New Club</h2>
-      <form id="createClubForm">
-        <label>Club Name *</label>
-        <input type="text" id="clubName" required />
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i class="fa-solid fa-plus-circle modal-icon"></i>
+          <div>
+            <h2>Register New College Club</h2>
+            <p>Will be submitted to your Faculty Coordinator for approval.</p>
+          </div>
+        </div>
+        <button id="closeModalBtn" class="modal-close">&times;</button>
+      </div>
 
-        <label>Description / Features *</label>
-        <textarea id="clubDescription" required></textarea>
-
-        <label>WhatsApp Group Link</label>
-        <input type="url" id="clubWhatsapp" placeholder="https://chat.whatsapp.com/..." />
-
-        <label>Instagram Link</label>
-        <input type="url" id="clubInsta" placeholder="https://instagram.com/..." />
-
-        <label>President Name *</label>
-        <input type="text" id="presidentName" required />
-
-        <label>President Phone Number *</label>
-        <input type="tel" id="presidentPhone" required />
-
-        <label>President College Email * (used for edit access later)</label>
-        <input type="email" id="presidentEmail" required placeholder="name@mitsgwl.ac.in" />
-
-        <label>Fee</label>
-        <div class="fee-row">
-          <select id="feeType">
-            <option value="free">Free</option>
-            <option value="paid">Paid</option>
-          </select>
-          <input type="number" id="feeAmount" placeholder="Amount (₹)" class="hidden" />
+      <form id="createClubForm" class="modal-form">
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label>Club Name *</label>
+            <input type="text" id="clubName" placeholder="e.g. GDSC MITS / Club Decimal" required />
+          </div>
+          <div class="form-group flex-1">
+            <label>Category *</label>
+            <select id="clubCategory" required>
+              <option value="Technical">Technical</option>
+              <option value="Cultural">Cultural & Arts</option>
+              <option value="Sports">Sports & Athletics</option>
+              <option value="Social">Social & NSS</option>
+              <option value="Literary">Literary & Debate</option>
+              <option value="Innovation">E-Cell & Innovation</option>
+            </select>
+          </div>
         </div>
 
-        <label>Coordinator Professor Email * (they must approve this club)</label>
-        <input type="email" id="coordinatorEmail" required placeholder="professor@mitsgwl.ac.in" />
+        <div class="form-group">
+          <label>Tagline / Motto</label>
+          <input type="text" id="clubTagline" placeholder="e.g. Innovate, Collaborate, Elevate" />
+        </div>
 
-        <button type="submit" class="btn btn-primary full-width">Submit for Approval</button>
+        <div class="form-group">
+          <label>Detailed Description & Objectives *</label>
+          <textarea id="clubDescription" rows="3" placeholder="Describe the mission, activities, workshops, and benefits for students..." required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Membership Fee</label>
+            <select id="feeType">
+              <option value="free">Free for All</option>
+              <option value="paid">Paid Entry</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fee Amount (₹)</label>
+            <input type="number" id="feeAmount" placeholder="0" min="0" disabled />
+          </div>
+          <div class="form-group">
+            <label>Recruitment Status</label>
+            <select id="recruitmentStatus">
+              <option value="open">🔥 Open for Recruitment</option>
+              <option value="closed">Closed / Coming Soon</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-section-title"><i class="fa-solid fa-crown"></i> President / Student Lead Details</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>President Full Name *</label>
+            <input type="text" id="presidentName" placeholder="Full Name" required />
+          </div>
+          <div class="form-group">
+            <label>President Phone No. *</label>
+            <input type="tel" id="presidentPhone" placeholder="+91 XXXXX XXXXX" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>President College Email * (Used for edit & manage permissions)</label>
+          <input type="email" id="presidentEmail" placeholder="president@mitsgwl.ac.in" required />
+        </div>
+
+        <div class="form-section-title"><i class="fa-solid fa-share-nodes"></i> Connect & Socials</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>WhatsApp Group / Community Link</label>
+            <input type="url" id="clubWhatsapp" placeholder="https://chat.whatsapp.com/..." />
+          </div>
+          <div class="form-group">
+            <label>Instagram Handle / Link</label>
+            <input type="url" id="clubInsta" placeholder="https://instagram.com/..." />
+          </div>
+        </div>
+
+        <div class="form-section-title"><i class="fa-solid fa-chalkboard-user"></i> Faculty In-Charge</div>
+
+        <div class="form-group">
+          <label>Coordinator Professor Email * (Club will be in pending until approved)</label>
+          <input type="email" id="coordinatorEmail" placeholder="professor@mitsgwl.ac.in" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary full-width" id="submitClubBtn">
+          <i class="fa-solid fa-paper-plane"></i> Submit Club for Faculty Approval
+        </button>
       </form>
     </div>
   </div>
 
-  <!-- ===== EDIT CLUB MODAL ===== -->
+  <!-- ===== EDIT CLUB MODAL (President Only) ===== -->
   <div id="editClubModal" class="modal hidden">
     <div class="modal-box">
-      <button id="closeEditModalBtn" class="modal-close">&times;</button>
-      <h2>Edit Club</h2>
-      <form id="editClubForm">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i class="fa-solid fa-pen-to-square modal-icon"></i>
+          <div>
+            <h2 id="editModalHeading">Edit Club Details</h2>
+            <p>Update announcements, contact info, and recruitment status in real time.</p>
+          </div>
+        </div>
+        <button id="closeEditModalBtn" class="modal-close">&times;</button>
+      </div>
+
+      <form id="editClubForm" class="modal-form">
         <input type="hidden" id="editClubId" />
-        <label>Description / Features</label>
-        <textarea id="editDescription" required></textarea>
 
-        <label>WhatsApp Group Link</label>
-        <input type="url" id="editWhatsapp" />
+        <div class="form-group">
+          <label>Club Tagline / Motto</label>
+          <input type="text" id="editTagline" />
+        </div>
 
-        <label>Instagram Link</label>
-        <input type="url" id="editInsta" />
+        <div class="form-group">
+          <label>Description & Features</label>
+          <textarea id="editDescription" rows="3" required></textarea>
+        </div>
 
-        <label>President Name</label>
-        <input type="text" id="editPresidentName" required />
+        <div class="form-group">
+          <label>📢 Latest Announcement / Notice (Shows on Club Card)</label>
+          <input type="text" id="editAnnouncement" placeholder="e.g. Next workshop on Sept 15 in SAC Auditorium!" />
+        </div>
 
-        <label>President Phone</label>
-        <input type="tel" id="editPresidentPhone" required />
+        <div class="form-row">
+          <div class="form-group">
+            <label>Recruitment Status</label>
+            <select id="editRecruitmentStatus">
+              <option value="open">🔥 Open for Recruitment</option>
+              <option value="closed">Closed / Inactive</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fee Status</label>
+            <select id="editFeeType">
+              <option value="free">Free</option>
+              <option value="paid">Paid</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fee (₹)</label>
+            <input type="number" id="editFeeAmount" min="0" />
+          </div>
+        </div>
 
-        <button type="submit" class="btn btn-primary full-width">Save Changes</button>
+        <div class="form-row">
+          <div class="form-group">
+            <label>President Contact Name</label>
+            <input type="text" id="editPresidentName" required />
+          </div>
+          <div class="form-group">
+            <label>President Phone Number</label>
+            <input type="tel" id="editPresidentPhone" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>WhatsApp Group Link</label>
+            <input type="url" id="editWhatsapp" placeholder="https://chat.whatsapp.com/..." />
+          </div>
+          <div class="form-group">
+            <label>Instagram Link</label>
+            <input type="url" id="editInsta" placeholder="https://instagram.com/..." />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary full-width">
+          <i class="fa-solid fa-floppy-disk"></i> Save & Publish Changes
+        </button>
       </form>
     </div>
   </div>
 
-  <!-- ===== Firebase SDKs (compat version = simplest for beginners, no build tools needed) ===== -->
+  <!-- ===== CLUB DETAIL & RECRUITMENT MODAL ===== -->
+  <div id="clubDetailModal" class="modal hidden">
+    <div class="modal-box modal-detail">
+      <button id="closeDetailModalBtn" class="modal-close">&times;</button>
+      <div id="clubDetailContent">
+        <!-- Injected dynamically by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-left">
+        <p><strong>MITS Club Hub</strong> &bull; Madhav Institute of Technology & Science</p>
+        <p class="footer-sub">Engineered by Akash Dhakad & Team &bull; Real-time Firebase & RBAC</p>
+      </div>
+      <div class="footer-right">
+        <span>Verified @mitsgwl.ac.in Portal</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== Firebase SDKs (v10 compat) ===== -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
