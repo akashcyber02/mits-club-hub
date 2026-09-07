@@ -11,12 +11,12 @@
 */
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyBvOHtd-MTsuPxFvUTyOslQJ_p2rkpkDjU",
+  authDomain: "mits-club-hub.firebaseapp.com",
+  projectId: "mits-club-hub",
+  storageBucket: "mits-club-hub.firebasestorage.app",
+  messagingSenderId: "508903698315",
+  appId: "1:508903698315:web:018d57ed9ad53b1f42098e",
 };
 
 firebase.initializeApp(firebaseConfig);
