@@ -1913,6 +1913,33 @@ h1, h2, h3, h4, .stat-num, .logo-title, .login-main-title {
   transform: translateY(-2px);
 }
 
+.dev-project-link {
+  color: #10b981;
+  text-decoration: none;
+  font-weight: 700;
+  border-bottom: 1px dashed rgba(16, 185, 129, 0.4);
+  transition: var(--transition);
+}
+
+.dev-project-link:hover {
+  color: #34d399;
+  border-bottom-color: #34d399;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.dev-project {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  color: #34d399 !important;
+}
+
+.dev-project:hover {
+  background: #10b981 !important;
+  color: #062419 !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+}
+
 .dev-gh:hover { background: #24292e; border-color: white; }
 .dev-li:hover { background: #0a66c2; border-color: #0a66c2; }
 .dev-ig:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); border-color: transparent; }
