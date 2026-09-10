@@ -1,5 +1,5 @@
 /* =========================================================
-   MITS CLUB HUB — 3D Vibrant & Glassmorphic Styling
+   MITS CLUB HUB — 3D Vibrant, Glassmorphic & Privacy Locked
    ========================================================= */
 
 :root {
@@ -52,7 +52,7 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, .stat-num, .logo-title {
+h1, h2, h3, h4, .stat-num, .logo-title, .login-main-title {
   font-family: "Outfit", sans-serif;
 }
 
@@ -98,6 +98,184 @@ h1, h2, h3, h4, .stat-num, .logo-title {
 @keyframes toastSlide {
   from { transform: translateX(120%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
+}
+
+/* =========================================================
+   MANDATORY LOGIN GATE SCREEN (#loginGateView)
+   ========================================================= */
+.login-gate-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  position: relative;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.login-bg-blobs .login-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.45;
+  pointer-events: none;
+  animation: floatBlobs 9s infinite alternate ease-in-out;
+}
+
+.login-bg-blobs .blob-1 { width: 500px; height: 500px; background: #2563eb; top: -100px; left: -100px; }
+.login-bg-blobs .blob-2 { width: 550px; height: 550px; background: #7c3aed; bottom: -150px; right: -100px; animation-delay: -4s; }
+.login-bg-blobs .blob-3 { width: 400px; height: 400px; background: #06b6d4; top: 30%; left: 50%; animation-delay: -6s; }
+
+.login-card-3d {
+  background: rgba(18, 24, 38, 0.88);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-lg);
+  padding: 48px 40px;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 50px rgba(56, 189, 248, 0.25);
+  animation: modalPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-header-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.icon-3d-shield {
+  width: 72px;
+  height: 72px;
+  background: var(--grad-hero);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: white;
+  box-shadow: 0 12px 30px rgba(56, 189, 248, 0.5);
+  transform: rotate(-5deg);
+  animation: shieldPulse 3s infinite alternate ease-in-out;
+}
+
+@keyframes shieldPulse {
+  0% { transform: rotate(-5deg) scale(1); }
+  100% { transform: rotate(3deg) scale(1.06); }
+}
+
+.login-security-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  color: #38bdf8;
+  margin-bottom: 16px;
+}
+
+.login-main-title {
+  font-size: 36px;
+  font-weight: 900;
+  color: white;
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
+}
+
+.login-college-name {
+  font-size: 14px;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+.login-description {
+  font-size: 14px;
+  color: #cbd5e1;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.login-features-list {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.login-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.feat-ico {
+  color: #10b981;
+  font-size: 15px;
+}
+
+.btn-google-login-3d {
+  background: white;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 800;
+  padding: 16px 24px;
+  border-radius: var(--radius-md);
+  width: 100%;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-google-login-3d:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 16px 40px rgba(255, 255, 255, 0.4);
+}
+
+.login-domain-hint {
+  margin-top: 18px;
+  font-size: 12px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.login-domain-hint strong {
+  color: #38bdf8;
+}
+
+/* =========================================================
+   MAIN APP WRAPPER (#mainAppView)
+   ========================================================= */
+.main-app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ===== 3D NAVBAR ===== */
@@ -229,16 +407,6 @@ h1, h2, h3, h4, .stat-num, .logo-title {
   text-decoration: none;
 }
 
-.btn-login-3d {
-  background: white;
-  color: #0f172a;
-  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-}
-.btn-login-3d:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.35);
-}
-
 .btn-create-3d {
   background: var(--grad-hero);
   color: white;
@@ -253,7 +421,7 @@ h1, h2, h3, h4, .stat-num, .logo-title {
   background: rgba(255, 255, 255, 0.08);
   color: #f43f5e;
   border: 1px solid rgba(244, 63, 94, 0.3);
-  padding: 10px 14px;
+  padding: 10px 18px;
   border-radius: var(--radius-md);
 }
 .btn-logout-3d:hover {
@@ -799,7 +967,6 @@ h1, h2, h3, h4, .stat-num, .logo-title {
   overflow: hidden;
 }
 
-/* Notice snippet on card */
 .card-notice-box {
   background: rgba(56, 189, 248, 0.08);
   border-left: 3px solid #38bdf8;
@@ -1076,7 +1243,6 @@ h1, h2, h3, h4, .stat-num, .logo-title {
   line-height: 1.7;
 }
 
-/* Perks List */
 .perks-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -1112,7 +1278,6 @@ h1, h2, h3, h4, .stat-num, .logo-title {
   line-height: 1.4;
 }
 
-/* Step by Step Timeline */
 .steps-timeline {
   display: flex;
   flex-direction: column;
@@ -1154,7 +1319,6 @@ h1, h2, h3, h4, .stat-num, .logo-title {
   color: var(--text-gray);
 }
 
-/* Leadership Contact Cards */
 .leadership-cards-wrap {
   display: flex;
   flex-direction: column;
@@ -1189,7 +1353,6 @@ h1, h2, h3, h4, .stat-num, .logo-title {
   line-height: 1.5;
 }
 
-/* Embedded Application Form */
 .application-form-3d {
   display: flex;
   flex-direction: column;
@@ -1438,4 +1601,6 @@ h1, h2, h3, h4, .stat-num, .logo-title {
   .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
   .club-header-top { flex-direction: column; align-items: center; text-align: center; }
   .club-page-nav-bar { position: static; }
+  .login-card-3d { padding: 32px 20px; }
+  .login-main-title { font-size: 28px; }
 }

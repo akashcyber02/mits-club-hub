@@ -3,6 +3,7 @@
    Engineered & Architected by Akash Dhakad (Team Lead & RBAC Architect)
    
    Features:
+   - Mandatory Privacy Login Gatekeeper Screen
    - 3D Interactive Mouse Physics & Card Tilt
    - Single Page App (SPA) Dedicated Full Club View with Hash Routing
    - Comprehensive Multi-Filter Engine (Search, Category, Fee, Status, Sort)
@@ -13,13 +14,16 @@
    - MITS Sample Data Seeder for Viva & Testing
    ========================================================= */
 
-// ---------- DOM Elements ----------
+// ---------- Gatekeeper & Views ----------
+const loginGateView = document.getElementById("loginGateView");
+const mainAppView = document.getElementById("mainAppView");
+const gateLoginBtn = document.getElementById("gateLoginBtn");
+
 const navLogoBtn = document.getElementById("navLogoBtn");
 const homeView = document.getElementById("homeView");
 const clubFullView = document.getElementById("clubFullView");
 
-// Auth & Nav
-const loginBtn = document.getElementById("loginBtn");
+// Auth & Nav Elements
 const logoutBtn = document.getElementById("logoutBtn");
 const userBox = document.getElementById("userBox");
 const userEmailEl = document.getElementById("userEmail");
@@ -103,10 +107,14 @@ function showToast(message, type = "info") {
 }
 
 /* =========================================================
-   2. AUTHENTICATION & ROLE RECOGNITION (RBAC)
+   2. AUTHENTICATION & LOGIN GATEKEEPER
    ========================================================= */
 
-loginBtn.addEventListener("click", () => {
+if (gateLoginBtn) {
+  gateLoginBtn.addEventListener("click", handleGoogleLogin);
+}
+
+function handleGoogleLogin() {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
     .then((result) => {
@@ -115,26 +123,30 @@ loginBtn.addEventListener("click", () => {
     .catch((err) => {
       showToast("Login failed: " + err.message, "error");
     });
-});
+}
 
 logoutBtn.addEventListener("click", () => {
   auth.signOut().then(() => {
-    showToast("Logged out successfully.", "info");
+    showToast("Logged out successfully. Privacy gate locked.", "info");
+    window.location.hash = "";
   });
 });
 
 auth.onAuthStateChanged((user) => {
   if (user) {
     const email = user.email || "";
+    // Enforce @mitsgwl.ac.in restriction
     if (typeof ALLOWED_DOMAIN !== "undefined" && ALLOWED_DOMAIN && !email.endsWith(ALLOWED_DOMAIN)) {
-      showToast("Access Restricted: Please sign in with your official @mitsgwl.ac.in email.", "error");
+      showToast("Access Denied: Only @mitsgwl.ac.in email addresses are permitted.", "error");
       auth.signOut();
       return;
     }
 
+    // Authenticated User -> Unlock Portal
     currentUser = user;
-    loginBtn.classList.add("hidden");
-    userBox.classList.remove("hidden");
+    loginGateView.classList.add("hidden");
+    mainAppView.classList.remove("hidden");
+
     userEmailEl.textContent = user.email;
     if (userAvatarEl) {
       userAvatarEl.textContent = (user.displayName || user.email || "M").charAt(0).toUpperCase();
@@ -143,16 +155,18 @@ auth.onAuthStateChanged((user) => {
     detectUserRole(user.email);
     listenToPendingApprovals(user.email);
     checkPresidentStatus(user.email);
+    listenToApprovedClubs();
   } else {
+    // Logged Out -> Lock Portal behind Login Gate
     currentUser = null;
-    loginBtn.classList.remove("hidden");
-    userBox.classList.add("hidden");
+    loginGateView.classList.remove("hidden");
+    mainAppView.classList.add("hidden");
     approvalPanel.classList.add("hidden");
     presidentBanner.classList.add("hidden");
-    if (unsubPending) unsubPending();
+
+    if (unsubClubs) { unsubClubs(); unsubClubs = null; }
+    if (unsubPending) { unsubPending(); unsubPending = null; }
   }
-  
-  listenToApprovedClubs();
 });
 
 function detectUserRole(email) {
@@ -525,7 +539,7 @@ function renderFullClubView(club) {
         </button>
         <div style="display: flex; gap: 10px; align-items: center;">
           <span class="tag-3d tag-cat"><i class="fa-solid ${catIcon}"></i> ${cat}</span>
-          ${isPresident ? `<button class="btn btn-primary" id="btnEditFromPage" style="padding: 6px 14px; font-size: 13px;"><i class="fa-solid fa-pen"></i> Edit Club</button>` : ""}
+          ${isPresident ? `<button class="btn btn-create-3d" id="btnEditFromPage" style="padding: 6px 14px; font-size: 13px;"><i class="fa-solid fa-pen"></i> Edit Club</button>` : ""}
         </div>
       </div>
 
@@ -555,7 +569,7 @@ function renderFullClubView(club) {
                 </a>
               ` : ""}
               ${club.insta ? `
-                <a href="${club.insta}" target="_blank" class="btn btn-ghost" style="border: 1px solid rgba(255,255,255,0.2); color: white;">
+                <a href="${club.insta}" target="_blank" class="btn btn-logout-3d" style="color: white; border-color: rgba(255,255,255,0.2);">
                   <i class="fa-brands fa-instagram"></i> Follow on Instagram
                 </a>
               ` : ""}
@@ -787,6 +801,8 @@ function getCategoryGlow(cat) {
    ========================================================= */
 
 function checkHashRoute() {
+  if (!currentUser) return;
+
   const hash = window.location.hash;
   if (hash.startsWith("#club/")) {
     const clubId = hash.replace("#club/", "");
@@ -1080,8 +1096,3 @@ seedDataBtn.addEventListener("click", () => {
       showToast("Error seeding: " + err.message, "error");
     });
 });
-
-/* =========================================================
-   12. INITIAL LOAD
-   ========================================================= */
-listenToApprovedClubs();
