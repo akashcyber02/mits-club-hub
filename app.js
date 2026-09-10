@@ -23,6 +23,10 @@ const gateLoginBtn = document.getElementById("gateLoginBtn");
 const navLogoBtn = document.getElementById("navLogoBtn");
 const homeView = document.getElementById("homeView");
 const clubFullView = document.getElementById("clubFullView");
+const developerPageView = document.getElementById("developerPageView");
+const navDevBtn = document.getElementById("navDevBtn");
+const devBackBtn = document.getElementById("devBackBtn");
+const devBackToClubsLink = document.getElementById("devBackToClubsLink");
 
 // Auth & Nav Elements
 const logoutBtn = document.getElementById("logoutBtn");
@@ -920,11 +924,20 @@ function checkHashRoute() {
   if (!currentUser) return;
 
   const hash = window.location.hash;
+  if (hash === "#developer") {
+    homeView.classList.add("hidden");
+    clubFullView.classList.add("hidden");
+    if (developerPageView) developerPageView.classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
+
   if (hash.startsWith("#club/")) {
     const clubId = hash.replace("#club/", "");
     const foundClub = allApprovedClubs.find(c => c.id === clubId);
     if (foundClub) {
       homeView.classList.add("hidden");
+      if (developerPageView) developerPageView.classList.add("hidden");
       clubFullView.classList.remove("hidden");
       renderFullClubView(foundClub);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -935,12 +948,26 @@ function checkHashRoute() {
   // Otherwise show Home View
   homeView.classList.remove("hidden");
   clubFullView.classList.add("hidden");
+  if (developerPageView) developerPageView.classList.add("hidden");
 }
 
 window.addEventListener("hashchange", checkHashRoute);
 
 if (navLogoBtn) {
   navLogoBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    window.location.hash = "";
+  });
+}
+
+if (devBackBtn) {
+  devBackBtn.addEventListener("click", () => {
+    window.location.hash = "";
+  });
+}
+
+if (devBackToClubsLink) {
+  devBackToClubsLink.addEventListener("click", (e) => {
     e.preventDefault();
     window.location.hash = "";
   });

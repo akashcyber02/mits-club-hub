@@ -118,6 +118,9 @@
       </div>
 
       <div class="nav-right">
+        <a href="#developer" class="btn btn-dev-nav" id="navDevBtn" title="Meet the Developer — Akash Dhakad">
+          <i class="fa-solid fa-code"></i> <span>👨‍💻 Developer</span>
+        </a>
         <div id="userBox" class="user-box">
           <div class="user-info-pill">
             <div class="user-avatar-circle" id="userAvatar">M</div>
@@ -306,6 +309,272 @@
     <!-- ========================================================================= -->
     <div id="clubFullView" class="view-section hidden">
       <!-- Injected dynamically by app.js with full A to Z rich details & photo gallery -->
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 3: DEDICATED DEVELOPER SPOTLIGHT PAGE (#developerPageView)           -->
+    <!-- ========================================================================= -->
+    <div id="developerPageView" class="view-section hidden">
+      <div class="devpage-container">
+        
+        <!-- Back Navigation & Page Title -->
+        <div class="devpage-topbar">
+          <button id="devBackBtn" class="btn-back-3d">
+            <i class="fa-solid fa-arrow-left"></i> Back to Clubs Hub
+          </button>
+          <div class="devpage-pill">
+            <i class="fa-solid fa-shield-halved"></i> Official Architect Profile &bull; MITS Gwalior
+          </div>
+        </div>
+
+        <!-- 3D Hero Profile Showcase -->
+        <div class="devpage-hero-card">
+          <div class="devpage-hero-glow"></div>
+          
+          <div class="devpage-profile-grid">
+            <!-- Developer Photo Frame -->
+            <div class="dev-photo-column">
+              <div class="dev-photo-3d-wrapper">
+                <div class="dev-photo-ring"></div>
+                <img 
+                  id="devMainPhoto" 
+                  src="assets/akash-profile.jpg" 
+                  onerror="this.onerror=null; this.src='assets/akash-avatar.svg';" 
+                  alt="Akash Dhakad — Lead Developer & Architect" 
+                  class="dev-photo-img" 
+                />
+                <div class="dev-photo-badge">
+                  <span class="pulse-dot"></span> 1st Year AI Student
+                </div>
+              </div>
+
+              <!-- Quick Action Link to Live Swasthya Setu -->
+              <a href="https://swasthya-setu-akash.netlify.app/" target="_blank" class="btn-live-swasthya-glow" title="Open Swasthya Setu App">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <span>Explore Swasthya Setu</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <!-- Developer Main Bio & Info -->
+            <div class="dev-details-column">
+              <div class="dev-tag-row">
+                <span class="dev-badge-ai"><i class="fa-solid fa-brain"></i> Artificial Intelligence & Data Science</span>
+                <span class="dev-badge-college"><i class="fa-solid fa-building-columns"></i> MITS Gwalior</span>
+                <span class="dev-badge-batch"><i class="fa-solid fa-graduation-cap"></i> 1st Year (B.Tech)</span>
+              </div>
+
+              <h1 class="dev-title-name">
+                Akash <span class="text-gradient">Dhakad</span>
+              </h1>
+              <p class="dev-subtitle-role">
+                Lead Full-Stack Architect & AI Developer &bull; Creator of <em>Swasthya Setu</em> & <em>MITS Club Hub</em>
+              </p>
+
+              <div class="dev-story-box">
+                <p>
+                  "Namaste! I am <strong>Akash Dhakad</strong>, a 1st-year <strong>Artificial Intelligence</strong> student at <strong>Madhav Institute of Technology & Science (MITS Gwalior)</strong>. I engineer real-world, high-impact digital products and AI applications that solve practical problems for our college campus and society."
+                </p>
+                <p>
+                  "I built <strong>MITS Club Hub</strong> to eliminate scattered WhatsApp circulars and give every MITSian a single 3D discovery hub with domain authentication, student-faculty role verification, real-time Firestore sync, and official event galleries."
+                </p>
+              </div>
+
+              <!-- Direct Connect & Socials Hub -->
+              <div class="dev-connections-grid">
+                <a href="https://swasthya-setu-akash.netlify.app/" target="_blank" class="dev-hero-btn dev-btn-swasthya" title="Live Health App">
+                  <i class="fa-solid fa-globe"></i>
+                  <div>
+                    <span class="lbl-small">Live Project</span>
+                    <span class="lbl-bold">Swasthya Setu</span>
+                  </div>
+                </a>
+
+                <a href="https://github.com/akashcyber02" target="_blank" class="dev-hero-btn dev-btn-github" title="GitHub Repository & Code">
+                  <i class="fa-brands fa-github"></i>
+                  <div>
+                    <span class="lbl-small">Open Source</span>
+                    <span class="lbl-bold">akashcyber02</span>
+                  </div>
+                </a>
+
+                <a href="https://www.linkedin.com/in/akash-dhakad8358/" target="_blank" class="dev-hero-btn dev-btn-linkedin" title="Professional Profile">
+                  <i class="fa-brands fa-linkedin-in"></i>
+                  <div>
+                    <span class="lbl-small">Connect</span>
+                    <span class="lbl-bold">akash-dhakad8358</span>
+                  </div>
+                </a>
+
+                <a href="https://www.instagram.com/http.akash_02?stkn=eHE0OW03bjI0NDJy" target="_blank" class="dev-hero-btn dev-btn-instagram" title="Instagram">
+                  <i class="fa-brands fa-instagram"></i>
+                  <div>
+                    <span class="lbl-small">Follow</span>
+                    <span class="lbl-bold">@http.akash_02</span>
+                  </div>
+                </a>
+
+                <a href="mailto:26ai1ak9@mitsgwl.ac.in" class="dev-hero-btn dev-btn-email" title="College Email">
+                  <i class="fa-solid fa-envelope"></i>
+                  <div>
+                    <span class="lbl-small">College Mail</span>
+                    <span class="lbl-bold">26ai1ak9@mitsgwl.ac.in</span>
+                  </div>
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Featured Projects Showcase Bento -->
+        <div class="dev-section-title-wrap">
+          <h2 class="dev-sec-heading"><i class="fa-solid fa-cubes-stacked"></i> Featured Architectures & Projects</h2>
+          <p class="dev-sec-sub">Real-world applications engineered to make an impact</p>
+        </div>
+
+        <div class="dev-projects-bento">
+          <!-- Project 1: Swasthya Setu -->
+          <div class="dev-project-card bento-glow-emerald">
+            <div class="pcard-badge-row">
+              <span class="pcard-tag tag-emerald"><i class="fa-solid fa-heart-pulse"></i> Live in Production</span>
+              <span class="pcard-year">Health Tech</span>
+            </div>
+            <h3 class="pcard-title">Swasthya Setu (स्वास्थ्य सेतु)</h3>
+            <p class="pcard-desc">
+              A comprehensive health-tech portal and web application engineered for public welfare and healthcare connectivity across Maharashtra. Bridges patients, medical specialists, and vital emergency resources with a fast, intuitive responsive interface.
+            </p>
+            <div class="pcard-tech-stack">
+              <span>JavaScript</span>
+              <span>Healthcare APIs</span>
+              <span>Netlify</span>
+              <span>Responsive UI</span>
+            </div>
+            <div class="pcard-action-bar">
+              <a href="https://swasthya-setu-akash.netlify.app/" target="_blank" class="btn-pcard-link">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Live App
+              </a>
+            </div>
+          </div>
+
+          <!-- Project 2: MITS Club Hub -->
+          <div class="dev-project-card bento-glow-sky">
+            <div class="pcard-badge-row">
+              <span class="pcard-tag tag-sky"><i class="fa-solid fa-building-columns"></i> Official MITS Portal</span>
+              <span class="pcard-year">2026</span>
+            </div>
+            <h3 class="pcard-title">MITS Club Hub</h3>
+            <p class="pcard-desc">
+              Centralized campus life discovery, membership application, and faculty approval portal for Madhav Institute of Technology & Science, Gwalior. Features domain-locked authentication, 3D physics interaction, Cloud Firestore sync, and client-side photo compression.
+            </p>
+            <div class="pcard-tech-stack">
+              <span>Firebase 10 Auth</span>
+              <span>Cloud Firestore</span>
+              <span>SPA Architecture</span>
+              <span>3D CSS Physics</span>
+            </div>
+            <div class="pcard-action-bar">
+              <a href="#" class="btn-pcard-link" id="devBackToClubsLink">
+                <i class="fa-solid fa-shapes"></i> Explore Clubs Directory
+              </a>
+            </div>
+          </div>
+
+          <!-- Project 3: AI & Machine Learning Research -->
+          <div class="dev-project-card bento-glow-purple">
+            <div class="pcard-badge-row">
+              <span class="pcard-tag tag-purple"><i class="fa-solid fa-brain"></i> AI & Data Science</span>
+              <span class="pcard-year">MITS Research</span>
+            </div>
+            <h3 class="pcard-title">AI & Smart Campus Innovations</h3>
+            <p class="pcard-desc">
+              Developing automated club recommendation algorithms, computer vision models for event attendance, and smart analytics workflows as part of the B.Tech Artificial Intelligence curriculum at MITS Gwalior.
+            </p>
+            <div class="pcard-tech-stack">
+              <span>Python</span>
+              <span>Machine Learning</span>
+              <span>Data Structures</span>
+              <span>Computer Vision</span>
+            </div>
+            <div class="pcard-action-bar">
+              <a href="https://github.com/akashcyber02" target="_blank" class="btn-pcard-link">
+                <i class="fa-brands fa-github"></i> View GitHub Repos
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Technical Skillset & Engineering Arsenal -->
+        <div class="dev-section-title-wrap" style="margin-top: 50px;">
+          <h2 class="dev-sec-heading"><i class="fa-solid fa-microchip"></i> Technical Arsenal & Skills</h2>
+          <p class="dev-sec-sub">Technologies and tools leveraged to build scalable software</p>
+        </div>
+
+        <div class="dev-skills-grid">
+          <div class="skill-category-box">
+            <h4><i class="fa-solid fa-code"></i> Core Languages</h4>
+            <div class="skill-pills">
+              <span>JavaScript (ES6+)</span>
+              <span>Python</span>
+              <span>HTML5 / CSS3</span>
+              <span>C / C++</span>
+              <span>SQL</span>
+            </div>
+          </div>
+
+          <div class="skill-category-box">
+            <h4><i class="fa-solid fa-cloud"></i> Cloud & Backend</h4>
+            <div class="skill-pills">
+              <span>Firebase Cloud Firestore</span>
+              <span>Firebase Auth & Hosting</span>
+              <span>Netlify CI/CD</span>
+              <span>REST APIs</span>
+              <span>Git & GitHub</span>
+            </div>
+          </div>
+
+          <div class="skill-category-box">
+            <h4><i class="fa-solid fa-brain"></i> AI & Specialization</h4>
+            <div class="skill-pills">
+              <span>Artificial Intelligence</span>
+              <span>Machine Learning Fundamentals</span>
+              <span>Data Analysis</span>
+              <span>3D Web UI & Physics</span>
+              <span>Client-side Compression</span>
+            </div>
+          </div>
+
+          <div class="skill-category-box">
+            <h4><i class="fa-solid fa-users"></i> Leadership & Campus</h4>
+            <div class="skill-pills">
+              <span>Lead Architect (MITS Club Hub)</span>
+              <span>Team Collaboration (4 Members)</span>
+              <span>GDSC / Tech Club Member</span>
+              <span>Campus Digital Transformation</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Collaboration Callout -->
+        <div class="dev-collab-card">
+          <div class="collab-content">
+            <div class="collab-icon"><i class="fa-solid fa-handshake-angle"></i></div>
+            <div>
+              <h3>Want to collaborate or build exciting tech at MITS Gwalior?</h3>
+              <p>Whether you have feedback on MITS Club Hub, need assistance in AI/Web development, or want to build groundbreaking software together, my inbox is always open!</p>
+            </div>
+          </div>
+          <div class="collab-actions">
+            <a href="mailto:26ai1ak9@mitsgwl.ac.in" class="btn btn-collab-mail">
+              <i class="fa-solid fa-envelope"></i> Reach Out via Email
+            </a>
+            <a href="https://www.instagram.com/http.akash_02?stkn=eHE0OW03bjI0NDJy" target="_blank" class="btn btn-collab-ig">
+              <i class="fa-brands fa-instagram"></i> DM on Instagram
+            </a>
+          </div>
+        </div>
+
+      </div>
     </div>
 
     <!-- ===== CREATE CLUB MODAL ===== -->
@@ -560,6 +829,9 @@
               Artificial Intelligence Engineer @ MITS Gwalior &bull; Creator of <a href="https://swasthya-setu-akash.netlify.app/" target="_blank" class="dev-project-link">Swasthya Setu <i class="fa-solid fa-arrow-up-right-from-square"></i></a> &bull; Full-Stack Architect.
             </p>
             <div class="dev-social-links">
+              <a href="#developer" class="dev-social-btn dev-profile-link" title="Open Full Developer Profile & Story">
+                <i class="fa-solid fa-user-astronaut"></i> <span>Full Profile</span>
+              </a>
               <a href="https://swasthya-setu-akash.netlify.app/" target="_blank" class="dev-social-btn dev-project" title="Swasthya Setu — Live Health Tech App">
                 <i class="fa-solid fa-heart-pulse"></i> <span>Swasthya Setu</span>
               </a>
