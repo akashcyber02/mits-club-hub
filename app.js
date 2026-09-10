@@ -35,9 +35,11 @@ const userEmailEl = document.getElementById("userEmail");
 const userAvatarEl = document.getElementById("userAvatar");
 const userRoleBadge = document.getElementById("userRoleBadge");
 const addClubBtn = document.getElementById("addClubBtn");
+const aiAdvisorNavBtn = document.getElementById("aiAdvisorNavBtn");
 
 // Stats & Approvals
 const statClubsCount = document.getElementById("statClubsCount");
+const statCategoriesCount = document.getElementById("statCategoriesCount");
 const statRecruitingCount = document.getElementById("statRecruitingCount");
 const approvalPanel = document.getElementById("approvalPanel");
 const pendingList = document.getElementById("pendingList");
@@ -50,7 +52,7 @@ const clearSearchBtn = document.getElementById("clearSearchBtn");
 const feeFilter = document.getElementById("feeFilter");
 const recruitmentFilter = document.getElementById("recruitmentFilter");
 const sortFilter = document.getElementById("sortFilter");
-const categoryPills = document.querySelectorAll("#categoryPills .pill-3d");
+const categoryPillsContainer = document.getElementById("categoryPills");
 const resetFiltersBtn = document.getElementById("resetFiltersBtn");
 
 // Directory & Grid
@@ -63,6 +65,9 @@ const seedDataBtn = document.getElementById("seedDataBtn");
 const createClubModal = document.getElementById("createClubModal");
 const closeModalBtn = document.getElementById("closeModalBtn");
 const createClubForm = document.getElementById("createClubForm");
+const clubCategorySelect = document.getElementById("clubCategory");
+const customCategoryWrap = document.getElementById("customCategoryWrap");
+const customCategoryInput = document.getElementById("customCategoryInput");
 const feeTypeSelect = document.getElementById("feeType");
 const feeAmountInput = document.getElementById("feeAmount");
 const clubPhotoFilesInput = document.getElementById("clubPhotoFiles");
@@ -71,11 +76,24 @@ const clubPhotoFilesInput = document.getElementById("clubPhotoFiles");
 const editClubModal = document.getElementById("editClubModal");
 const closeEditModalBtn = document.getElementById("closeEditModalBtn");
 const editClubForm = document.getElementById("editClubForm");
+const editCategorySelect = document.getElementById("editCategory");
+const editCustomCategoryWrap = document.getElementById("editCustomCategoryWrap");
+const editCustomCategoryInput = document.getElementById("editCustomCategoryInput");
 const editFeeType = document.getElementById("editFeeType");
 const editFeeAmount = document.getElementById("editFeeAmount");
 const editPhotoFilesInput = document.getElementById("editPhotoFiles");
 const editGalleryThumbnails = document.getElementById("editGalleryThumbnails");
 const editPhotoCount = document.getElementById("editPhotoCount");
+const aiNoticeGenBtn = document.getElementById("aiNoticeGenBtn");
+
+// AI Advisor Modal
+const aiAdvisorModal = document.getElementById("aiAdvisorModal");
+const closeAiModalBtn = document.getElementById("closeAiModalBtn");
+const aiUserInput = document.getElementById("aiUserInput");
+const aiRunMatchBtn = document.getElementById("aiRunMatchBtn");
+const aiMatchResults = document.getElementById("aiMatchResults");
+const aiClubCardsList = document.getElementById("aiClubCardsList");
+const aiConfidencePill = document.getElementById("aiConfidencePill");
 
 // Lightbox Modal
 const imageLightboxModal = document.getElementById("imageLightboxModal");
@@ -387,6 +405,7 @@ function listenToApprovedClubs() {
       const recruitingClubs = allApprovedClubs.filter(c => c.recruitmentStatus === "open");
       if (statRecruitingCount) statRecruitingCount.textContent = recruitingClubs.length;
 
+      renderDynamicCategoryPills(allApprovedClubs);
       applyFilters();
       checkHashRoute();
     }, (error) => {
@@ -395,8 +414,83 @@ function listenToApprovedClubs() {
 }
 
 /* =========================================================
-   6. MULTI-FILTER & SEARCH ENGINE
+   6. DYNAMIC CATEGORY PILLS & MULTI-FILTER ENGINE
    ========================================================= */
+
+function renderDynamicCategoryPills(clubs) {
+  if (!categoryPillsContainer) return;
+
+  const standardCategories = [
+    { key: "Technical", label: "Technical & Coding", icon: "fa-laptop-code", theme: "theme-tech" },
+    { key: "Cultural", label: "Cultural & Arts", icon: "fa-masks-theater", theme: "theme-cultural" },
+    { key: "Sports", label: "Sports & Fitness", icon: "fa-trophy", theme: "theme-sports" },
+    { key: "Social", label: "Social & NSS", icon: "fa-hand-holding-heart", theme: "theme-social" },
+    { key: "Literary", label: "Literary & Debate", icon: "fa-feather-pointed", theme: "theme-literary" },
+    { key: "Innovation", label: "E-Cell & Innovation", icon: "fa-lightbulb", theme: "theme-innovation" }
+  ];
+
+  // Detect any custom categories
+  const clubCategories = new Set();
+  (clubs || []).forEach(c => {
+    if (c.category && c.category.trim()) {
+      clubCategories.add(c.category.trim());
+    }
+  });
+
+  const customCategories = [];
+  clubCategories.forEach(cat => {
+    const isStandard = standardCategories.some(s => s.key.toLowerCase() === cat.toLowerCase());
+    if (!isStandard && cat.toLowerCase() !== "all") {
+      customCategories.push({
+        key: cat,
+        label: cat,
+        icon: "fa-shapes",
+        theme: "theme-custom"
+      });
+    }
+  });
+
+  // Update total unique categories count stat
+  const totalCategories = standardCategories.length + customCategories.length;
+  if (statCategoriesCount) statCategoriesCount.textContent = totalCategories;
+
+  // Build HTML
+  let pillsHtml = `
+    <button class="pill-3d ${activeCategory === 'all' ? 'active' : ''}" data-category="all">
+      <span class="pill-icon"><i class="fa-solid fa-compass"></i></span> All Clubs
+    </button>
+  `;
+
+  standardCategories.forEach(cat => {
+    const isActive = activeCategory.toLowerCase() === cat.key.toLowerCase();
+    pillsHtml += `
+      <button class="pill-3d ${cat.theme} ${isActive ? 'active' : ''}" data-category="${cat.key}">
+        <span class="pill-icon"><i class="fa-solid ${cat.icon}"></i></span> ${cat.label}
+      </button>
+    `;
+  });
+
+  customCategories.forEach(cat => {
+    const isActive = activeCategory.toLowerCase() === cat.key.toLowerCase();
+    pillsHtml += `
+      <button class="pill-3d theme-custom ${isActive ? 'active' : ''}" data-category="${cat.key}">
+        <span class="pill-icon"><i class="fa-solid ${cat.icon}"></i></span> ${cat.label}
+      </button>
+    `;
+  });
+
+  categoryPillsContainer.innerHTML = pillsHtml;
+
+  // Re-bind listeners
+  categoryPillsContainer.querySelectorAll(".pill-3d").forEach(pill => {
+    pill.addEventListener("click", () => {
+      categoryPillsContainer.querySelectorAll(".pill-3d").forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      activeCategory = pill.getAttribute("data-category");
+      applyFilters();
+    });
+  });
+}
 
 function applyFilters() {
   const searchTerm = searchInput.value.trim().toLowerCase();
@@ -449,15 +543,6 @@ feeFilter.addEventListener("change", applyFilters);
 recruitmentFilter.addEventListener("change", applyFilters);
 sortFilter.addEventListener("change", applyFilters);
 
-categoryPills.forEach((pill) => {
-  pill.addEventListener("click", () => {
-    categoryPills.forEach((p) => p.classList.remove("active"));
-    pill.classList.add("active");
-    activeCategory = pill.getAttribute("data-category");
-    applyFilters();
-  });
-});
-
 if (resetFiltersBtn) {
   resetFiltersBtn.addEventListener("click", () => {
     searchInput.value = "";
@@ -465,8 +550,11 @@ if (resetFiltersBtn) {
     recruitmentFilter.value = "all";
     sortFilter.value = "featured";
     activeCategory = "all";
-    categoryPills.forEach((p) => p.classList.remove("active"));
-    categoryPills[0].classList.add("active");
+    if (categoryPillsContainer) {
+      categoryPillsContainer.querySelectorAll(".pill-3d").forEach((p) => p.classList.remove("active"));
+      const firstPill = categoryPillsContainer.querySelector(".pill-3d");
+      if (firstPill) firstPill.classList.add("active");
+    }
     clearSearchBtn.classList.add("hidden");
     applyFilters();
   });
@@ -995,6 +1083,28 @@ feeTypeSelect.addEventListener("change", () => {
   else feeAmountInput.value = "";
 });
 
+if (clubCategorySelect) {
+  clubCategorySelect.addEventListener("change", () => {
+    if (clubCategorySelect.value === "Other") {
+      if (customCategoryWrap) customCategoryWrap.classList.remove("hidden");
+      if (customCategoryInput) customCategoryInput.focus();
+    } else {
+      if (customCategoryWrap) customCategoryWrap.classList.add("hidden");
+    }
+  });
+}
+
+if (editCategorySelect) {
+  editCategorySelect.addEventListener("change", () => {
+    if (editCategorySelect.value === "Other") {
+      if (editCustomCategoryWrap) editCustomCategoryWrap.classList.remove("hidden");
+      if (editCustomCategoryInput) editCustomCategoryInput.focus();
+    } else {
+      if (editCustomCategoryWrap) editCustomCategoryWrap.classList.add("hidden");
+    }
+  });
+}
+
 createClubForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!currentUser) return;
@@ -1007,13 +1117,18 @@ createClubForm.addEventListener("submit", async (e) => {
     const isPaid = feeTypeSelect.value === "paid";
     const feeVal = isPaid ? Number(feeAmountInput.value || 0) : 0;
 
+    let finalCategory = clubCategorySelect.value;
+    if (finalCategory === "Other") {
+      finalCategory = (customCategoryInput ? customCategoryInput.value.trim() : "") || "General";
+    }
+
     // Read uploaded gallery files
     const uploadedPhotos = await readFilesAsDataURLs(clubPhotoFilesInput.files);
     const coverUrl = document.getElementById("clubCoverImg").value.trim();
 
     const newClub = {
       name: document.getElementById("clubName").value.trim(),
-      category: document.getElementById("clubCategory").value,
+      category: finalCategory,
       tagline: document.getElementById("clubTagline").value.trim(),
       coverImg: coverUrl || (uploadedPhotos.length > 0 ? uploadedPhotos[0] : ""),
       gallery: uploadedPhotos,
@@ -1035,8 +1150,9 @@ createClubForm.addEventListener("submit", async (e) => {
     };
 
     await db.collection("clubs").add(newClub);
-    showToast("Club submitted with photos! It will appear once Coordinator Professor approves it.", "success");
+    showToast(`Club "${newClub.name}" submitted! Category "${finalCategory}" will appear automatically once approved.`, "success");
     createClubForm.reset();
+    if (customCategoryWrap) customCategoryWrap.classList.add("hidden");
     createClubModal.classList.add("hidden");
   } catch (err) {
     showToast("Submission failed: " + err.message, "error");
@@ -1065,6 +1181,21 @@ function openEditModal(club) {
   document.getElementById("editPresidentPhone").value = club.presidentPhone || "";
   document.getElementById("editWhatsapp").value = club.whatsapp || "";
   document.getElementById("editInsta").value = club.insta || "";
+
+  // Category in edit modal
+  if (editCategorySelect) {
+    const standardCats = ["Technical", "Cultural", "Sports", "Social", "Literary", "Innovation"];
+    if (standardCats.includes(club.category)) {
+      editCategorySelect.value = club.category;
+      if (editCustomCategoryWrap) editCustomCategoryWrap.classList.add("hidden");
+    } else if (club.category) {
+      editCategorySelect.value = "Other";
+      if (editCustomCategoryWrap) {
+        editCustomCategoryWrap.classList.remove("hidden");
+        if (editCustomCategoryInput) editCustomCategoryInput.value = club.category;
+      }
+    }
+  }
 
   // Set gallery state
   currentEditingClubPhotos = [...(club.gallery || [])];
@@ -1107,12 +1238,18 @@ editClubForm.addEventListener("submit", async (e) => {
     const feeType = editFeeType.value;
     const feeAmount = feeType === "paid" ? Number(editFeeAmount.value || 0) : 0;
 
+    let finalEditCat = editCategorySelect ? editCategorySelect.value : "Technical";
+    if (finalEditCat === "Other") {
+      finalEditCat = (editCustomCategoryInput ? editCustomCategoryInput.value.trim() : "") || "General";
+    }
+
     // Read any newly selected photo files
     const newlyAddedPhotos = await readFilesAsDataURLs(editPhotoFilesInput.files);
     const updatedGallery = [...currentEditingClubPhotos, ...newlyAddedPhotos];
     const coverUrl = document.getElementById("editCoverImg").value.trim() || (updatedGallery.length > 0 ? updatedGallery[0] : "");
 
     await db.collection("clubs").doc(id).update({
+      category: finalEditCat,
       tagline: document.getElementById("editTagline").value.trim(),
       coverImg: coverUrl,
       gallery: updatedGallery,
@@ -1129,7 +1266,7 @@ editClubForm.addEventListener("submit", async (e) => {
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    showToast("Club details & photo gallery updated successfully!", "success");
+    showToast("Club details, category & photo gallery updated successfully!", "success");
     editClubModal.classList.add("hidden");
   } catch (err) {
     showToast("Error updating: " + err.message, "error");
@@ -1139,10 +1276,162 @@ editClubForm.addEventListener("submit", async (e) => {
   }
 });
 
+/* =========================================================
+   12. MITS AI SMART CLUB ADVISOR & MATCHMAKER ENGINE
+   ========================================================= */
+
+if (aiAdvisorNavBtn) {
+  aiAdvisorNavBtn.addEventListener("click", () => {
+    if (aiAdvisorModal) aiAdvisorModal.classList.remove("hidden");
+    if (aiUserInput) aiUserInput.focus();
+  });
+}
+
+if (closeAiModalBtn) {
+  closeAiModalBtn.addEventListener("click", () => {
+    if (aiAdvisorModal) aiAdvisorModal.classList.add("hidden");
+  });
+}
+
+// Quick AI tags
+document.querySelectorAll(".ai-quick-tag").forEach(tagBtn => {
+  tagBtn.addEventListener("click", () => {
+    const query = tagBtn.getAttribute("data-query");
+    if (aiUserInput) {
+      aiUserInput.value = query;
+      runAiClubMatcher(query);
+    }
+  });
+});
+
+if (aiRunMatchBtn) {
+  aiRunMatchBtn.addEventListener("click", () => {
+    const query = aiUserInput ? aiUserInput.value.trim() : "";
+    if (!query) {
+      showToast("Please write something about your interests or select a tag!", "info");
+      return;
+    }
+    runAiClubMatcher(query);
+  });
+}
+
+function runAiClubMatcher(queryText) {
+  if (!allApprovedClubs || allApprovedClubs.length === 0) {
+    showToast("No approved clubs found in portal to match.", "info");
+    return;
+  }
+
+  aiRunMatchBtn.disabled = true;
+  aiRunMatchBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Neural AI Analyzing MITS Clubs...`;
+
+  setTimeout(() => {
+    aiRunMatchBtn.disabled = false;
+    aiRunMatchBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ✨ Run AI Club Match Analysis`;
+
+    const tokens = queryText.toLowerCase().split(/[\s,.;!?]+/).filter(w => w.length > 2);
+    
+    const scoredClubs = allApprovedClubs.map(club => {
+      let score = 0;
+      const searchableText = `${club.name} ${club.category} ${club.tagline} ${club.description} ${club.whyJoin}`.toLowerCase();
+      
+      tokens.forEach(tok => {
+        if (searchableText.includes(tok)) score += 15;
+        if ((club.category || "").toLowerCase().includes(tok)) score += 25;
+        if ((club.name || "").toLowerCase().includes(tok)) score += 30;
+      });
+
+      // Normalize match percentage
+      let baseMatch = 78 + Math.min(20, score);
+      if (score === 0) baseMatch = 65 + Math.floor(Math.random() * 10);
+      else if (baseMatch > 99) baseMatch = 99;
+
+      return {
+        club,
+        score,
+        matchPct: baseMatch
+      };
+    });
+
+    scoredClubs.sort((a, b) => b.score - a.score || b.matchPct - a.matchPct);
+    const topClubs = scoredClubs.slice(0, 3);
+
+    renderAiResults(topClubs, queryText);
+  }, 400);
+}
+
+function renderAiResults(scoredClubs, userQuery) {
+  if (!aiMatchResults || !aiClubCardsList) return;
+  aiMatchResults.classList.remove("hidden");
+  aiClubCardsList.innerHTML = "";
+
+  scoredClubs.forEach(({ club, matchPct }, idx) => {
+    const card = document.createElement("div");
+    card.className = "ai-match-card-item";
+    
+    let reasonText = `Strongly aligns with your interest in "${userQuery.slice(0, 30)}". Offers active mentorship, live projects, and regular MITS workshops.`;
+    if (club.category === "Technical") reasonText = `Premier technical recommendation for coding, hackathons, open source, and full-stack engineering at MITS.`;
+    else if (club.category === "Cultural") reasonText = `Top platform for stage presence, arts, cultural fest organization, and creative leadership.`;
+    else if (club.category === "Sports") reasonText = `Active tournament preparation, inter-college meets, and athletic fitness training.`;
+    else if (club.category === "Social") reasonText = `High impact community service, social leadership, and government-recognized NSS credentials.`;
+    else if (club.category === "Literary") reasonText = `Excels in parliamentary debate, oratory contests, content writing, and public speaking.`;
+    else if (club.category === "Innovation") reasonText = `E-Cell startup incubation, pitch decks, business competitions, and founder mentorship.`;
+
+    card.innerHTML = `
+      <div class="ai-match-top-row">
+        <div class="ai-match-club-title">
+          <span class="ai-rank-badge">#${idx + 1} Best Match</span>
+          <h4>${club.name}</h4>
+        </div>
+        <div class="ai-match-score-pill">
+          <i class="fa-solid fa-bolt"></i> ${matchPct}% Match
+        </div>
+      </div>
+      <p class="ai-match-tagline">${club.tagline || ""}</p>
+      <div class="ai-match-reason">
+        <i class="fa-solid fa-sparkles"></i> <strong>AI Reason:</strong> ${reasonText}
+      </div>
+      <div class="ai-match-actions">
+        <button type="button" class="btn-ai-explore-club" data-clubid="${club.id}">
+          <i class="fa-solid fa-eye"></i> View Full Club
+        </button>
+      </div>
+    `;
+
+    card.querySelector(".btn-ai-explore-club").addEventListener("click", () => {
+      aiAdvisorModal.classList.add("hidden");
+      window.location.hash = `#club/${club.id}`;
+    });
+
+    aiClubCardsList.appendChild(card);
+  });
+}
+
+// AI Notice Generator for President
+if (aiNoticeGenBtn) {
+  aiNoticeGenBtn.addEventListener("click", () => {
+    const editAnnouncement = document.getElementById("editAnnouncement");
+    const clubHeading = document.getElementById("editModalHeading").textContent.replace("Edit — ", "").trim();
+
+    const templates = [
+      `🚀 ${clubHeading} Alert! Registrations are now LIVE for our flagship upcoming workshop & hands-on contest in SAC Hall. Open for 1st-4th Year. Limited seats!`,
+      `🔥 Official Notice: ${clubHeading} is hosting an exclusive orientation & recruitment drive this week! Join the official WhatsApp group for venue & timings.`,
+      `✨ Get ready MITSians! ${clubHeading} brings you an action-packed hands-on session with industry mentors and certificate perks. Don't miss out!`,
+      `📢 Urgent Update: ${clubHeading} core team recruitments closing soon! Fill out the application form on MITS Club Hub today.`
+    ];
+
+    const chosen = templates[Math.floor(Math.random() * templates.length)];
+    if (editAnnouncement) {
+      editAnnouncement.value = chosen;
+      showToast("✨ AI drafted a high-impact campus notice for your club!", "success");
+    }
+  });
+}
+
 // Close modals when clicking outside
 window.addEventListener("click", (e) => {
   if (e.target === createClubModal) createClubModal.classList.add("hidden");
   if (e.target === editClubModal) editClubModal.classList.add("hidden");
+  if (e.target === aiAdvisorModal) aiAdvisorModal.classList.add("hidden");
 });
 
 /* =========================================================

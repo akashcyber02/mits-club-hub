@@ -118,9 +118,6 @@
       </div>
 
       <div class="nav-right">
-        <a href="#developer" class="btn btn-dev-nav" id="navDevBtn" title="Meet the Developer — Akash Dhakad">
-          <i class="fa-solid fa-code"></i> <span>👨‍💻 Developer</span>
-        </a>
         <div id="userBox" class="user-box">
           <div class="user-info-pill">
             <div class="user-avatar-circle" id="userAvatar">M</div>
@@ -129,6 +126,12 @@
               <span id="userRoleBadge" class="badge-role">🎓 Student</span>
             </div>
           </div>
+          <a href="#developer" class="btn btn-dev-nav" id="navDevBtn" title="Meet the Developer — Akash Dhakad (1st Year AI)">
+            <i class="fa-solid fa-code"></i> <span>👨‍💻 Developer</span>
+          </a>
+          <button id="aiAdvisorNavBtn" class="btn btn-ai-nav" title="MITS AI Smart Club Matchmaker">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> <span>✨ AI Advisor</span>
+          </button>
           <button id="addClubBtn" class="btn btn-create-3d" title="Register a new club">
             <i class="fa-solid fa-plus"></i> + New Club
           </button>
@@ -606,8 +609,14 @@
                 <option value="Social">🤝 Social & NSS</option>
                 <option value="Literary">📚 Literary & Media</option>
                 <option value="Innovation">🚀 E-Cell & Innovation</option>
+                <option value="Other">➕ Other / Custom Category...</option>
               </select>
             </div>
+          </div>
+
+          <div id="customCategoryWrap" class="f-group hidden">
+            <label>✨ Enter Custom Category Name * (Will auto-add to homepage filter pills)</label>
+            <input type="text" id="customCategoryInput" placeholder="e.g. Robotics & AI, Gaming & Esports, Photography, Theatre" />
           </div>
 
           <div class="f-group">
@@ -719,9 +728,28 @@
         <form id="editClubForm" class="modal-form-3d">
           <input type="hidden" id="editClubId" />
 
-          <div class="f-group">
-            <label>Club Tagline</label>
-            <input type="text" id="editTagline" required />
+          <div class="form-grid-2">
+            <div class="f-group">
+              <label>Category</label>
+              <select id="editCategory">
+                <option value="Technical">💻 Technical & Coding</option>
+                <option value="Cultural">🎭 Cultural & Arts</option>
+                <option value="Sports">🏆 Sports & Athletics</option>
+                <option value="Social">🤝 Social & NSS</option>
+                <option value="Literary">📚 Literary & Media</option>
+                <option value="Innovation">🚀 E-Cell & Innovation</option>
+                <option value="Other">➕ Other / Custom Category...</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Club Tagline</label>
+              <input type="text" id="editTagline" required />
+            </div>
+          </div>
+
+          <div id="editCustomCategoryWrap" class="f-group hidden">
+            <label>✨ Enter Custom Category Name *</label>
+            <input type="text" id="editCustomCategoryInput" placeholder="e.g. Robotics & AI, Gaming, Photography, Theatre" />
           </div>
 
           <div class="f-group">
@@ -742,7 +770,12 @@
           </div>
 
           <div class="f-group">
-            <label>📢 Live Notice / Announcement (Shows on Club Card & Page)</label>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label style="margin-bottom:0;">📢 Live Notice / Announcement (Shows on Club Card & Page)</label>
+              <button type="button" id="aiNoticeGenBtn" class="btn-ai-sparkle-sm" title="Draft catchy notice with AI">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> ✨ AI Auto-Draft Notice
+              </button>
+            </div>
             <input type="text" id="editAnnouncement" placeholder="e.g. Hackathon registrations open till Sept 20 in SAC Auditorium!" />
           </div>
 
@@ -803,6 +836,55 @@
             <i class="fa-solid fa-floppy-disk"></i> Save & Broadcast Changes
           </button>
         </form>
+      </div>
+    </div>
+
+    <!-- ===== MITS AI SMART CLUB ADVISOR & MATCHMAKER MODAL ===== -->
+    <div id="aiAdvisorModal" class="modal hidden">
+      <div class="modal-box-3d ai-modal-box">
+        <div class="modal-top">
+          <div class="modal-icon-title">
+            <div class="m-icon ai-glow-icon"><i class="fa-solid fa-brain"></i></div>
+            <div>
+              <div class="ai-header-badge"><span class="pulse-dot"></span> AI Club Intelligence</div>
+              <h2>MITS AI Smart Club Matchmaker</h2>
+              <p>Engineered by Akash Dhakad (1st Year AI) &bull; Find the perfect clubs for your skills & passion.</p>
+            </div>
+          </div>
+          <button id="closeAiModalBtn" class="btn-close-modal">&times;</button>
+        </div>
+
+        <div class="ai-advisor-body">
+          <div class="ai-intro-prompt">
+            <label><i class="fa-solid fa-wand-magic-sparkles"></i> What are your interests, skills or college goals?</label>
+            <textarea id="aiUserInput" rows="3" placeholder="e.g. I am interested in web development, AI, and winning hackathons... OR I love photography and event management... OR I want to play badminton and stay fit..."></textarea>
+          </div>
+
+          <!-- Quick AI Prompt Tags -->
+          <div class="ai-quick-tags-wrap">
+            <span class="ai-tag-hint">Quick Select:</span>
+            <button type="button" class="ai-quick-tag" data-query="Coding, Web Development, Hackathons & Python">💻 Coding & Hackathons</button>
+            <button type="button" class="ai-quick-tag" data-query="Artificial Intelligence, Robotics, Machine Learning & Drones">🤖 AI & Robotics</button>
+            <button type="button" class="ai-quick-tag" data-query="Drama, Acting, Music, Dance & Cultural Fests">🎭 Drama & Cultural</button>
+            <button type="button" class="ai-quick-tag" data-query="Cricket, Football, Athletics, Fitness & Sports">🏆 Sports & Athletics</button>
+            <button type="button" class="ai-quick-tag" data-query="Public Speaking, Debating, Writing & Literature">📚 Debate & Literary</button>
+            <button type="button" class="ai-quick-tag" data-query="Startups, E-Cell, Business, Marketing & Innovation">🚀 Startups & Innovation</button>
+            <button type="button" class="ai-quick-tag" data-query="Social Work, NSS, Blood Donation & Community Service">🤝 Social Service</button>
+          </div>
+
+          <button type="button" id="aiRunMatchBtn" class="btn btn-ai-run-match">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> ✨ Run AI Club Match Analysis
+          </button>
+
+          <!-- AI Results Output -->
+          <div id="aiMatchResults" class="ai-results-container hidden">
+            <div class="ai-results-header">
+              <span class="ai-match-headline"><i class="fa-solid fa-circle-check"></i> Top Recommended Clubs for You</span>
+              <span class="ai-confidence-pill" id="aiConfidencePill">⚡ AI Match Computed</span>
+            </div>
+            <div id="aiClubCardsList" class="ai-recommended-cards-grid"></div>
+          </div>
+        </div>
       </div>
     </div>
 
