@@ -16,6 +16,15 @@
   <!-- ===== TOAST NOTIFICATION CONTAINER ===== -->
   <div id="toastContainer" class="toast-container"></div>
 
+  <!-- ===== FULLSCREEN 3D IMAGE LIGHTBOX ===== -->
+  <div id="imageLightboxModal" class="lightbox-modal hidden">
+    <button id="closeLightboxBtn" class="lightbox-close">&times;</button>
+    <div class="lightbox-content">
+      <img id="lightboxImg" src="" alt="Club Photo Fullview" />
+      <p id="lightboxCaption" class="lightbox-caption"></p>
+    </div>
+  </div>
+
   <!-- ========================================================================= -->
   <!-- GATEKEEPER VIEW: MANDATORY LOGIN SCREEN (#loginGateView)                  -->
   <!-- ========================================================================= -->
@@ -57,6 +66,10 @@
         <div class="login-feature-item">
           <i class="fa-solid fa-circle-check feat-ico"></i>
           <span>Official Professor Approvals Queue</span>
+        </div>
+        <div class="login-feature-item">
+          <i class="fa-solid fa-circle-check feat-ico"></i>
+          <span>Club Photos & Event Memories Gallery</span>
         </div>
         <div class="login-feature-item">
           <i class="fa-solid fa-circle-check feat-ico"></i>
@@ -242,7 +255,7 @@
           <div class="pres-crown"><i class="fa-solid fa-crown"></i></div>
           <div>
             <h3>President Dashboard Access Active</h3>
-            <p>You have leadership privileges for your approved club(s). Click <strong>"Edit"</strong> on your club card to update notices, FAQs, recruitment forms & links.</p>
+            <p>You have leadership privileges for your approved club(s). Click <strong>"Edit"</strong> on your club card to update notices, photos, recruitment forms & links.</p>
           </div>
         </div>
       </section>
@@ -282,7 +295,7 @@
     <!-- VIEW 2: FULL DEDICATED CLUB PAGE VIEW (#clubFullView)                    -->
     <!-- ========================================================================= -->
     <div id="clubFullView" class="view-section hidden">
-      <!-- Injected dynamically by app.js with full A to Z rich details -->
+      <!-- Injected dynamically by app.js with full A to Z rich details & photo gallery -->
     </div>
 
     <!-- ===== CREATE CLUB MODAL ===== -->
@@ -321,6 +334,17 @@
           <div class="f-group">
             <label>Club Tagline / Catchphrase *</label>
             <input type="text" id="clubTagline" placeholder="e.g. Decode, Debug, Dominate" required />
+          </div>
+
+          <div class="f-group">
+            <label>Cover / Banner Image URL (Optional)</label>
+            <input type="url" id="clubCoverImg" placeholder="https://images.unsplash.com/... or image link" />
+          </div>
+
+          <div class="f-group">
+            <label>📸 Upload Club Photos / Event Memories (Select Multiple)</label>
+            <input type="file" id="clubPhotoFiles" accept="image/*" multiple class="file-upload-input" />
+            <span class="helper-text"><i class="fa-solid fa-images"></i> You can select as many photos of past events, workshops & teams as you want!</span>
           </div>
 
           <div class="f-group">
@@ -406,7 +430,7 @@
           <div class="modal-icon-title">
             <div class="m-icon" style="background: linear-gradient(135deg, #a855f7, #6366f1);"><i class="fa-solid fa-pen-to-square"></i></div>
             <div>
-              <h2 id="editModalHeading">Edit Club Details</h2>
+              <h2 id="editModalHeading">Edit Club Details & Photos</h2>
               <p>Changes will be published live instantly across MITS Club Hub.</p>
             </div>
           </div>
@@ -419,6 +443,23 @@
           <div class="f-group">
             <label>Club Tagline</label>
             <input type="text" id="editTagline" required />
+          </div>
+
+          <div class="f-group">
+            <label>Cover / Banner Image URL</label>
+            <input type="url" id="editCoverImg" placeholder="https://..." />
+          </div>
+
+          <div class="f-group">
+            <label>📸 Add More Club Event Photos (Select Multiple)</label>
+            <input type="file" id="editPhotoFiles" accept="image/*" multiple class="file-upload-input" />
+            <span class="helper-text"><i class="fa-solid fa-plus-circle"></i> Upload more event moments, workshops and celebrations!</span>
+          </div>
+
+          <!-- Existing Photos Preview in Edit Mode -->
+          <div class="f-group">
+            <label>Current Gallery Photos (<span id="editPhotoCount">0</span> photos)</label>
+            <div id="editGalleryThumbnails" class="edit-thumbnails-grid"></div>
           </div>
 
           <div class="f-group">

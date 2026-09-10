@@ -3,6 +3,7 @@
    Engineered & Architected by Akash Dhakad (Team Lead & RBAC Architect)
    
    Features:
+   - Multiple Photo Uploads & 3D Lightbox Gallery
    - Mandatory Privacy Login Gatekeeper Screen
    - 3D Interactive Mouse Physics & Card Tilt
    - Single Page App (SPA) Dedicated Full Club View with Hash Routing
@@ -11,7 +12,7 @@
    - Professor Approval Workflow with Custom Remarks
    - President Live Management & Real-time Broadcast
    - Rich "Kya Hai / Kyu Hai / Kaise Join Karein" A-to-Z Club Breakdown
-   - MITS Sample Data Seeder for Viva & Testing
+   - MITS Sample Data Seeder with High-Res Photos
    ========================================================= */
 
 // ---------- Gatekeeper & Views ----------
@@ -60,6 +61,7 @@ const closeModalBtn = document.getElementById("closeModalBtn");
 const createClubForm = document.getElementById("createClubForm");
 const feeTypeSelect = document.getElementById("feeType");
 const feeAmountInput = document.getElementById("feeAmount");
+const clubPhotoFilesInput = document.getElementById("clubPhotoFiles");
 
 // Edit Club Modal
 const editClubModal = document.getElementById("editClubModal");
@@ -67,11 +69,21 @@ const closeEditModalBtn = document.getElementById("closeEditModalBtn");
 const editClubForm = document.getElementById("editClubForm");
 const editFeeType = document.getElementById("editFeeType");
 const editFeeAmount = document.getElementById("editFeeAmount");
+const editPhotoFilesInput = document.getElementById("editPhotoFiles");
+const editGalleryThumbnails = document.getElementById("editGalleryThumbnails");
+const editPhotoCount = document.getElementById("editPhotoCount");
+
+// Lightbox Modal
+const imageLightboxModal = document.getElementById("imageLightboxModal");
+const closeLightboxBtn = document.getElementById("closeLightboxBtn");
+const lightboxImg = document.getElementById("lightboxImg");
+const lightboxCaption = document.getElementById("lightboxCaption");
 
 // State
 let currentUser = null;
 let allApprovedClubs = [];
 let activeCategory = "all";
+let currentEditingClubPhotos = [];
 let unsubClubs = null;
 let unsubPending = null;
 
@@ -107,7 +119,67 @@ function showToast(message, type = "info") {
 }
 
 /* =========================================================
-   2. AUTHENTICATION & LOGIN GATEKEEPER
+   2. IMAGE LIGHTBOX VIEWER
+   ========================================================= */
+function openLightbox(imgUrl, caption = "") {
+  if (!imgUrl) return;
+  lightboxImg.src = imgUrl;
+  lightboxCaption.textContent = caption;
+  imageLightboxModal.classList.remove("hidden");
+}
+
+if (closeLightboxBtn) {
+  closeLightboxBtn.addEventListener("click", () => {
+    imageLightboxModal.classList.add("hidden");
+  });
+}
+
+if (imageLightboxModal) {
+  imageLightboxModal.addEventListener("click", (e) => {
+    if (e.target === imageLightboxModal) {
+      imageLightboxModal.classList.add("hidden");
+    }
+  });
+}
+
+// Compress & Read files to Base64
+async function readFilesAsDataURLs(fileList) {
+  const files = Array.from(fileList || []);
+  const readPromises = files.map(file => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Compress image using canvas
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxDim = 800;
+          let width = img.width;
+          let height = img.height;
+          if (width > height && width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL("image/jpeg", 0.75));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  return Promise.all(readPromises);
+}
+
+/* =========================================================
+   3. AUTHENTICATION & LOGIN GATEKEEPER
    ========================================================= */
 
 if (gateLoginBtn) {
@@ -142,7 +214,6 @@ auth.onAuthStateChanged((user) => {
       return;
     }
 
-    // Authenticated User -> Unlock Portal
     currentUser = user;
     loginGateView.classList.add("hidden");
     mainAppView.classList.remove("hidden");
@@ -157,7 +228,6 @@ auth.onAuthStateChanged((user) => {
     checkPresidentStatus(user.email);
     listenToApprovedClubs();
   } else {
-    // Logged Out -> Lock Portal behind Login Gate
     currentUser = null;
     loginGateView.classList.remove("hidden");
     mainAppView.classList.add("hidden");
@@ -212,7 +282,7 @@ function checkPresidentStatus(email) {
 }
 
 /* =========================================================
-   3. PROFESSOR APPROVAL PORTAL
+   4. PROFESSOR APPROVAL PORTAL
    ========================================================= */
 
 function listenToPendingApprovals(professorEmail) {
@@ -294,7 +364,7 @@ function listenToPendingApprovals(professorEmail) {
 }
 
 /* =========================================================
-   4. REAL-TIME APPROVED CLUBS SUBSCRIPTION
+   5. REAL-TIME APPROVED CLUBS SUBSCRIPTION
    ========================================================= */
 
 function listenToApprovedClubs() {
@@ -308,7 +378,7 @@ function listenToApprovedClubs() {
         allApprovedClubs.push({ id: doc.id, ...doc.data() });
       });
       
-      // Update quick stats counter
+      // Update stats
       if (statClubsCount) statClubsCount.textContent = allApprovedClubs.length;
       const recruitingClubs = allApprovedClubs.filter(c => c.recruitmentStatus === "open");
       if (statRecruitingCount) statRecruitingCount.textContent = recruitingClubs.length;
@@ -321,7 +391,7 @@ function listenToApprovedClubs() {
 }
 
 /* =========================================================
-   5. MULTI-FILTER & SEARCH ENGINE
+   6. MULTI-FILTER & SEARCH ENGINE
    ========================================================= */
 
 function applyFilters() {
@@ -399,7 +469,7 @@ if (resetFiltersBtn) {
 }
 
 /* =========================================================
-   6. 3D CLUB CARDS RENDERING & MOUSE PHYSICS
+   7. 3D CLUB CARDS RENDERING & MOUSE PHYSICS
    ========================================================= */
 
 const categoryIcons = {
@@ -409,6 +479,15 @@ const categoryIcons = {
   Social: "fa-hand-holding-heart",
   Literary: "fa-feather-pointed",
   Innovation: "fa-lightbulb"
+};
+
+const defaultCategoryCovers = {
+  Technical: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80",
+  Cultural: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+  Sports: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&q=80",
+  Social: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800&q=80",
+  Literary: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=800&q=80",
+  Innovation: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80"
 };
 
 function renderClubGrid(clubs) {
@@ -431,7 +510,17 @@ function renderClubGrid(clubs) {
     const isRecruiting = club.recruitmentStatus === "open";
     const catIcon = categoryIcons[cat] || "fa-shapes";
 
+    const coverImg = club.coverImg || (club.gallery && club.gallery.length > 0 ? club.gallery[0] : defaultCategoryCovers[cat]);
+    const photoCount = (club.gallery && club.gallery.length) || 0;
+
     card.innerHTML = `
+      <!-- Card Cover Photo -->
+      <div class="card-cover-wrapper">
+        <img src="${coverImg}" alt="${club.name} Cover" class="card-cover-img" loading="lazy" />
+        <div class="card-cover-overlay"></div>
+        ${photoCount > 0 ? `<div class="card-photo-count-badge"><i class="fa-solid fa-camera"></i> ${photoCount} Photos</div>` : ""}
+      </div>
+
       <div class="card-glow-band"></div>
 
       <div class="card-header-3d">
@@ -513,7 +602,7 @@ function attach3DCardPhysics(card) {
 }
 
 /* =========================================================
-   7. VIEW 2: DEDICATED FULL CLUB PAGE (A to Z Breakdown)
+   8. VIEW 2: DEDICATED FULL CLUB PAGE (A to Z Breakdown + Gallery)
    ========================================================= */
 
 function openFullClubPage(clubId) {
@@ -529,6 +618,9 @@ function renderFullClubView(club) {
   const isRecruiting = club.recruitmentStatus === "open";
   const isPresident = currentUser && currentUser.email === club.presidentEmail;
 
+  const coverImg = club.coverImg || (club.gallery && club.gallery.length > 0 ? club.gallery[0] : defaultCategoryCovers[cat]);
+  const gallery = club.gallery || [];
+
   clubFullView.innerHTML = `
     <div class="club-page-container">
       
@@ -539,45 +631,50 @@ function renderFullClubView(club) {
         </button>
         <div style="display: flex; gap: 10px; align-items: center;">
           <span class="tag-3d tag-cat"><i class="fa-solid ${catIcon}"></i> ${cat}</span>
-          ${isPresident ? `<button class="btn btn-create-3d" id="btnEditFromPage" style="padding: 6px 14px; font-size: 13px;"><i class="fa-solid fa-pen"></i> Edit Club</button>` : ""}
+          ${isPresident ? `<button class="btn btn-create-3d" id="btnEditFromPage" style="padding: 6px 14px; font-size: 13px;"><i class="fa-solid fa-pen"></i> Edit Club & Photos</button>` : ""}
         </div>
       </div>
 
       <!-- Hero Showcase Cover -->
       <div class="club-hero-showcase">
-        <div class="club-hero-backdrop-glow" style="background: ${getCategoryGlow(cat)};"></div>
+        <div class="club-hero-cover-bg">
+          <img src="${coverImg}" alt="${club.name} Banner" />
+          <div class="club-hero-cover-overlay"></div>
+        </div>
 
-        <div class="club-header-top">
-          <div class="club-avatar-3d" style="background: ${getCategoryGradient(cat)};">
-            <i class="fa-solid ${catIcon}"></i>
-          </div>
-
-          <div class="club-title-block">
-            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
-              <span class="tag-3d ${isFree ? "tag-free" : "tag-paid"}">${isFree ? "FREE REGISTRATION" : "ENTRY FEE: ₹" + club.feeAmount}</span>
-              ${isRecruiting ? `<span class="tag-3d tag-recruiting"><i class="fa-solid fa-fire"></i> Recruitment Drive Active</span>` : `<span class="tag-3d" style="background: rgba(255,255,255,0.06); color: #94a3b8;">Recruitment Closed</span>`}
-              <span class="tag-3d" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;"><i class="fa-solid fa-circle-check"></i> Official MITS Club</span>
+        <div class="club-hero-body-content">
+          <div class="club-header-top">
+            <div class="club-avatar-3d" style="background: ${getCategoryGradient(cat)};">
+              <i class="fa-solid ${catIcon}"></i>
             </div>
 
-            <h1 class="club-page-name">${club.name}</h1>
-            ${club.tagline ? `<p class="club-page-tagline">"${club.tagline}"</p>` : ""}
+            <div class="club-title-block">
+              <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
+                <span class="tag-3d ${isFree ? "tag-free" : "tag-paid"}">${isFree ? "FREE REGISTRATION" : "ENTRY FEE: ₹" + club.feeAmount}</span>
+                ${isRecruiting ? `<span class="tag-3d tag-recruiting"><i class="fa-solid fa-fire"></i> Recruitment Drive Active</span>` : `<span class="tag-3d" style="background: rgba(255,255,255,0.06); color: #94a3b8;">Recruitment Closed</span>`}
+                <span class="tag-3d" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;"><i class="fa-solid fa-circle-check"></i> Official MITS Club</span>
+              </div>
 
-            <div class="club-header-actions">
-              ${club.whatsapp ? `
-                <a href="${club.whatsapp}" target="_blank" class="btn btn-join-wa">
-                  <i class="fa-brands fa-whatsapp"></i> Join Official WhatsApp Group
-                </a>
-              ` : ""}
-              ${club.insta ? `
-                <a href="${club.insta}" target="_blank" class="btn btn-logout-3d" style="color: white; border-color: rgba(255,255,255,0.2);">
-                  <i class="fa-brands fa-instagram"></i> Follow on Instagram
-                </a>
-              ` : ""}
-              ${isRecruiting ? `
-                <a href="#applySection" class="btn btn-apply-hero">
-                  <i class="fa-solid fa-paper-plane"></i> Apply for Core Team
-                </a>
-              ` : ""}
+              <h1 class="club-page-name">${club.name}</h1>
+              ${club.tagline ? `<p class="club-page-tagline">"${club.tagline}"</p>` : ""}
+
+              <div class="club-header-actions">
+                ${club.whatsapp ? `
+                  <a href="${club.whatsapp}" target="_blank" class="btn btn-join-wa">
+                    <i class="fa-brands fa-whatsapp"></i> Join Official WhatsApp Group
+                  </a>
+                ` : ""}
+                ${club.insta ? `
+                  <a href="${club.insta}" target="_blank" class="btn btn-logout-3d" style="color: white; border-color: rgba(255,255,255,0.2);">
+                    <i class="fa-brands fa-instagram"></i> Follow on Instagram
+                  </a>
+                ` : ""}
+                ${isRecruiting ? `
+                  <a href="#applySection" class="btn btn-apply-hero">
+                    <i class="fa-solid fa-paper-plane"></i> Apply for Core Team
+                  </a>
+                ` : ""}
+              </div>
             </div>
           </div>
         </div>
@@ -592,6 +689,29 @@ function renderFullClubView(club) {
           <div>
             <h4 style="font-size: 15px; color: #38bdf8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Latest Official Notice</h4>
             <p style="font-size: 14.5px; color: white; margin-top: 2px;">${club.announcement}</p>
+          </div>
+        </div>
+      ` : ""}
+
+      <!-- 📸 3D PHOTO & MOMENTS GALLERY -->
+      ${gallery.length > 0 ? `
+        <div class="club-gallery-showcase">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 class="bento-card-title" style="margin-bottom: 0;">
+              <i class="fa-solid fa-camera-retro bento-ico"></i> 📸 Club Photo Gallery & Event Memories (${gallery.length} Photos)
+            </h3>
+            <span style="font-size: 12px; color: #94a3b8;"><i class="fa-solid fa-expand"></i> Click any photo to preview fullview</span>
+          </div>
+
+          <div class="gallery-grid-3d">
+            ${gallery.map((imgUrl, idx) => `
+              <div class="gallery-item-3d" data-img="${imgUrl}" data-caption="${club.name} — Event Photo #${idx + 1}">
+                <img src="${imgUrl}" alt="${club.name} Event Photo" loading="lazy" />
+                <div class="gallery-item-overlay">
+                  <span><i class="fa-solid fa-magnifying-glass-plus"></i> View High-Res</span>
+                </div>
+              </div>
+            `).join("")}
           </div>
         </div>
       ` : ""}
@@ -754,6 +874,14 @@ function renderFullClubView(club) {
     if (editBtn) editBtn.addEventListener("click", () => openEditModal(club));
   }
 
+  // Lightbox click on gallery items
+  const galleryItems = clubFullView.querySelectorAll(".gallery-item-3d");
+  galleryItems.forEach(item => {
+    item.addEventListener("click", () => {
+      openLightbox(item.getAttribute("data-img"), item.getAttribute("data-caption"));
+    });
+  });
+
   // Application form submit
   const membershipForm = document.getElementById("membershipFormPage");
   if (membershipForm) {
@@ -784,20 +912,8 @@ function getCategoryGradient(cat) {
   return map[cat] || "linear-gradient(135deg, #38bdf8, #818cf8)";
 }
 
-function getCategoryGlow(cat) {
-  const map = {
-    Technical: "rgba(6, 182, 212, 0.4)",
-    Cultural: "rgba(236, 72, 153, 0.4)",
-    Sports: "rgba(16, 185, 129, 0.4)",
-    Social: "rgba(245, 158, 11, 0.4)",
-    Literary: "rgba(139, 92, 246, 0.4)",
-    Innovation: "rgba(59, 130, 246, 0.4)"
-  };
-  return map[cat] || "rgba(56, 189, 248, 0.4)";
-}
-
 /* =========================================================
-   8. HASH-BASED ROUTING (SPA)
+   9. HASH-BASED ROUTING (SPA)
    ========================================================= */
 
 function checkHashRoute() {
@@ -831,7 +947,7 @@ if (navLogoBtn) {
 }
 
 /* =========================================================
-   9. CREATE CLUB MODAL
+   10. CREATE CLUB MODAL WITH PHOTO UPLOAD
    ========================================================= */
 
 addClubBtn.addEventListener("click", () => {
@@ -852,61 +968,66 @@ feeTypeSelect.addEventListener("change", () => {
   else feeAmountInput.value = "";
 });
 
-createClubForm.addEventListener("submit", (e) => {
+createClubForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!currentUser) return;
 
-  const isPaid = feeTypeSelect.value === "paid";
-  const feeVal = isPaid ? Number(feeAmountInput.value || 0) : 0;
-
-  const newClub = {
-    name: document.getElementById("clubName").value.trim(),
-    category: document.getElementById("clubCategory").value,
-    tagline: document.getElementById("clubTagline").value.trim(),
-    description: document.getElementById("clubDescription").value.trim(),
-    whyJoin: document.getElementById("clubWhyJoin").value.trim(),
-    feeType: feeTypeSelect.value,
-    feeAmount: feeVal,
-    recruitmentStatus: document.getElementById("recruitmentStatus").value,
-    presidentName: document.getElementById("presidentName").value.trim(),
-    presidentPhone: document.getElementById("presidentPhone").value.trim(),
-    presidentEmail: document.getElementById("presidentEmail").value.trim(),
-    whatsapp: document.getElementById("clubWhatsapp").value.trim(),
-    insta: document.getElementById("clubInsta").value.trim(),
-    coordinatorEmail: document.getElementById("coordinatorEmail").value.trim(),
-    status: "pending",
-    createdBy: currentUser.email,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    announcement: ""
-  };
-
   const submitBtn = document.getElementById("submitClubBtn");
   submitBtn.disabled = true;
-  submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting for Approval...`;
+  submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing Photos & Submitting...`;
 
-  db.collection("clubs").add(newClub)
-    .then(() => {
-      showToast("Club submitted! It will appear once your Coordinator Professor approves it.", "success");
-      createClubForm.reset();
-      createClubModal.classList.add("hidden");
-    })
-    .catch((err) => {
-      showToast("Submission failed: " + err.message, "error");
-    })
-    .finally(() => {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Club for Faculty Approval`;
-    });
+  try {
+    const isPaid = feeTypeSelect.value === "paid";
+    const feeVal = isPaid ? Number(feeAmountInput.value || 0) : 0;
+
+    // Read uploaded gallery files
+    const uploadedPhotos = await readFilesAsDataURLs(clubPhotoFilesInput.files);
+    const coverUrl = document.getElementById("clubCoverImg").value.trim();
+
+    const newClub = {
+      name: document.getElementById("clubName").value.trim(),
+      category: document.getElementById("clubCategory").value,
+      tagline: document.getElementById("clubTagline").value.trim(),
+      coverImg: coverUrl || (uploadedPhotos.length > 0 ? uploadedPhotos[0] : ""),
+      gallery: uploadedPhotos,
+      description: document.getElementById("clubDescription").value.trim(),
+      whyJoin: document.getElementById("clubWhyJoin").value.trim(),
+      feeType: feeTypeSelect.value,
+      feeAmount: feeVal,
+      recruitmentStatus: document.getElementById("recruitmentStatus").value,
+      presidentName: document.getElementById("presidentName").value.trim(),
+      presidentPhone: document.getElementById("presidentPhone").value.trim(),
+      presidentEmail: document.getElementById("presidentEmail").value.trim(),
+      whatsapp: document.getElementById("clubWhatsapp").value.trim(),
+      insta: document.getElementById("clubInsta").value.trim(),
+      coordinatorEmail: document.getElementById("coordinatorEmail").value.trim(),
+      status: "pending",
+      createdBy: currentUser.email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      announcement: ""
+    };
+
+    await db.collection("clubs").add(newClub);
+    showToast("Club submitted with photos! It will appear once Coordinator Professor approves it.", "success");
+    createClubForm.reset();
+    createClubModal.classList.add("hidden");
+  } catch (err) {
+    showToast("Submission failed: " + err.message, "error");
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Club for Faculty Approval`;
+  }
 });
 
 /* =========================================================
-   10. EDIT CLUB MODAL (President Only)
+   11. EDIT CLUB MODAL (President Photo & Details Manager)
    ========================================================= */
 
 function openEditModal(club) {
   document.getElementById("editClubId").value = club.id;
   document.getElementById("editModalHeading").textContent = `Edit — ${club.name}`;
   document.getElementById("editTagline").value = club.tagline || "";
+  document.getElementById("editCoverImg").value = club.coverImg || "";
   document.getElementById("editDescription").value = club.description || "";
   document.getElementById("editWhyJoin").value = club.whyJoin || "";
   document.getElementById("editAnnouncement").value = club.announcement || "";
@@ -918,38 +1039,77 @@ function openEditModal(club) {
   document.getElementById("editWhatsapp").value = club.whatsapp || "";
   document.getElementById("editInsta").value = club.insta || "";
 
+  // Set gallery state
+  currentEditingClubPhotos = [...(club.gallery || [])];
+  renderEditThumbnails();
+
   editClubModal.classList.remove("hidden");
+}
+
+function renderEditThumbnails() {
+  editGalleryThumbnails.innerHTML = "";
+  editPhotoCount.textContent = currentEditingClubPhotos.length;
+
+  currentEditingClubPhotos.forEach((imgUrl, index) => {
+    const wrap = document.createElement("div");
+    wrap.className = "thumb-preview-wrap";
+    wrap.innerHTML = `
+      <img src="${imgUrl}" alt="Thumbnail" />
+      <button type="button" class="thumb-delete-btn" data-index="${index}">&times;</button>
+    `;
+    wrap.querySelector(".thumb-delete-btn").addEventListener("click", () => {
+      currentEditingClubPhotos.splice(index, 1);
+      renderEditThumbnails();
+    });
+    editGalleryThumbnails.appendChild(wrap);
+  });
 }
 
 closeEditModalBtn.addEventListener("click", () => editClubModal.classList.add("hidden"));
 
-editClubForm.addEventListener("submit", (e) => {
+editClubForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = document.getElementById("editClubId").value;
   if (!id) return;
 
-  const feeType = editFeeType.value;
-  const feeAmount = feeType === "paid" ? Number(editFeeAmount.value || 0) : 0;
+  const submitBtn = editClubForm.querySelector("button[type=submit]");
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving Photos & Changes...`;
 
-  db.collection("clubs").doc(id).update({
-    tagline: document.getElementById("editTagline").value.trim(),
-    description: document.getElementById("editDescription").value.trim(),
-    whyJoin: document.getElementById("editWhyJoin").value.trim(),
-    announcement: document.getElementById("editAnnouncement").value.trim(),
-    recruitmentStatus: document.getElementById("editRecruitmentStatus").value,
-    feeType: feeType,
-    feeAmount: feeAmount,
-    presidentName: document.getElementById("editPresidentName").value.trim(),
-    presidentPhone: document.getElementById("editPresidentPhone").value.trim(),
-    whatsapp: document.getElementById("editWhatsapp").value.trim(),
-    insta: document.getElementById("editInsta").value.trim(),
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  })
-  .then(() => {
-    showToast("Club details updated & broadcasted successfully!", "success");
+  try {
+    const feeType = editFeeType.value;
+    const feeAmount = feeType === "paid" ? Number(editFeeAmount.value || 0) : 0;
+
+    // Read any newly selected photo files
+    const newlyAddedPhotos = await readFilesAsDataURLs(editPhotoFilesInput.files);
+    const updatedGallery = [...currentEditingClubPhotos, ...newlyAddedPhotos];
+    const coverUrl = document.getElementById("editCoverImg").value.trim() || (updatedGallery.length > 0 ? updatedGallery[0] : "");
+
+    await db.collection("clubs").doc(id).update({
+      tagline: document.getElementById("editTagline").value.trim(),
+      coverImg: coverUrl,
+      gallery: updatedGallery,
+      description: document.getElementById("editDescription").value.trim(),
+      whyJoin: document.getElementById("editWhyJoin").value.trim(),
+      announcement: document.getElementById("editAnnouncement").value.trim(),
+      recruitmentStatus: document.getElementById("editRecruitmentStatus").value,
+      feeType: feeType,
+      feeAmount: feeAmount,
+      presidentName: document.getElementById("editPresidentName").value.trim(),
+      presidentPhone: document.getElementById("editPresidentPhone").value.trim(),
+      whatsapp: document.getElementById("editWhatsapp").value.trim(),
+      insta: document.getElementById("editInsta").value.trim(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    showToast("Club details & photo gallery updated successfully!", "success");
     editClubModal.classList.add("hidden");
-  })
-  .catch((err) => showToast("Error updating: " + err.message, "error"));
+  } catch (err) {
+    showToast("Error updating: " + err.message, "error");
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save & Broadcast Changes`;
+  }
 });
 
 // Close modals when clicking outside
@@ -959,7 +1119,7 @@ window.addEventListener("click", (e) => {
 });
 
 /* =========================================================
-   11. SAMPLE MITS CLUBS SEEDER (Viva & Presentation Engine)
+   12. SAMPLE MITS CLUBS SEEDER WITH HIGH-RES PHOTOS
    ========================================================= */
 
 const sampleMITSClubs = [
@@ -967,6 +1127,13 @@ const sampleMITSClubs = [
     name: "GDSC MITS — Google Developer Student Club",
     category: "Technical",
     tagline: "Bridging the gap between theory and practice",
+    coverImg: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1000&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80",
+      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80",
+      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80",
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80"
+    ],
     description: "University-based community group supported by Google Developers. We empower students to build real-world software solutions, participate in Google Solution Challenge, Flutter bootcamps, Cloud Study Jams, and Web dev sprints.",
     whyJoin: "Hands-on projects with Google technologies, global hackathon exposure, Cloud credits, peer coding sessions, and official Google certificates.",
     feeType: "free",
@@ -986,6 +1153,12 @@ const sampleMITSClubs = [
     name: "Club Decimal — Competitive Coding & DSA",
     category: "Technical",
     tagline: "Decode, Debug, Dominate",
+    coverImg: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1000&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80",
+      "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=800&q=80",
+      "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=800&q=80"
+    ],
     description: "The premier coding and algorithmic thinking chapter of MITS Gwalior. Conducting bi-weekly Codeforces/LeetCode contests, ICPC coaching, and tech placement interview masterclasses.",
     whyJoin: "Level up DSA & problem solving for MAANG interviews, compete in college hackathons, and learn from top rated coders in college.",
     feeType: "free",
@@ -1005,6 +1178,13 @@ const sampleMITSClubs = [
     name: "Chhavi — The Cultural & Arts Society",
     category: "Cultural",
     tagline: "Celebrating creativity, rhythm, and expression",
+    coverImg: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1000&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=800&q=80",
+      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80",
+      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80",
+      "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&q=80"
+    ],
     description: "Home to the singers, dancers, dramatists, poets, and visual artists of MITS. Organizing the flagship annual college fest, cultural nights, street theatre (Nukkad Natak), and art exhibitions.",
     whyJoin: "Perform on grand stages, represent MITS in national university youth festivals, win accolades, and make unforgettable campus memories.",
     feeType: "free",
@@ -1024,6 +1204,12 @@ const sampleMITSClubs = [
     name: "Robotics & Automation Research Lab",
     category: "Technical",
     tagline: "Innovating autonomous future machines",
+    coverImg: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1000&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&q=80",
+      "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800&q=80",
+      "https://images.unsplash.com/photo-1563770660941-20978e870e26?w=800&q=80"
+    ],
     description: "Hands-on engineering club dedicated to robotics, IoT hardware, microcontrollers (Arduino/ESP32/Raspberry Pi), line followers, drones, and ROS-based autonomous navigation.",
     whyJoin: "Access hardware components & 3D printers, learn embedded C++, compete in e-Yantra, and build battle bots.",
     feeType: "paid",
@@ -1043,6 +1229,12 @@ const sampleMITSClubs = [
     name: "E-Cell MITS — Entrepreneurship Cell",
     category: "Innovation",
     tagline: "From Ideas to Enterprise",
+    coverImg: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1000&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&q=80",
+      "https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?w=800&q=80",
+      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80"
+    ],
     description: "Fostering startup culture and innovative venture creation across campus. Connecting student founders with seed angel funding, incubators, alumni founders, and hosting the Annual E-Summit.",
     whyJoin: "Pitch your startup ideas to real VCs, get incubation support, attend networking dinners, and master business modeling.",
     feeType: "free",
@@ -1062,6 +1254,12 @@ const sampleMITSClubs = [
     name: "NSS & Social Action Unit MITS",
     category: "Social",
     tagline: "Not Me But You",
+    coverImg: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1000&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=800&q=80",
+      "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80",
+      "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=800&q=80"
+    ],
     description: "Dedicated to youth empowerment, environmental sustainability, blood donation camps, village education outreach, and campus cleanliness drives.",
     whyJoin: "Create meaningful societal impact, earn official NSS university credits, participate in national integration camps, and build true leadership.",
     feeType: "free",
@@ -1080,7 +1278,7 @@ const sampleMITSClubs = [
 ];
 
 seedDataBtn.addEventListener("click", () => {
-  if (!confirm("Load official MITS sample clubs into Firestore? This will populate verified clubs for testing & presentation.")) return;
+  if (!confirm("Load official MITS sample clubs with HD event photo galleries into Firestore?")) return;
 
   const batch = db.batch();
   sampleMITSClubs.forEach((club) => {
@@ -1090,7 +1288,7 @@ seedDataBtn.addEventListener("click", () => {
 
   batch.commit()
     .then(() => {
-      showToast("Successfully loaded MITS Sample Clubs into Firestore!", "success");
+      showToast("Successfully loaded MITS Clubs with HD Photo Galleries!", "success");
     })
     .catch((err) => {
       showToast("Error seeding: " + err.message, "error");
