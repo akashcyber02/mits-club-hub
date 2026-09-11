@@ -1672,46 +1672,40 @@
           <div class="otp-instruction-card">
             <i class="fa-solid fa-mobile-screen-button"></i>
             <div>
-              <p>We will send a one-time verification code (OTP) to your phone number:</p>
+              <p>Real 6-digit OTP will be sent directly to your physical SIM card via SMS:</p>
               <h4 id="otpTargetPhoneText">+91 XXXXX XXXXX</h4>
             </div>
           </div>
 
-          <!-- Instant Live OTP Display Banner -->
-          <div id="otpLiveBanner" class="otp-live-banner hidden">
-            <div class="otp-live-header">
-              <div class="otp-live-status">
+          <!-- Real SMS Dispatch Status Box -->
+          <div id="otpSmsStatusCard" class="otp-sms-status-card hidden">
+            <div class="sms-status-icon"><i class="fa-solid fa-tower-broadcast"></i></div>
+            <div class="sms-status-info">
+              <div class="sms-status-head">
                 <span class="live-dot-pulse"></span>
-                <span>Generated 2FA Code (Instant Simulation)</span>
+                <strong>SMS Dispatched to Mobile SIM</strong>
               </div>
-              <span class="otp-live-chip">Fast Verification</span>
-            </div>
-            <div class="otp-live-value-row">
-              <span class="otp-code-highlight" id="otpDisplayCode">------</span>
-              <button type="button" id="btnAutoFillOtp" class="btn-autofill-action" title="Auto fill this code">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Fill
-              </button>
-            </div>
-            <div class="otp-live-notice">
-              <i class="fa-solid fa-circle-info"></i>
-              <span><strong>Note:</strong> Real physical SIM SMS requires a paid telecom gateway (Twilio/Fast2SMS). This instant simulated code validates and protects your profile immediately!</span>
+              <p id="otpSmsStatusDetail">6-digit code has been delivered via SMS. Check your messages inbox.</p>
             </div>
           </div>
 
-          <div id="otpInputSection" class="otp-input-section">
-            <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #cbd5e1;">Enter 6-Digit Verification Code</label>
+          <div id="otpInputSection" class="otp-input-section hidden">
+            <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #cbd5e1;">Enter 6-Digit SMS Code</label>
             <div class="otp-code-wrap">
               <input type="text" id="otpCodeInput" maxlength="6" placeholder="• • • • • •" class="otp-digit-field" autocomplete="one-time-code" />
             </div>
             <div class="otp-timer-row">
-              <span id="otpTimerText">Resend code in <strong>60s</strong></span>
-              <button type="button" id="btnResendOtp" class="btn-resend-otp hidden"><i class="fa-solid fa-rotate-right"></i> Resend OTP</button>
+              <span id="otpTimerText">Resend SMS in <strong>60s</strong></span>
+              <button type="button" id="btnResendOtp" class="btn-resend-otp hidden"><i class="fa-solid fa-rotate-right"></i> Resend SMS</button>
             </div>
           </div>
 
+          <!-- Invisible / Embedded Firebase reCAPTCHA Container -->
+          <div id="recaptcha-container" style="margin: 10px 0;"></div>
+
           <div style="display: flex; gap: 10px; margin-top: 20px;">
             <button type="button" id="btnSendOtpCode" class="btn btn-submit-3d" style="background: linear-gradient(135deg, #059669, #10b981);">
-              <i class="fa-solid fa-paper-plane"></i> Send OTP Code
+              <i class="fa-solid fa-paper-plane"></i> Send SMS OTP
             </button>
             <button type="button" id="btnConfirmOtpCode" class="btn btn-submit-3d hidden" style="background: linear-gradient(135deg, #2563eb, #38bdf8);">
               <i class="fa-solid fa-circle-check"></i> Verify & Confirm

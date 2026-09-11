@@ -161,18 +161,18 @@ const profile2faBadge = document.getElementById("profile2faBadge");
 const btnTriggerPhone2FA = document.getElementById("btnTriggerPhone2FA");
 const profileEmailInput = document.getElementById("profileEmailInput");
 
-// 2FA Phone Verification Modal
+// 2FA Phone Verification Modal (Real Firebase SMS)
 const phoneVerifyModal = document.getElementById("phoneVerifyModal");
 const closePhoneVerifyModalBtn = document.getElementById("closePhoneVerifyModalBtn");
 const otpTargetPhoneText = document.getElementById("otpTargetPhoneText");
+const otpSmsStatusCard = document.getElementById("otpSmsStatusCard");
+const otpSmsStatusDetail = document.getElementById("otpSmsStatusDetail");
+const otpInputSection = document.getElementById("otpInputSection");
 const otpCodeInput = document.getElementById("otpCodeInput");
 const otpTimerText = document.getElementById("otpTimerText");
 const btnResendOtp = document.getElementById("btnResendOtp");
 const btnSendOtpCode = document.getElementById("btnSendOtpCode");
 const btnConfirmOtpCode = document.getElementById("btnConfirmOtpCode");
-const otpLiveBanner = document.getElementById("otpLiveBanner");
-const otpDisplayCode = document.getElementById("otpDisplayCode");
-const btnAutoFillOtp = document.getElementById("btnAutoFillOtp");
 
 // Interactive Contact Action Sheet Modal
 const contactActionModal = document.getElementById("contactActionModal");
@@ -709,23 +709,78 @@ if (userProfileForm) {
   });
 }
 
+// Helper: Format raw input to standard E.164 (+91 for India)
+function formatPhoneToE164(rawPhone) {
+  if (!rawPhone) return "";
+  let clean = rawPhone.trim().replace(/[^\d+]/g, "");
+  if (clean.startsWith("+")) {
+    return clean;
+  }
+  if (clean.startsWith("0")) {
+    clean = clean.substring(1);
+  }
+  if (clean.length === 10) {
+    return `+91${clean}`;
+  }
+  if (clean.startsWith("91") && clean.length === 12) {
+    return `+${clean}`;
+  }
+  return `+91${clean}`;
+}
+
+// Helper: Get or initialize Invisible Firebase RecaptchaVerifier
+function getOrCreateRecaptchaVerifier() {
+  if (!window.recaptchaVerifier) {
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", {
+      size: "invisible",
+      callback: (response) => {
+        // reCAPTCHA solved
+      },
+      "expired-callback": () => {
+        showToast("reCAPTCHA session expired. Please click Send SMS again.", "error");
+        resetRecaptchaVerifier();
+      }
+    });
+  }
+  return window.recaptchaVerifier;
+}
+
+function resetRecaptchaVerifier() {
+  if (window.recaptchaVerifier) {
+    try {
+      window.recaptchaVerifier.clear();
+    } catch (e) {
+      console.warn("Recaptcha clear error:", e);
+    }
+    window.recaptchaVerifier = null;
+  }
+}
+
 // 2FA Phone Verification Trigger
 if (btnTriggerPhone2FA) {
   btnTriggerPhone2FA.addEventListener("click", () => {
-    const phone = profilePhoneInput ? profilePhoneInput.value.trim() : "";
-    if (!phone) {
+    const rawPhone = profilePhoneInput ? profilePhoneInput.value.trim() : "";
+    if (!rawPhone) {
       showToast("Please enter your WhatsApp/phone number first!", "error");
       if (profilePhoneInput) profilePhoneInput.focus();
       return;
     }
 
-    if (otpTargetPhoneText) otpTargetPhoneText.textContent = phone;
+    const formattedPhone = formatPhoneToE164(rawPhone);
+    if (!formattedPhone || formattedPhone.length < 12) {
+      showToast("Please enter a valid 10-digit mobile number!", "error");
+      if (profilePhoneInput) profilePhoneInput.focus();
+      return;
+    }
+
+    if (otpTargetPhoneText) otpTargetPhoneText.textContent = formattedPhone;
     if (otpCodeInput) otpCodeInput.value = "";
-    if (otpLiveBanner) otpLiveBanner.classList.add("hidden");
-    if (otpDisplayCode) otpDisplayCode.textContent = "------";
+    if (otpSmsStatusCard) otpSmsStatusCard.classList.add("hidden");
+    if (otpInputSection) otpInputSection.classList.add("hidden");
     if (btnSendOtpCode) {
       btnSendOtpCode.classList.remove("hidden");
       btnSendOtpCode.disabled = false;
+      btnSendOtpCode.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Send SMS OTP`;
     }
     if (btnConfirmOtpCode) btnConfirmOtpCode.classList.add("hidden");
     if (btnResendOtp) btnResendOtp.classList.add("hidden");
@@ -743,7 +798,7 @@ if (closePhoneVerifyModalBtn) {
 
 function startOtpTimer() {
   let seconds = 60;
-  if (otpTimerText) otpTimerText.innerHTML = `Resend code in <strong>${seconds}s</strong>`;
+  if (otpTimerText) otpTimerText.innerHTML = `Resend SMS in <strong>${seconds}s</strong>`;
   if (btnResendOtp) btnResendOtp.classList.add("hidden");
 
   if (otpCountdownInterval) clearInterval(otpCountdownInterval);
@@ -751,74 +806,124 @@ function startOtpTimer() {
     seconds--;
     if (seconds <= 0) {
       clearInterval(otpCountdownInterval);
-      if (otpTimerText) otpTimerText.textContent = "Didn't receive the code?";
-      if (btnResendOtp) btnResendOtp.classList.remove("hidden");
+      if (otpTimerText) otpTimerText.textContent = "Didn't receive the SMS?";
+      if (btnResendOtp) {
+        btnResendOtp.classList.remove("hidden");
+        btnResendOtp.disabled = false;
+      }
     } else {
-      if (otpTimerText) otpTimerText.innerHTML = `Resend code in <strong>${seconds}s</strong>`;
+      if (otpTimerText) otpTimerText.innerHTML = `Resend SMS in <strong>${seconds}s</strong>`;
     }
   }, 1000);
 }
 
-function sendVerificationOtp() {
-  // Generate 6-digit random code
-  currentGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-  startOtpTimer();
+// Send Real Telecom SMS OTP via Google Firebase Phone Auth
+async function sendVerificationOtp() {
+  const rawPhone = profilePhoneInput ? profilePhoneInput.value.trim() : "";
+  const formattedPhone = formatPhoneToE164(rawPhone);
 
-  // Show live code banner for instant simulation
-  if (otpDisplayCode) otpDisplayCode.textContent = currentGeneratedOtp;
-  if (otpLiveBanner) otpLiveBanner.classList.remove("hidden");
-
-  if (btnSendOtpCode) btnSendOtpCode.classList.add("hidden");
-  if (btnConfirmOtpCode) btnConfirmOtpCode.classList.remove("hidden");
-  if (otpCodeInput) {
-    otpCodeInput.focus();
+  if (!formattedPhone || formattedPhone.length < 12) {
+    showToast("Please enter a valid 10-digit mobile number!", "error");
+    return;
   }
 
-  showToast(`🔐 2FA Verification Code: ${currentGeneratedOtp}`, "success");
-}
+  if (btnSendOtpCode) {
+    btnSendOtpCode.disabled = true;
+    btnSendOtpCode.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Dispatching SMS...`;
+  }
+  if (btnResendOtp) {
+    btnResendOtp.disabled = true;
+  }
 
-if (btnAutoFillOtp) {
-  btnAutoFillOtp.addEventListener("click", () => {
-    if (currentGeneratedOtp && otpCodeInput) {
-      otpCodeInput.value = currentGeneratedOtp;
-      otpCodeInput.style.borderColor = "#10b981";
-      showToast("✨ Code auto-filled! Click Verify & Confirm.", "success");
-      if (btnConfirmOtpCode) btnConfirmOtpCode.focus();
+  try {
+    const appVerifier = getOrCreateRecaptchaVerifier();
+    const confirmationResult = await auth.signInWithPhoneNumber(formattedPhone, appVerifier);
+    window.confirmationResult = confirmationResult;
+
+    startOtpTimer();
+
+    if (otpSmsStatusCard) otpSmsStatusCard.classList.remove("hidden");
+    if (otpSmsStatusDetail) {
+      otpSmsStatusDetail.textContent = `6-digit code has been delivered via SMS to ${formattedPhone}. Check your messages inbox.`;
     }
-  });
+    if (otpInputSection) otpInputSection.classList.remove("hidden");
+    if (btnSendOtpCode) btnSendOtpCode.classList.add("hidden");
+    if (btnConfirmOtpCode) {
+      btnConfirmOtpCode.classList.remove("hidden");
+      btnConfirmOtpCode.disabled = false;
+      btnConfirmOtpCode.innerHTML = `<i class="fa-solid fa-circle-check"></i> Verify & Confirm`;
+    }
+    if (otpCodeInput) {
+      otpCodeInput.value = "";
+      otpCodeInput.focus();
+    }
+
+    showToast(`📱 Real SMS OTP sent to ${formattedPhone}!`, "success");
+  } catch (error) {
+    console.error("Firebase Phone Auth Error:", error);
+    resetRecaptchaVerifier();
+    if (btnSendOtpCode) {
+      btnSendOtpCode.disabled = false;
+      btnSendOtpCode.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Send SMS OTP`;
+    }
+    if (btnResendOtp) btnResendOtp.disabled = false;
+
+    if (error.code === "auth/operation-not-allowed") {
+      showToast("⚠️ Phone Auth is disabled in Firebase Console! Please enable 'Phone' in Firebase Console > Authentication > Sign-in method.", "error");
+    } else if (error.code === "auth/invalid-phone-number") {
+      showToast("❌ Invalid phone number. Please enter a valid 10-digit mobile number (+91).", "error");
+    } else if (error.code === "auth/quota-exceeded") {
+      showToast("⚠️ SMS quota exceeded for today. Please try again later.", "error");
+    } else if (error.code === "auth/captcha-check-failed") {
+      showToast("reCAPTCHA check failed. Please click Send SMS again.", "error");
+    } else {
+      showToast("SMS delivery error: " + (error.message || error.code), "error");
+    }
+  }
 }
 
 if (btnSendOtpCode) btnSendOtpCode.addEventListener("click", sendVerificationOtp);
 if (btnResendOtp) btnResendOtp.addEventListener("click", sendVerificationOtp);
 
+// Confirm Real SMS OTP
 if (btnConfirmOtpCode) {
   btnConfirmOtpCode.addEventListener("click", async () => {
     const entered = (otpCodeInput ? otpCodeInput.value.trim() : "");
     if (!entered || entered.length !== 6) {
-      showToast("Please enter the complete 6-digit OTP code!", "error");
+      showToast("Please enter the complete 6-digit SMS OTP code!", "error");
       return;
     }
 
-    if (entered !== currentGeneratedOtp) {
-      showToast("Invalid verification code. Please try again.", "error");
+    if (!window.confirmationResult) {
+      showToast("Please request an SMS OTP first.", "error");
       return;
     }
 
-    if (otpCountdownInterval) clearInterval(otpCountdownInterval);
-    
-    // Save verified status
-    if (currentUser) {
-      const phone = profilePhoneInput ? profilePhoneInput.value.trim() : "";
-      try {
+    if (btnConfirmOtpCode) {
+      btnConfirmOtpCode.disabled = true;
+      btnConfirmOtpCode.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Verifying Code...`;
+    }
+
+    try {
+      // Validate OTP with Firebase server
+      await window.confirmationResult.confirm(entered);
+
+      if (otpCountdownInterval) clearInterval(otpCountdownInterval);
+      
+      const rawPhone = profilePhoneInput ? profilePhoneInput.value.trim() : "";
+      const formattedPhone = formatPhoneToE164(rawPhone);
+
+      // Save verified status in Firestore
+      if (currentUser) {
         await db.collection("users").doc(currentUser.email).set({
           isPhoneVerified: true,
-          phone: phone,
+          phone: formattedPhone,
           phoneVerifiedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
         if (!currentUserProfile) currentUserProfile = {};
         currentUserProfile.isPhoneVerified = true;
-        currentUserProfile.phone = phone;
+        currentUserProfile.phone = formattedPhone;
         localStorage.setItem(`mits_profile_${currentUser.email}`, JSON.stringify(currentUserProfile));
 
         if (profile2faBadge) {
@@ -826,10 +931,22 @@ if (btnConfirmOtpCode) {
           profile2faBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> 2FA Verified`;
         }
 
-        showToast("🎉 Phone number verified successfully with 2FA!", "success");
+        showToast("🎉 Phone number verified successfully via Real SMS OTP!", "success");
         if (phoneVerifyModal) phoneVerifyModal.classList.add("hidden");
-      } catch (err) {
-        showToast("Error updating verification: " + err.message, "error");
+      }
+    } catch (error) {
+      console.error("Firebase OTP Verification Error:", error);
+      if (error.code === "auth/invalid-verification-code") {
+        showToast("❌ Invalid 6-digit SMS code. Please check your SMS inbox and re-enter.", "error");
+      } else if (error.code === "auth/code-expired") {
+        showToast("⌛ Verification code expired. Please click 'Resend SMS'.", "error");
+      } else {
+        showToast("Verification failed: " + (error.message || error.code), "error");
+      }
+    } finally {
+      if (btnConfirmOtpCode) {
+        btnConfirmOtpCode.disabled = false;
+        btnConfirmOtpCode.innerHTML = `<i class="fa-solid fa-circle-check"></i> Verify & Confirm`;
       }
     }
   });
