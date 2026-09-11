@@ -1780,6 +1780,72 @@
       </div>
     </div>
 
+    <!-- ===== FACULTY MENTOR NOTIFICATION ACTION MODAL ===== -->
+    <div id="mentorNotifyModal" class="modal hidden">
+      <div class="modal-box-3d mentor-notify-box">
+        <div class="modal-top">
+          <div class="modal-icon-title">
+            <div class="m-icon" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div>
+              <h2 id="mentorNotifyHeading">Notify Faculty Coordinator</h2>
+              <p id="mentorNotifySub">Send an official approval request to your faculty mentor.</p>
+            </div>
+          </div>
+          <button id="closeMentorNotifyModalBtn" class="btn-close-modal">&times;</button>
+        </div>
+
+        <div class="mentor-notify-body">
+          <div class="notify-club-card">
+            <div class="notify-club-icon"><i class="fa-solid fa-envelope-circle-check"></i></div>
+            <div class="notify-club-details">
+              <h3 id="notifyClubName">Club Name</h3>
+              <p><i class="fa-solid fa-user-tie"></i> <strong>Assigned Faculty:</strong> <span id="notifyProfessorEmail" class="highlight-mentor-email">professor@mitsgwl.ac.in</span></p>
+              <p><i class="fa-solid fa-shield-halved"></i> <strong>Status:</strong> <span class="tag-3d" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);">Pending Faculty Approval</span></p>
+            </div>
+          </div>
+
+          <div class="notify-instructions">
+            <p><i class="fa-solid fa-circle-info"></i> Your club is securely submitted in Firestore. To notify your professor so they can log in and authorize it on the portal, choose a channel below:</p>
+          </div>
+
+          <div class="contact-actions-list">
+            <a href="#" id="notifyGmailBtn" target="_blank" class="contact-action-btn action-email" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(15, 23, 42, 0.6)); border-color: rgba(239, 68, 68, 0.4);">
+              <div class="cab-icon" style="background: rgba(239, 68, 68, 0.2); color: #f87171;"><i class="fa-solid fa-envelope-open-text"></i></div>
+              <div class="cab-text">
+                <strong style="color: #fca5a5;">Send Official Request via Gmail (1-Click)</strong>
+                <span>Pre-composed formal request letter to Professor</span>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square cab-arrow"></i>
+            </a>
+
+            <a href="#" id="notifyWhatsAppBtn" target="_blank" class="contact-action-btn action-wa">
+              <div class="cab-icon"><i class="fa-brands fa-whatsapp"></i></div>
+              <div class="cab-text">
+                <strong>Forward Request on WhatsApp</strong>
+                <span>Quick message with portal approval link</span>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square cab-arrow"></i>
+            </a>
+
+            <button type="button" id="notifyCopyBtn" class="contact-action-btn action-call" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.6)); border-color: rgba(56, 189, 248, 0.35); text-align: left; width: 100%;">
+              <div class="cab-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;"><i class="fa-regular fa-copy"></i></div>
+              <div class="cab-text">
+                <strong style="color: #7dd3fc;">Copy Formal Request Text</strong>
+                <span>Copy formatted message to clipboard</span>
+              </div>
+              <i class="fa-solid fa-clone cab-arrow"></i>
+            </button>
+          </div>
+
+          <div style="margin-top: 18px; text-align: right;">
+            <button type="button" id="closeMentorNotifyDoneBtn" class="btn btn-submit-3d" style="background: linear-gradient(135deg, #10b981, #059669); padding: 10px 24px; font-size: 13.5px;">
+              <i class="fa-solid fa-check"></i> Done &amp; Return to Directory
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== FOOTER (Clean & Minimal Portal Footer) ===== -->
     <footer class="footer-3d">
       <div class="footer-container">

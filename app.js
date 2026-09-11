@@ -188,6 +188,16 @@ const contactActionInsta = document.getElementById("contactActionInsta");
 const contactActionCallNum = document.getElementById("contactActionCallNum");
 const contactActionEmailAddr = document.getElementById("contactActionEmailAddr");
 
+// Faculty Mentor Notification Modal
+const mentorNotifyModal = document.getElementById("mentorNotifyModal");
+const closeMentorNotifyModalBtn = document.getElementById("closeMentorNotifyModalBtn");
+const closeMentorNotifyDoneBtn = document.getElementById("closeMentorNotifyDoneBtn");
+const notifyClubName = document.getElementById("notifyClubName");
+const notifyProfessorEmail = document.getElementById("notifyProfessorEmail");
+const notifyGmailBtn = document.getElementById("notifyGmailBtn");
+const notifyWhatsAppBtn = document.getElementById("notifyWhatsAppBtn");
+const notifyCopyBtn = document.getElementById("notifyCopyBtn");
+
 // Applicants Management Modal (President Only)
 const viewApplicantsModal = document.getElementById("viewApplicantsModal");
 const closeApplicantsModalBtn = document.getElementById("closeApplicantsModalBtn");
@@ -2700,6 +2710,9 @@ createClubForm.addEventListener("submit", async (e) => {
     createClubForm.reset();
     if (customCategoryWrap) customCategoryWrap.classList.add("hidden");
     createClubModal.classList.add("hidden");
+
+    // Automatically trigger Faculty Mentor Notification Action Sheet
+    openFacultyMentorNotificationModal(newClub);
   } catch (err) {
     showToast("Submission failed: " + err.message, "error");
   } finally {
@@ -2707,6 +2720,72 @@ createClubForm.addEventListener("submit", async (e) => {
     submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Club for Faculty Approval`;
   }
 });
+
+/* =========================================================
+   10.1 FACULTY MENTOR NOTIFICATION DISPATCHER
+   ========================================================= */
+
+function openFacultyMentorNotificationModal(clubData) {
+  if (!mentorNotifyModal) return;
+
+  if (notifyClubName) notifyClubName.textContent = clubData.name || "Club";
+  if (notifyProfessorEmail) notifyProfessorEmail.textContent = clubData.coordinatorEmail || "coordinator@mitsgwl.ac.in";
+
+  const subject = `[MITS Club Hub] Faculty Coordinator Authorization Request: "${clubData.name}"`;
+  const body = `Respected Professor / Faculty Mentor,
+
+Greetings from MITS Club Hub!
+
+A new student club has been registered on the MITS Club Hub portal and assigned to you as the Faculty Coordinator:
+
+📌 Club Name: ${clubData.name}
+📂 Category: ${clubData.category || "General"}
+👤 Student President: ${clubData.presidentName || "President"} (${clubData.presidentPhone || "Phone"})
+✉️ President Email: ${clubData.presidentEmail || ""}
+📝 Description: ${clubData.description || ""}
+
+👉 Please review and authorize this club by logging into the portal:
+https://mits-gwl-club-hub.netlify.app
+
+Once authorized, the club will go live for all MITS students.
+
+Warm regards,
+${clubData.presidentName || "Club President"}
+MITS Club Hub | Madhav Institute of Technology & Science, Gwalior`;
+
+  if (notifyGmailBtn) {
+    notifyGmailBtn.href = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(clubData.coordinatorEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  if (notifyWhatsAppBtn) {
+    const waMsg = `*Namaste Professor* 🙏\n\nI have registered *${clubData.name}* on the *MITS Club Hub* portal and nominated you as our Faculty Coordinator.\n\nKindly review and approve our club on the portal:\n🔗 https://mits-gwl-club-hub.netlify.app\n\nThank you,\n${clubData.presidentName}`;
+    notifyWhatsAppBtn.href = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+  }
+
+  if (notifyCopyBtn) {
+    notifyCopyBtn.onclick = () => {
+      navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`).then(() => {
+        showToast("📋 Official approval request copied to clipboard!", "success");
+      }).catch(() => {
+        showToast("Failed to copy to clipboard", "error");
+      });
+    };
+  }
+
+  mentorNotifyModal.classList.remove("hidden");
+}
+
+if (closeMentorNotifyModalBtn) {
+  closeMentorNotifyModalBtn.addEventListener("click", () => {
+    if (mentorNotifyModal) mentorNotifyModal.classList.add("hidden");
+  });
+}
+
+if (closeMentorNotifyDoneBtn) {
+  closeMentorNotifyDoneBtn.addEventListener("click", () => {
+    if (mentorNotifyModal) mentorNotifyModal.classList.add("hidden");
+  });
+}
 
 /* =========================================================
    11. EDIT CLUB MODAL (President Photo, Details & Leadership Manager)

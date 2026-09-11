@@ -4798,10 +4798,102 @@ body.light-theme .sms-status-info p {
 }
 
 /* =========================================================
-   INTERACTIVE CONTACT ACTION SHEET MODAL
+   INTERACTIVE CONTACT ACTION SHEET MODAL & MENTOR NOTIFY MODAL
    ========================================================= */
-.contact-action-box {
-  max-width: 500px !important;
+.contact-action-box, .mentor-notify-box {
+  max-width: 520px !important;
+}
+
+.notify-club-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(15, 23, 42, 0.6));
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  padding: 18px;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+
+.notify-club-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.35);
+  flex-shrink: 0;
+}
+
+.notify-club-details h3 {
+  font-size: 18px;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.notify-club-details p {
+  font-size: 12.5px;
+  color: #cbd5e1;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.highlight-mentor-email {
+  font-family: monospace;
+  color: #a5b4fc;
+  font-weight: 700;
+  background: rgba(99, 102, 241, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.notify-instructions {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.notify-instructions p {
+  font-size: 12.5px;
+  color: #94a3b8;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Light Theme Support */
+body.light-theme .notify-club-card {
+  background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+  border-color: #c7d2fe;
+}
+
+body.light-theme .notify-club-details h3 {
+  color: #1e1b4b;
+}
+
+body.light-theme .notify-club-details p {
+  color: #4338ca;
+}
+
+body.light-theme .highlight-mentor-email {
+  color: #3730a3;
+  background: #e0e7ff;
+}
+
+body.light-theme .notify-instructions {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+body.light-theme .notify-instructions p {
+  color: #475569;
 }
 
 .contact-leader-card {
