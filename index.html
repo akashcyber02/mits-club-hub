@@ -1677,6 +1677,27 @@
             </div>
           </div>
 
+          <!-- Instant Live OTP Display Banner -->
+          <div id="otpLiveBanner" class="otp-live-banner hidden">
+            <div class="otp-live-header">
+              <div class="otp-live-status">
+                <span class="live-dot-pulse"></span>
+                <span>Generated 2FA Code (Instant Simulation)</span>
+              </div>
+              <span class="otp-live-chip">Fast Verification</span>
+            </div>
+            <div class="otp-live-value-row">
+              <span class="otp-code-highlight" id="otpDisplayCode">------</span>
+              <button type="button" id="btnAutoFillOtp" class="btn-autofill-action" title="Auto fill this code">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Fill
+              </button>
+            </div>
+            <div class="otp-live-notice">
+              <i class="fa-solid fa-circle-info"></i>
+              <span><strong>Note:</strong> Real physical SIM SMS requires a paid telecom gateway (Twilio/Fast2SMS). This instant simulated code validates and protects your profile immediately!</span>
+            </div>
+          </div>
+
           <div id="otpInputSection" class="otp-input-section">
             <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #cbd5e1;">Enter 6-Digit Verification Code</label>
             <div class="otp-code-wrap">

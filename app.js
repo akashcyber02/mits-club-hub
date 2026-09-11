@@ -170,6 +170,9 @@ const otpTimerText = document.getElementById("otpTimerText");
 const btnResendOtp = document.getElementById("btnResendOtp");
 const btnSendOtpCode = document.getElementById("btnSendOtpCode");
 const btnConfirmOtpCode = document.getElementById("btnConfirmOtpCode");
+const otpLiveBanner = document.getElementById("otpLiveBanner");
+const otpDisplayCode = document.getElementById("otpDisplayCode");
+const btnAutoFillOtp = document.getElementById("btnAutoFillOtp");
 
 // Interactive Contact Action Sheet Modal
 const contactActionModal = document.getElementById("contactActionModal");
@@ -718,6 +721,8 @@ if (btnTriggerPhone2FA) {
 
     if (otpTargetPhoneText) otpTargetPhoneText.textContent = phone;
     if (otpCodeInput) otpCodeInput.value = "";
+    if (otpLiveBanner) otpLiveBanner.classList.add("hidden");
+    if (otpDisplayCode) otpDisplayCode.textContent = "------";
     if (btnSendOtpCode) {
       btnSendOtpCode.classList.remove("hidden");
       btnSendOtpCode.disabled = false;
@@ -759,13 +764,28 @@ function sendVerificationOtp() {
   currentGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
   startOtpTimer();
 
+  // Show live code banner for instant simulation
+  if (otpDisplayCode) otpDisplayCode.textContent = currentGeneratedOtp;
+  if (otpLiveBanner) otpLiveBanner.classList.remove("hidden");
+
   if (btnSendOtpCode) btnSendOtpCode.classList.add("hidden");
   if (btnConfirmOtpCode) btnConfirmOtpCode.classList.remove("hidden");
   if (otpCodeInput) {
     otpCodeInput.focus();
   }
 
-  showToast(`🔐 2FA Verification Code sent to phone: ${currentGeneratedOtp}`, "success");
+  showToast(`🔐 2FA Verification Code: ${currentGeneratedOtp}`, "success");
+}
+
+if (btnAutoFillOtp) {
+  btnAutoFillOtp.addEventListener("click", () => {
+    if (currentGeneratedOtp && otpCodeInput) {
+      otpCodeInput.value = currentGeneratedOtp;
+      otpCodeInput.style.borderColor = "#10b981";
+      showToast("✨ Code auto-filled! Click Verify & Confirm.", "success");
+      if (btnConfirmOtpCode) btnConfirmOtpCode.focus();
+    }
+  });
 }
 
 if (btnSendOtpCode) btnSendOtpCode.addEventListener("click", sendVerificationOtp);
