@@ -2429,14 +2429,19 @@ if (devBackToClubsLink) {
    10. CREATE CLUB MODAL WITH PHOTO UPLOAD
    ========================================================= */
 
-addClubBtn.addEventListener("click", () => {
+function openCreateClubModal() {
   if (!currentUser) {
     showToast("Please login first to register a new club!", "error");
     return;
   }
   document.getElementById("presidentEmail").value = currentUser.email;
   createClubModal.classList.remove("hidden");
-});
+}
+
+if (addClubBtn) addClubBtn.addEventListener("click", openCreateClubModal);
+const emptyAddClubBtn = document.getElementById("emptyAddClubBtn");
+if (emptyAddClubBtn) emptyAddClubBtn.addEventListener("click", openCreateClubModal);
+
 
 closeModalBtn.addEventListener("click", () => createClubModal.classList.add("hidden"));
 
