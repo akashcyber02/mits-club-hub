@@ -729,22 +729,6 @@ function formatPhoneToE164(rawPhone) {
 }
 
 // Helper: Get or initialize Invisible Firebase RecaptchaVerifier
-function getOrCreateRecaptchaVerifier() {
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", {
-      size: "invisible",
-      callback: (response) => {
-        // reCAPTCHA solved
-      },
-      "expired-callback": () => {
-        showToast("reCAPTCHA session expired. Please click Send SMS again.", "error");
-        resetRecaptchaVerifier();
-      }
-    });
-  }
-  return window.recaptchaVerifier;
-}
-
 function resetRecaptchaVerifier() {
   if (window.recaptchaVerifier) {
     try {
@@ -754,6 +738,31 @@ function resetRecaptchaVerifier() {
     }
     window.recaptchaVerifier = null;
   }
+  const container = document.getElementById("recaptcha-container");
+  if (container) {
+    container.innerHTML = "";
+  }
+}
+
+function getOrCreateRecaptchaVerifier() {
+  const container = document.getElementById("recaptcha-container");
+  if (window.recaptchaVerifier) {
+    return window.recaptchaVerifier;
+  }
+  if (container) {
+    container.innerHTML = "";
+  }
+  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", {
+    size: "invisible",
+    callback: (response) => {
+      // reCAPTCHA solved
+    },
+    "expired-callback": () => {
+      showToast("reCAPTCHA session expired. Please click Send SMS again.", "error");
+      resetRecaptchaVerifier();
+    }
+  });
+  return window.recaptchaVerifier;
 }
 
 // 2FA Phone Verification Trigger
@@ -773,6 +782,7 @@ if (btnTriggerPhone2FA) {
       return;
     }
 
+    resetRecaptchaVerifier();
     if (otpTargetPhoneText) otpTargetPhoneText.textContent = formattedPhone;
     if (otpCodeInput) otpCodeInput.value = "";
     if (otpSmsStatusCard) otpSmsStatusCard.classList.add("hidden");
@@ -793,6 +803,7 @@ if (closePhoneVerifyModalBtn) {
   closePhoneVerifyModalBtn.addEventListener("click", () => {
     if (phoneVerifyModal) phoneVerifyModal.classList.add("hidden");
     if (otpCountdownInterval) clearInterval(otpCountdownInterval);
+    resetRecaptchaVerifier();
   });
 }
 
@@ -836,8 +847,21 @@ async function sendVerificationOtp() {
   }
 
   try {
-    const appVerifier = getOrCreateRecaptchaVerifier();
-    const confirmationResult = await auth.signInWithPhoneNumber(formattedPhone, appVerifier);
+    let appVerifier = getOrCreateRecaptchaVerifier();
+    let confirmationResult;
+    try {
+      confirmationResult = await auth.signInWithPhoneNumber(formattedPhone, appVerifier);
+    } catch (innerErr) {
+      if (innerErr.message && innerErr.message.includes("already been rendered")) {
+        console.warn("reCAPTCHA already rendered detected, resetting & retrying...");
+        resetRecaptchaVerifier();
+        appVerifier = getOrCreateRecaptchaVerifier();
+        confirmationResult = await auth.signInWithPhoneNumber(formattedPhone, appVerifier);
+      } else {
+        throw innerErr;
+      }
+    }
+
     window.confirmationResult = confirmationResult;
 
     startOtpTimer();
