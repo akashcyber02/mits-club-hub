@@ -62,5 +62,31 @@ service cloud.firestore {
       allow read: if true;
       allow create, update, delete: if isCollegeEmail();
     }
+
+    // --- Club Applications & Registered Members Collection ---
+    match /clubApplications/{appId} {
+      // 1. Applicant can read their own application
+      // 2. Verified President or Coordinator of the club can read all applications for their club
+      allow read: if isAuthenticated() && (
+        request.auth.token.email == resource.data.email ||
+        request.auth.token.email == resource.data.presidentEmail ||
+        request.auth.token.email == resource.data.coordinatorEmail
+      );
+
+      // Any authenticated college student can submit an application with their own email
+      allow create: if isCollegeEmail() && request.resource.data.email == request.auth.token.email;
+
+      // Only the President or Coordinator can update status (Pending -> Shortlisted / Approved / Rejected)
+      allow update: if isAuthenticated() && (
+        request.auth.token.email == resource.data.presidentEmail ||
+        request.auth.token.email == resource.data.coordinatorEmail
+      );
+
+      // Applicant or President can delete / withdraw application
+      allow delete: if isAuthenticated() && (
+        request.auth.token.email == resource.data.email ||
+        request.auth.token.email == resource.data.presidentEmail
+      );
+    }
   }
 }
