@@ -15,6 +15,8 @@
    - MITS Sample Data Seeder with High-Res Photos
    ========================================================= */
 
+/* global firebase, auth, db, ALLOWED_DOMAIN */
+
 // ---------- Gatekeeper & Views ----------
 const loginGateView = document.getElementById("loginGateView");
 const mainAppView = document.getElementById("mainAppView");

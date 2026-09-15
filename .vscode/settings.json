@@ -1,0 +1,11 @@
+{
+  "javascript.validate.enable": true,
+  "javascript.implicitProjectConfig.checkJs": false,
+  "html.validate.scripts": false,
+  "files.associations": {
+    "*.html": "html",
+    "*.css": "css",
+    "*.js": "javascript"
+  },
+  "liveServer.settings.port": 5500
+}
