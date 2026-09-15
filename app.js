@@ -1360,7 +1360,12 @@ function handleGoogleLogin() {
       showToast(`Welcome to MITS Club Hub, ${result.user.displayName || "MITSian"}!`, "success");
     })
     .catch((err) => {
-      showToast("Login failed: " + err.message, "error");
+      if (err.code === "auth/unauthorized-domain") {
+        const host = window.location.hostname;
+        showToast(`⚠️ Domain "${host}" not authorized in Firebase! Add "${host}" in Firebase Console > Authentication > Settings > Authorized domains.`, "error");
+      } else {
+        showToast("Login failed: " + err.message, "error");
+      }
     });
 }
 
