@@ -7,5 +7,6 @@
     "*.css": "css",
     "*.js": "javascript"
   },
-  "liveServer.settings.port": 5501
+  "liveServer.settings.host": "localhost",
+  "liveServer.settings.port": 5500
 }

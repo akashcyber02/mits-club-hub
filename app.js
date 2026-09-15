@@ -17,6 +17,11 @@
 
 /* global firebase, auth, db, ALLOWED_DOMAIN */
 
+// Auto-redirect 127.0.0.1 to localhost so Firebase OAuth works out-of-the-box
+if (window.location.hostname === "127.0.0.1") {
+  window.location.hostname = "localhost";
+}
+
 // ---------- Gatekeeper & Views ----------
 const loginGateView = document.getElementById("loginGateView");
 const mainAppView = document.getElementById("mainAppView");
