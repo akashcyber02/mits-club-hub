@@ -1360,18 +1360,33 @@ if (gateLoginBtn) {
 
 function handleGoogleLogin() {
   const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  
   auth.signInWithPopup(provider)
     .then((result) => {
       showToast(`Welcome to MITS Club Hub, ${result.user.displayName || "MITSian"}!`, "success");
     })
     .catch((err) => {
+      console.error("Google Auth Error:", err);
       if (err.code === "auth/unauthorized-domain") {
         const host = window.location.hostname;
         showToast(`⚠️ Domain "${host}" not authorized in Firebase! Add "${host}" in Firebase Console > Authentication > Settings > Authorized domains.`, "error");
+      } else if (err.code === "auth/popup-blocked") {
+        showToast("Popup blocked. Redirecting to Google Login...", "info");
+        auth.signInWithRedirect(provider);
+      } else if (err.code === "auth/cancelled-popup-request" || err.code === "auth/popup-closed-by-user") {
+        showToast("Login window was closed. Please try again.", "info");
       } else {
         showToast("Login failed: " + err.message, "error");
       }
     });
+}
+
+// Handle redirect result if signInWithRedirect was triggered
+if (auth.getRedirectResult) {
+  auth.getRedirectResult().catch((err) => {
+    if (err && err.code) console.warn("Redirect auth error:", err);
+  });
 }
 
 logoutBtn.addEventListener("click", () => {
@@ -1383,10 +1398,14 @@ logoutBtn.addEventListener("click", () => {
 
 auth.onAuthStateChanged((user) => {
   if (user) {
-    const email = user.email || "";
-    // Enforce @mitsgwl.ac.in restriction
-    if (typeof ALLOWED_DOMAIN !== "undefined" && ALLOWED_DOMAIN && !email.endsWith(ALLOWED_DOMAIN)) {
-      showToast("Access Denied: Only @mitsgwl.ac.in email addresses are permitted.", "error");
+    const email = (user.email || "").toLowerCase();
+    
+    // Check allowed email domains (@mitsgwl.ac.in or @gmail.com for testing)
+    const isCollegeEmail = email.endsWith("@mitsgwl.ac.in");
+    const isGmail = email.endsWith("@gmail.com");
+    
+    if (!isCollegeEmail && !isGmail) {
+      showToast("Access Denied: Please log in with your college (@mitsgwl.ac.in) or Google account.", "error");
       auth.signOut();
       return;
     }
