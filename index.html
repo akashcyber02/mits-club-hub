@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b0f19" />
+  <title>MITS Club Hub — Official Campus Life & Clubs Portal | mitsgwlclubhub.com</title>
+  <meta name="description" content="Official centralized campus life & clubs portal for Madhav Institute of Technology & Science (MITS Gwalior). Explore tech, cultural, sports, and social clubs." />
+  
+  <!-- OpenGraph / Social Sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://mitsgwlclubhub.com" />
+  <meta property="og:title" content="MITS Club Hub — Centralized Campus Life Portal" />
+  <meta property="og:description" content="Discover, Join & Lead Official MITS Clubs with Domain-Restricted Google Auth & Faculty Verification." />
+  <meta property="og:site_name" content="MITS Club Hub" />
+
+  <!-- Google Fonts & Font Awesome 6 -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== TOAST NOTIFICATION CONTAINER ===== -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- ===== FULLSCREEN 3D IMAGE LIGHTBOX ===== -->
+  <div id="imageLightboxModal" class="lightbox-modal hidden">
+    <button id="closeLightboxBtn" class="lightbox-close">&times;</button>
+    <div class="lightbox-content">
+      <img id="lightboxImg" src="" alt="Club Photo Fullview" />
+      <p id="lightboxCaption" class="lightbox-caption"></p>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- GATEKEEPER VIEW: MANDATORY LOGIN SCREEN (#loginGateView)                  -->
+  <!-- ========================================================================= -->
+  <div id="loginGateView" class="login-gate-screen">
+    <!-- Login Gate Theme Toggle -->
+    <div class="login-gate-top-bar" style="position: absolute; top: 24px; right: 24px; z-index: 200;">
+      <button id="gateThemeToggleBtn" class="btn btn-theme-toggle" title="Toggle Dark / Light Mode">
+        <i class="fa-solid fa-moon" id="gateThemeIcon"></i>
+      </button>
+    </div>
+
+    <div class="login-bg-blobs">
+      <div class="login-blob blob-1"></div>
+      <div class="login-blob blob-2"></div>
+      <div class="login-blob blob-3"></div>
+    </div>
+
+    <div class="login-card-3d">
+      <div class="login-header-icon">
+        <div class="icon-3d-shield">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+      </div>
+
+      <div class="login-security-pill">
+        <i class="fa-solid fa-lock"></i> Protected MITS Student & Faculty Network
+      </div>
+
+      <h1 class="login-main-title">
+        MITS <span class="text-gradient">Club Hub</span>
+      </h1>
+      <p class="login-college-name">
+        Madhav Institute of Technology & Science, Gwalior
+      </p>
+
+      <p class="login-description">
+        Access to all college clubs, event registrations, recruitment drives, and leadership portals is strictly restricted to verified college members.
+      </p>
+
+      <!-- Key Portal Highlights -->
+      <div class="login-features-list">
+        <div class="login-feature-item">
+          <i class="fa-solid fa-circle-check feat-ico"></i>
+          <span>Verified Student & Faculty Roles</span>
+        </div>
+        <div class="login-feature-item">
+          <i class="fa-solid fa-circle-check feat-ico"></i>
+          <span>Official Professor Approvals Queue</span>
+        </div>
+        <div class="login-feature-item">
+          <i class="fa-solid fa-circle-check feat-ico"></i>
+          <span>Club Photos & Event Memories Gallery</span>
+        </div>
+        <div class="login-feature-item">
+          <i class="fa-solid fa-circle-check feat-ico"></i>
+          <span>1-Click Membership Applications</span>
+        </div>
+      </div>
+
+      <!-- Main Google Login Action -->
+      <button id="gateLoginBtn" class="btn btn-google-login-3d">
+        <i class="fa-brands fa-google"></i> Sign in with College Email
+      </button>
+
+      <div class="login-domain-hint">
+        <i class="fa-solid fa-circle-info"></i> Only <strong>@mitsgwl.ac.in</strong> email addresses are authorized.
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN APP WRAPPER: UNLOCKED ONLY AFTER SUCCESSFUL LOGIN (#mainAppView)    -->
+  <!-- ========================================================================= -->
+  <div id="mainAppView" class="main-app-container hidden">
+
+    <!-- ===== GLOBAL NAVBAR ===== -->
+    <header class="navbar">
+      <div class="nav-left">
+        <a href="#" class="logo-group" id="navLogoBtn">
+          <div class="logo-icon-3d">
+            <i class="fa-solid fa-shapes"></i>
+          </div>
+          <div>
+            <div class="logo-title">MITS <span class="logo-accent">Club Hub</span></div>
+            <span class="logo-subtitle" id="navSubtitle">Madhav Institute of Technology & Science</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="nav-right">
+        <div id="userBox" class="user-box">
+          <!-- Language Switcher Toggle -->
+          <button id="langToggleBtn" class="btn btn-lang-toggle" title="Switch Language (English / हिन्दी)">
+            <i class="fa-solid fa-language"></i> <span id="langBtnText">हिन्दी</span>
+          </button>
+
+          <!-- Theme Mode Switcher (Dark / Light) -->
+          <button id="themeToggleBtn" class="btn btn-theme-toggle" title="Toggle Dark / Light Mode">
+            <i class="fa-solid fa-moon" id="themeIcon"></i>
+          </button>
+
+          <!-- User Info Pill with Profile Edit Trigger -->
+          <div class="user-info-pill" id="userProfileTrigger" title="Click to view & edit your student profile">
+            <div class="user-avatar-circle" id="userAvatar">M</div>
+            <div class="user-text-wrap">
+              <span id="userDisplayName" class="user-name-bold"></span>
+              <span id="userEmail" class="user-email"></span>
+              <span id="userRoleBadge" class="badge-role">🎓 Student</span>
+            </div>
+            <i class="fa-solid fa-pen user-edit-ico"></i>
+          </div>
+
+          <button id="myClubsNavBtn" class="btn btn-myclubs-nav" title="View my joined clubs and submitted applications">
+            <i class="fa-solid fa-layer-group"></i> <span id="lblMyClubsBtn">My Clubs</span>
+            <span id="myClubsCountBadge" class="badge-count-pill hidden">0</span>
+          </button>
+          <a href="#developer" class="btn btn-dev-nav" id="navDevBtn" title="Meet the Developer — Akash Dhakad (1st Year AI)">
+            <i class="fa-solid fa-code"></i> <span>👨‍💻 Developer</span>
+          </a>
+          <button id="aiAdvisorNavBtn" class="btn btn-ai-nav" title="MITS AI Smart Club Matchmaker">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> <span>✨ AI Advisor</span>
+          </button>
+          <button id="addClubBtn" class="btn btn-create-3d" title="Register a new club">
+            <i class="fa-solid fa-plus"></i> <span id="lblAddClubBtn">+ New Club</span>
+          </button>
+          <button id="logoutBtn" class="btn btn-logout-3d" title="Logout">
+            <i class="fa-solid fa-power-off"></i> <span id="lblLogoutBtn">Logout</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== PENDING COLLABORATION INVITATION BANNER ===== -->
+    <div id="collabInviteBanner" class="collab-invite-banner hidden">
+      <div class="collab-invite-content">
+        <div class="collab-invite-icon"><i class="fa-solid fa-crown"></i></div>
+        <div>
+          <h4 id="collabInviteTitle">Leadership Invitation</h4>
+          <p id="collabInviteDesc">You have been invited to join the Core Leadership Team of a club.</p>
+        </div>
+      </div>
+      <div class="collab-invite-actions">
+        <button type="button" id="btnAcceptCollab" class="btn btn-accept-collab"><i class="fa-solid fa-check"></i> Accept & Join Core Team</button>
+        <button type="button" id="btnDeclineCollab" class="btn btn-decline-collab"><i class="fa-solid fa-xmark"></i> Decline</button>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 1: HOME PAGE VIEW (#homeView)                                       -->
+    <!-- ========================================================================= -->
+    <div id="homeView" class="view-section active-view">
+
+      <!-- ===== 3D HERO BANNER ===== -->
+      <section class="hero-3d-section">
+        <div class="hero-bg-blobs">
+          <div class="blob blob-1"></div>
+          <div class="blob blob-2"></div>
+          <div class="blob blob-3"></div>
+        </div>
+
+        <div class="hero-container">
+          <div class="hero-badge-pill" id="heroBadgePill">
+            <span class="badge-sparkle"><i class="fa-solid fa-bolt"></i></span>
+            Official MITS Campus Life Platform
+          </div>
+          <h1 class="hero-title-3d" id="heroTitle">
+            Explore, Lead & Dominate In <span class="text-gradient">MITS Clubs</span>
+          </h1>
+          <p class="hero-subtitle-3d" id="heroSubtitle">
+            From cutting-edge Tech hackathons and Cultural fests to Sports, E-Cell & Social initiatives — discover everything happening in college in one ultra-modern hub.
+          </p>
+
+          <!-- Quick 3D Stats Counter -->
+          <div class="hero-stats-row">
+            <div class="stat-card-3d">
+              <span class="stat-num" id="statClubsCount">12+</span>
+              <span class="stat-label" id="lblStatClubs">Active Clubs</span>
+            </div>
+            <div class="stat-card-3d">
+              <span class="stat-num" id="statCategoriesCount">6</span>
+              <span class="stat-label" id="lblStatCategories">Categories</span>
+            </div>
+            <div class="stat-card-3d">
+              <span class="stat-num" id="statRecruitingCount">8</span>
+              <span class="stat-label" id="lblStatRecruiting">Recruiting Now</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SEARCH, DISCOVERY & MULTI-FILTER ENGINE ===== -->
+      <section class="main-directory-wrap">
+        
+        <div class="filter-console-3d">
+          <!-- Top Row: Full-width Search Bar with live clear -->
+          <div class="search-bar-row">
+            <div class="search-input-wrapper-3d">
+              <i class="fa-solid fa-magnifying-glass search-ico"></i>
+              <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Search clubs by name, keywords, president, domains..." 
+                autocomplete="off"
+              />
+              <button id="clearSearchBtn" class="btn-clear-search hidden" title="Clear search">&times;</button>
+            </div>
+            <button id="resetFiltersBtn" class="btn btn-reset-filters" title="Reset all filters">
+              <i class="fa-solid fa-rotate-left"></i> <span id="lblResetFilters">Reset</span>
+            </button>
+          </div>
+
+          <!-- Dynamic Category Pills -->
+          <div class="category-pills-3d" id="categoryPills">
+            <button class="pill-3d active" data-cat="all"><i class="fa-solid fa-shapes"></i> All Categories</button>
+            <button class="pill-3d" data-cat="Technical"><i class="fa-solid fa-laptop-code"></i> Technical</button>
+            <button class="pill-3d" data-cat="Cultural"><i class="fa-solid fa-masks-theater"></i> Cultural</button>
+            <button class="pill-3d" data-cat="Sports"><i class="fa-solid fa-trophy"></i> Sports</button>
+            <button class="pill-3d" data-cat="Social"><i class="fa-solid fa-hand-holding-heart"></i> Social</button>
+            <button class="pill-3d" data-cat="Literary"><i class="fa-solid fa-feather-pointed"></i> Literary</button>
+            <button class="pill-3d" data-cat="Innovation"><i class="fa-solid fa-lightbulb"></i> Innovation</button>
+          </div>
+
+          <!-- Secondary Dropdown Filters Row -->
+          <div class="dropdown-filters-wrap">
+            <div class="f-select-wrap">
+              <label for="feeFilter"><i class="fa-solid fa-indian-rupee-sign"></i> <span id="lblFeeFilter">Fee Status</span></label>
+              <select id="feeFilter">
+                <option value="all">All Fees</option>
+                <option value="free">Free for All</option>
+                <option value="paid">Paid Entry</option>
+              </select>
+            </div>
+
+            <div class="f-select-wrap">
+              <label for="recruitmentFilter"><i class="fa-solid fa-fire"></i> <span id="lblRecruitFilter">Recruitment</span></label>
+              <select id="recruitmentFilter">
+                <option value="all">All Statuses</option>
+                <option value="open">🔥 Open for Recruitment</option>
+                <option value="closed">Closed / Past Deadline</option>
+              </select>
+            </div>
+
+            <div class="f-select-wrap">
+              <label for="sortFilter"><i class="fa-solid fa-arrow-down-wide-short"></i> <span id="lblSortFilter">Sort By</span></label>
+              <select id="sortFilter">
+                <option value="featured">✨ Featured & Latest</option>
+                <option value="name-asc">Alphabetical (A - Z)</option>
+                <option value="name-desc">Alphabetical (Z - A)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Directory Header Row -->
+        <div class="directory-header-row">
+          <div class="dir-title-group">
+            <h2 class="dir-title" id="dirHeading"><i class="fa-solid fa-compass"></i> Official Clubs Directory</h2>
+            <span class="dir-badge" id="resultsCount">Loading verified clubs...</span>
+          </div>
+          <div class="dir-prod-badge" title="100% Real Verified MITS Campus Clubs">
+            <span class="live-dot-pulse"></span>
+            <span id="lblLiveDirStatus">Verified Live Campus Portal</span>
+          </div>
+        </div>
+
+        <!-- 3D Interactive Cards Grid -->
+        <div class="club-grid-3d" id="clubGrid">
+          <!-- Injected dynamically by app.js -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="noResultsState" class="empty-state-3d hidden">
+          <div class="empty-icon-3d"><i class="fa-solid fa-compass-drafting"></i></div>
+          <h3 id="emptyHeading">No matching college clubs found</h3>
+          <p id="emptySub">Be the first student leader to register an official club or try adjusting your search filters!</p>
+          <button type="button" class="btn btn-create-3d" id="emptyAddClubBtn" style="margin-top: 16px;">
+            <i class="fa-solid fa-plus"></i> <span id="lblEmptyAddClub">Register Official Club</span>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- ===== PROFESSOR APPROVAL PANEL (Coordinator Professor Only) ===== -->
+      <section id="approvalPanel" class="approval-panel-3d hidden">
+        <div class="approval-header">
+          <div class="app-icon-title">
+            <div class="app-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <div>
+              <h3>Faculty In-Charge Approval Queue</h3>
+              <p>Clubs waiting for official verification before publishing live.</p>
+            </div>
+          </div>
+          <span class="badge-pending-count" id="pendingCountBadge">0 Pending</span>
+        </div>
+        <div id="pendingList" class="pending-clubs-grid">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+      </section>
+
+      <!-- ===== PRESIDENT BROADCAST BANNER (Club President Only) ===== -->
+      <section id="presidentBanner" class="president-banner-3d hidden">
+        <div class="pres-banner-content">
+          <div class="pres-icon"><i class="fa-solid fa-crown"></i></div>
+          <div>
+            <h3>Welcome, Club President!</h3>
+            <p>You have verified administrative permissions to update your club overview, manage applicant rosters, and broadcast live notices.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 2: FULL DEDICATED CLUB PAGE VIEW (#clubFullView)                    -->
+    <!-- ========================================================================= -->
+    <div id="clubFullView" class="view-section hidden">
+      <!-- Injected dynamically by app.js with full A to Z rich details & photo gallery -->
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 3: DEDICATED DEVELOPER SPOTLIGHT PAGE (#developerPageView)           -->
+    <!-- ========================================================================= -->
+    <div id="developerPageView" class="view-section hidden">
+      <div class="devpage-container">
+        
+        <!-- Back Navigation & Page Title -->
+        <div class="devpage-topbar">
+          <button id="devBackBtn" class="btn-back-3d">
+            <i class="fa-solid fa-arrow-left"></i> Back to Clubs Hub
+          </button>
+          <div class="devpage-pill">
+            <i class="fa-solid fa-shield-halved"></i> Official Architect Profile &bull; MITS Gwalior
+          </div>
+        </div>
+
+        <!-- 3D Hero Profile Showcase -->
+        <div class="devpage-hero-card">
+          <div class="devpage-hero-glow"></div>
+          
+          <div class="devpage-profile-grid">
+            <!-- Developer Photo Frame -->
+            <div class="dev-photo-column">
+              <div class="dev-photo-3d-wrapper">
+                <div class="dev-photo-ring"></div>
+                <img 
+                  id="devMainPhoto" 
+                  src="https://github.com/akashcyber02.png" 
+                  onerror="this.onerror=null; this.src='assets/akash-avatar.svg';" 
+                  alt="Akash Dhakad — Lead Developer & Architect" 
+                  class="dev-photo-img" 
+                />
+                <div class="dev-photo-badge">
+                  <span class="pulse-dot"></span> 1st Year AI Student
+                </div>
+              </div>
+
+              <!-- Quick Action Link to Live Swasthya Setu -->
+              <a href="https://swasthya-setu-akash.netlify.app/" target="_blank" class="btn-live-swasthya-glow" title="Open Swasthya Setu App">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <span>Explore Swasthya Setu</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <!-- Developer Main Bio & Info -->
+            <div class="dev-details-column">
+              <div class="dev-tag-row">
+                <span class="dev-badge-ai"><i class="fa-solid fa-brain"></i> Artificial Intelligence & Data Science</span>
+                <span class="dev-badge-college"><i class="fa-solid fa-building-columns"></i> MITS Gwalior</span>
+                <span class="dev-badge-batch"><i class="fa-solid fa-graduation-cap"></i> 1st Year (B.Tech)</span>
+              </div>
+
+              <h1 class="dev-title-name">
+                Akash <span class="text-gradient">Dhakad</span>
+              </h1>
+              <p class="dev-subtitle-role">
+                Lead Full-Stack Architect & AI Developer &bull; Creator of <em>Swasthya Setu</em> & <em>MITS Club Hub</em>
+              </p>
+
+              <div class="dev-story-box">
+                <p>
+                  "Namaste! I am <strong>Akash Dhakad</strong>, a 1st-year <strong>Artificial Intelligence</strong> student at <strong>Madhav Institute of Technology & Science (MITS Gwalior)</strong>. I engineer real-world, high-impact digital products and AI applications that solve practical problems for our college campus and society."
+                </p>
+                <p>
+                  "I built <strong>MITS Club Hub</strong> to eliminate scattered WhatsApp circulars and give every MITSian a single 3D discovery hub with domain authentication, student-faculty role verification, real-time Firestore sync, and official event galleries."
+                </p>
+              </div>
+
+              <!-- Direct Connect & Socials Hub -->
+              <div class="dev-connections-grid">
+                <a href="https://swasthya-setu-akash.netlify.app/" target="_blank" class="dev-hero-btn dev-btn-swasthya" title="Live Health App">
+                  <i class="fa-solid fa-globe"></i>
+                  <div>
+                    <span class="lbl-small">Live Project</span>
+                    <span class="lbl-bold">Swasthya Setu</span>
+                  </div>
+                </a>
+
+                <a href="https://github.com/akashcyber02" target="_blank" class="dev-hero-btn dev-btn-github" title="GitHub Repository & Code">
+                  <i class="fa-brands fa-github"></i>
+                  <div>
+                    <span class="lbl-small">Open Source</span>
+                    <span class="lbl-bold">GitHub Profile</span>
+                  </div>
+                </a>
+
+                <a href="https://www.linkedin.com/in/akash-dhakad8358/" target="_blank" class="dev-hero-btn dev-btn-linkedin" title="Professional Profile">
+                  <i class="fa-brands fa-linkedin-in"></i>
+                  <div>
+                    <span class="lbl-small">Connect</span>
+                    <span class="lbl-bold">LinkedIn</span>
+                  </div>
+                </a>
+
+                <a href="https://www.instagram.com/http.akash_02?stkn=eHE0OW03bjI0NDJy" target="_blank" class="dev-hero-btn dev-btn-instagram" title="Instagram">
+                  <i class="fa-brands fa-instagram"></i>
+                  <div>
+                    <span class="lbl-small">Follow</span>
+                    <span class="lbl-bold">Instagram</span>
+                  </div>
+                </a>
+
+                <a href="mailto:26ai1ak9@mitsgwl.ac.in" class="dev-hero-btn dev-btn-email" title="Official Contact Email">
+                  <i class="fa-solid fa-envelope"></i>
+                  <div>
+                    <span class="lbl-small">Contact</span>
+                    <span class="lbl-bold">Official Email</span>
+                  </div>
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Featured Projects Showcase Bento (Only the 2 Real Products Built by Akash) -->
+        <div class="dev-section-title-wrap">
+          <h2 class="dev-sec-heading"><i class="fa-solid fa-cubes-stacked"></i> Featured Products Built by Akash</h2>
+          <p class="dev-sec-sub">Production-grade web platforms engineered to make a direct impact</p>
+        </div>
+
+        <div class="dev-projects-bento dev-projects-2col">
+          <!-- Project 1: Swasthya Setu -->
+          <div class="dev-project-card bento-glow-emerald">
+            <div class="pcard-badge-row">
+              <span class="pcard-tag tag-emerald"><i class="fa-solid fa-heart-pulse"></i> Live in Production</span>
+              <span class="pcard-year">Health Tech</span>
+            </div>
+            <h3 class="pcard-title">Swasthya Setu (स्वास्थ्य सेतु)</h3>
+            <p class="pcard-desc">
+              A comprehensive health-tech portal and web application engineered for public welfare and healthcare connectivity across Maharashtra. Bridges patients, medical specialists, and vital emergency resources with a fast, intuitive responsive interface.
+            </p>
+            <div class="pcard-tech-stack">
+              <span>JavaScript</span>
+              <span>Healthcare APIs</span>
+              <span>Netlify</span>
+              <span>Responsive UI</span>
+            </div>
+            <div class="pcard-action-bar">
+              <a href="https://swasthya-setu-akash.netlify.app/" target="_blank" class="btn-pcard-link">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Live App
+              </a>
+            </div>
+          </div>
+
+          <!-- Project 2: MITS Club Hub -->
+          <div class="dev-project-card bento-glow-sky">
+            <div class="pcard-badge-row">
+              <span class="pcard-tag tag-sky"><i class="fa-solid fa-building-columns"></i> Official MITS Portal</span>
+              <span class="pcard-year">Campus Life</span>
+            </div>
+            <h3 class="pcard-title">MITS Club Hub</h3>
+            <p class="pcard-desc">
+              Centralized campus life discovery, membership application, and faculty approval portal for Madhav Institute of Technology & Science, Gwalior. Features domain-locked authentication, 3D physics interaction, Cloud Firestore sync, and client-side photo compression.
+            </p>
+            <div class="pcard-tech-stack">
+              <span>Firebase 10 Auth</span>
+              <span>Cloud Firestore</span>
+              <span>SPA Architecture</span>
+              <span>3D CSS Physics</span>
+            </div>
+            <div class="pcard-action-bar">
+              <a href="#" class="btn-pcard-link" id="devBackToClubsLink">
+                <i class="fa-solid fa-shapes"></i> Explore Clubs Directory
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- GitHub Open Source Spotlight -->
+        <div class="dev-section-title-wrap" style="margin-top: 50px;">
+          <h2 class="dev-sec-heading"><i class="fa-brands fa-github"></i> GitHub Developer Profile & Repositories</h2>
+          <p class="dev-sec-sub">Open-source code, repository architectures & contributions</p>
+        </div>
+
+        <div class="dev-github-card-3d">
+          <div class="github-card-header">
+            <div class="gh-avatar-wrap">
+              <img src="https://github.com/akashcyber02.png" onerror="this.onerror=null; this.src='assets/akash-avatar.svg';" alt="Akash Dhakad GitHub" class="gh-avatar" />
+              <span class="gh-status-dot" title="Active Contributor"></span>
+            </div>
+            <div class="gh-profile-info">
+              <div class="gh-name-row">
+                <h3>Akash Dhakad</h3>
+                <a href="https://github.com/akashcyber02" target="_blank" class="gh-user-pill">
+                  <i class="fa-brands fa-github"></i> @akashcyber02
+                </a>
+              </div>
+              <p class="gh-bio-text">
+                Artificial Intelligence Undergraduate @ MITS Gwalior &bull; Full-Stack Software Architect &bull; Creator of <em>Swasthya Setu</em> & <em>MITS Club Hub</em>.
+              </p>
+              <div class="gh-stats-row">
+                <span class="gh-stat-chip"><i class="fa-solid fa-book-bookmark"></i> Public Repositories</span>
+                <span class="gh-stat-chip"><i class="fa-solid fa-code-commit"></i> Active Open Source</span>
+                <span class="gh-stat-chip"><i class="fa-solid fa-location-dot"></i> MITS Gwalior, India</span>
+              </div>
+            </div>
+            <a href="https://github.com/akashcyber02" target="_blank" class="btn-visit-gh" title="Open GitHub Profile">
+              <i class="fa-brands fa-github"></i> Visit Profile <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+          </div>
+
+          <!-- Featured Pinned Repos -->
+          <div class="gh-pinned-repos-grid">
+            <a href="https://github.com/akashcyber02" target="_blank" class="gh-repo-item">
+              <div class="gh-repo-top">
+                <div class="gh-repo-name"><i class="fa-regular fa-bookmark"></i> mits-club-hub</div>
+                <span class="gh-repo-public">Public</span>
+              </div>
+              <p class="gh-repo-desc">
+                Centralized campus life discovery, role-based governance & club event archives for MITS Gwalior.
+              </p>
+              <div class="gh-repo-meta">
+                <span><span class="lang-color lang-js"></span> JavaScript</span>
+                <span><i class="fa-solid fa-fire"></i> Firebase Firestore</span>
+              </div>
+            </a>
+
+            <a href="https://github.com/akashcyber02" target="_blank" class="gh-repo-item">
+              <div class="gh-repo-top">
+                <div class="gh-repo-name"><i class="fa-regular fa-bookmark"></i> swasthya-setu</div>
+                <span class="gh-repo-public">Public</span>
+              </div>
+              <p class="gh-repo-desc">
+                Full-stack healthcare accessibility & welfare web platform deployed in production for Maharashtra.
+              </p>
+              <div class="gh-repo-meta">
+                <span><span class="lang-color lang-html"></span> HTML5 / JS</span>
+                <span><i class="fa-solid fa-heart-pulse"></i> Netlify Live</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Technical Skillset & Engineering Arsenal -->
+        <div class="dev-section-title-wrap" style="margin-top: 50px;">
+          <h2 class="dev-sec-heading"><i class="fa-solid fa-microchip"></i> Technical Arsenal & Skills</h2>
+          <p class="dev-sec-sub">Technologies and tools leveraged to build scalable software</p>
+        </div>
+
+        <div class="dev-skills-grid">
+          <div class="skill-category-box">
+            <h4><i class="fa-solid fa-code"></i> Core Languages</h4>
+            <div class="skill-pills">
+              <span>JavaScript (ES6+)</span>
+              <span>Python</span>
+              <span>HTML5 / CSS3</span>
+              <span>C / C++</span>
+              <span>SQL</span>
+            </div>
+          </div>
+
+          <div class="skill-category-box">
+            <h4><i class="fa-solid fa-cloud"></i> Cloud & Backend</h4>
+            <div class="skill-pills">
+              <span>Firebase Cloud Firestore</span>
+              <span>Firebase Auth & Hosting</span>
+              <span>Netlify CI/CD</span>
+              <span>REST APIs</span>
+              <span>Git & GitHub</span>
+            </div>
+          </div>
+
+          <div class="skill-category-box">
+            <h4><i class="fa-solid fa-brain"></i> AI & Specialization</h4>
+            <div class="skill-pills">
+              <span>Artificial Intelligence</span>
+              <span>Machine Learning Fundamentals</span>
+              <span>Data Analysis</span>
+              <span>3D Web UI & Physics</span>
+              <span>Client-side Compression</span>
+            </div>
+          </div>
+
+          <div class="skill-category-box">
+            <h4><i class="fa-solid fa-users"></i> Leadership & Campus</h4>
+            <div class="skill-pills">
+              <span>Lead Architect (MITS Club Hub)</span>
+              <span>Team Collaboration (4 Members)</span>
+              <span>GDSC / Tech Club Member</span>
+              <span>Campus Digital Transformation</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Club Data & Research Contributors (Team Members) -->
+        <div class="dev-section-title-wrap" style="margin-top: 50px;">
+          <h2 class="dev-sec-heading"><i class="fa-solid fa-users-viewfinder"></i> Club Research & Data Contributors</h2>
+          <p class="dev-sec-sub">Student team members who assisted in gathering and curating verified campus club information</p>
+        </div>
+
+        <div class="dev-contributors-grid">
+          <!-- Contributor 1: Alok Mahor -->
+          <div class="contributor-card-3d">
+            <div class="contrib-top-row">
+              <div class="contrib-avatar-circle">
+                <span>AM</span>
+              </div>
+              <div class="contrib-info-meta">
+                <h3 class="contrib-name">Alok Mahor</h3>
+                <span class="contrib-branch"><i class="fa-solid fa-brain"></i> 1st Year AI (B.Tech)</span>
+                <span class="contrib-role-badge"><i class="fa-solid fa-clipboard-list"></i> Data Curation Contributor</span>
+              </div>
+            </div>
+
+            <div class="contrib-clubs-box">
+              <span class="contrib-clubs-lbl"><i class="fa-solid fa-shapes"></i> Clubs Researched (10 Clubs):</span>
+              <div class="contrib-club-tags">
+                <span>Aerospace MITS</span>
+                <span>Team Scavengers Motorsports</span>
+                <span>MITS Querencia</span>
+                <span>ISTE MITS Chapter</span>
+                <span>MITS.FC Football</span>
+                <span>Alumni Cell Mech</span>
+                <span>Bandish Music Club</span>
+                <span>Holistic Health Club</span>
+                <span>AI Club MITS</span>
+                <span>Hindi Samiti MITS</span>
+              </div>
+            </div>
+
+            <div class="contrib-social-row">
+              <a href="https://github.com/11aialok" target="_blank" class="contrib-social-btn contrib-gh" title="GitHub Profile">
+                <i class="fa-brands fa-github"></i> <span>GitHub</span>
+              </a>
+              <a href="https://www.linkedin.com/in/alok-mahor-05235b436/" target="_blank" class="contrib-social-btn contrib-li" title="LinkedIn Profile">
+                <i class="fa-brands fa-linkedin-in"></i> <span>LinkedIn</span>
+              </a>
+              <a href="https://www.instagram.com/_1109_alok?stkn=bXJtYnU0ZzFldGwx" target="_blank" class="contrib-social-btn contrib-ig" title="Instagram">
+                <i class="fa-brands fa-instagram"></i> <span>Instagram</span>
+              </a>
+              <a href="mailto:26ai1al11@mitsgwl.ac.in" class="contrib-social-btn contrib-mail" title="College Email">
+                <i class="fa-solid fa-envelope"></i> <span>Email</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Contributor 2: Aman Singh -->
+          <div class="contributor-card-3d">
+            <div class="contrib-top-row">
+              <div class="contrib-avatar-circle">
+                <span>AS</span>
+              </div>
+              <div class="contrib-info-meta">
+                <h3 class="contrib-name">Aman Singh</h3>
+                <span class="contrib-branch"><i class="fa-solid fa-brain"></i> 1st Year AI (B.Tech)</span>
+                <span class="contrib-role-badge"><i class="fa-solid fa-clipboard-list"></i> Data Outreach Contributor</span>
+              </div>
+            </div>
+
+            <div class="contrib-clubs-box">
+              <span class="contrib-clubs-lbl"><i class="fa-solid fa-shapes"></i> Clubs Researched (10 Clubs):</span>
+              <div class="contrib-club-tags">
+                <span>AI Club</span>
+                <span>AIORT Robotics Workshop</span>
+                <span>Tech Odyssey</span>
+                <span>Sky Road Gaming Club</span>
+                <span>Machine Learning Club</span>
+                <span>Innovation & DIY Club</span>
+                <span>Art of Conversation</span>
+                <span>AARAMBH Club</span>
+                <span>Digital Learning Group</span>
+                <span>Heritage & Culture</span>
+              </div>
+            </div>
+
+            <div class="contrib-social-row">
+              <a href="https://github.com/26ai1am12-coder" target="_blank" class="contrib-social-btn contrib-gh" title="GitHub Profile">
+                <i class="fa-brands fa-github"></i> <span>GitHub</span>
+              </a>
+              <a href="https://www.instagram.com/aamansingh512?stkn=cXc5a2xtdDNidzNq" target="_blank" class="contrib-social-btn contrib-ig" title="Instagram">
+                <i class="fa-brands fa-instagram"></i> <span>Instagram</span>
+              </a>
+              <a href="mailto:26ai1am12@mitsgwl.ac.in" class="contrib-social-btn contrib-mail" title="College Email">
+                <i class="fa-solid fa-envelope"></i> <span>Email</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Contributor 3: Akash Gupta -->
+          <div class="contributor-card-3d">
+            <div class="contrib-top-row">
+              <div class="contrib-avatar-circle">
+                <span>AG</span>
+              </div>
+              <div class="contrib-info-meta">
+                <h3 class="contrib-name">Akash Gupta</h3>
+                <span class="contrib-branch"><i class="fa-solid fa-brain"></i> 1st Year AI (B.Tech)</span>
+                <span class="contrib-role-badge"><i class="fa-solid fa-clipboard-list"></i> Data Verification Contributor</span>
+              </div>
+            </div>
+
+            <div class="contrib-clubs-box">
+              <span class="contrib-clubs-lbl"><i class="fa-solid fa-shapes"></i> Clubs Researched (10 Clubs):</span>
+              <div class="contrib-club-tags">
+                <span>Circuitrix Electronics Club</span>
+                <span>GDSC MITS Chapter</span>
+                <span>E-Cell Innovation Club</span>
+                <span>Rotaract Youth Club</span>
+                <span>NSS & Social Action</span>
+                <span>Photography & Media Club</span>
+                <span>Web Wizards Club</span>
+                <span>Cyber Security Club</span>
+                <span>Astronomy & Space Club</span>
+                <span>Sports & Athletics Club</span>
+              </div>
+            </div>
+
+            <div class="contrib-social-row">
+              <a href="https://github.com/akash9752686804-eng" target="_blank" class="contrib-social-btn contrib-gh" title="GitHub Profile">
+                <i class="fa-brands fa-github"></i> <span>GitHub</span>
+              </a>
+              <a href="https://www.instagram.com/akash_gupta11445?stkn=NnVodmw2ZXlwY2Z2" target="_blank" class="contrib-social-btn contrib-ig" title="Instagram">
+                <i class="fa-brands fa-instagram"></i> <span>Instagram</span>
+              </a>
+              <a href="mailto:26ai1ak10@mitsgwl.ac.in" class="contrib-social-btn contrib-mail" title="College Email">
+                <i class="fa-solid fa-envelope"></i> <span>Email</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Production Database Tools & Purge Action -->
+        <div class="dev-section-title-wrap" style="margin-top: 50px;">
+          <h2 class="dev-sec-heading"><i class="fa-solid fa-server"></i> Production & Database Operations</h2>
+
+          <p class="dev-sec-sub">Ready for live domain deployment with real student and faculty data</p>
+        </div>
+
+        <div class="dev-prod-tools-card">
+          <div class="prod-tools-info">
+            <div class="prod-status-indicator">
+              <span class="live-dot-pulse"></span> <strong>100% Real Campus Production Mode Active</strong>
+            </div>
+            <p>
+              To start completely fresh with real MITS clubs registered by official student leaders and approved by faculty mentors, you can wipe any old sample demo clubs from Firestore with 1 click.
+            </p>
+          </div>
+          <button type="button" id="btnWipeDemoData" class="btn btn-wipe-demo" title="Delete all sample demo clubs from database">
+            <i class="fa-solid fa-trash-can"></i> Wipe All Demo Sample Clubs
+          </button>
+        </div>
+
+        <!-- Collaboration Callout -->
+        <div class="dev-collab-card">
+          <div class="collab-content">
+            <div class="collab-icon"><i class="fa-solid fa-handshake-angle"></i></div>
+            <div>
+              <h3>Want to collaborate or build exciting tech at MITS Gwalior?</h3>
+              <p>Whether you have feedback on MITS Club Hub, need assistance in AI/Web development, or want to build groundbreaking software together, my inbox is always open!</p>
+            </div>
+          </div>
+          <div class="collab-actions">
+            <a href="mailto:26ai1ak9@mitsgwl.ac.in" class="btn btn-collab-mail">
+              <i class="fa-solid fa-envelope"></i> Reach Out via Email
+            </a>
+            <a href="https://www.instagram.com/http.akash_02?stkn=eHE0OW03bjI0NDJy" target="_blank" class="btn btn-collab-ig">
+              <i class="fa-brands fa-instagram"></i> DM on Instagram
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== CREATE CLUB MODAL ===== -->
+    <div id="createClubModal" class="modal hidden">
+      <div class="modal-box-3d">
+        <div class="modal-top">
+          <div class="modal-icon-title">
+            <div class="m-icon"><i class="fa-solid fa-folder-plus"></i></div>
+            <div>
+              <h2>Register New College Club</h2>
+              <p>Your submission will be routed to the Coordinator Professor for approval.</p>
+            </div>
+          </div>
+          <button id="closeModalBtn" class="btn-close-modal">&times;</button>
+        </div>
+
+        <form id="createClubForm" class="modal-form-3d">
+          <div class="form-grid-2">
+            <div class="f-group">
+              <label>Club Name *</label>
+              <input type="text" id="clubName" placeholder="e.g. GDSC MITS / Club Decimal" required />
+            </div>
+            <div class="f-group">
+              <label>Category *</label>
+              <select id="clubCategory" required>
+                <option value="Technical">💻 Technical & Coding</option>
+                <option value="Cultural">🎭 Cultural & Arts</option>
+                <option value="Sports">🏆 Sports & Athletics</option>
+                <option value="Social">🤝 Social & NSS</option>
+                <option value="Literary">📚 Literary & Media</option>
+                <option value="Innovation">🚀 E-Cell & Innovation</option>
+                <option value="Other">➕ Other / Custom Category...</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="customCategoryWrap" class="f-group hidden">
+            <label>✨ Enter Custom Category Name * (Will auto-add to homepage filter pills)</label>
+            <input type="text" id="customCategoryInput" placeholder="e.g. Robotics & AI, Gaming & Esports, Photography, Theatre" />
+          </div>
+
+          <div class="f-group">
+            <label>Club Tagline / Catchphrase *</label>
+            <input type="text" id="clubTagline" placeholder="e.g. Decode, Debug, Dominate" required />
+          </div>
+
+          <div class="f-group">
+            <label>Cover / Banner Image URL (Optional)</label>
+            <input type="url" id="clubCoverImg" placeholder="https://images.unsplash.com/... or image link" />
+          </div>
+
+          <div class="f-group">
+            <label>📸 Upload Club Photos / Event Memories (Select Multiple)</label>
+            <input type="file" id="clubPhotoFiles" accept="image/*" multiple class="file-upload-input" />
+            <span class="helper-text"><i class="fa-solid fa-images"></i> You can select as many photos of past events, workshops & teams as you want!</span>
+          </div>
+
+          <div class="f-group">
+            <label id="lblCreateClubDesc">📖 Club Mission & Overview *</label>
+            <textarea id="clubDescription" rows="3" placeholder="Explain what the club does, core domains, regular activities..." required></textarea>
+          </div>
+
+          <div class="f-group">
+            <label id="lblCreateClubWhy">🎯 Why Join & Key Benefits *</label>
+            <textarea id="clubWhyJoin" rows="3" placeholder="Why should a student join? (e.g. Hackathons, hands-on projects, peer mentorship, official certificates, networking)..." required></textarea>
+          </div>
+
+          <div class="form-grid-3">
+            <div class="f-group">
+              <label>Membership Fee</label>
+              <select id="feeType">
+                <option value="free">Free for All</option>
+                <option value="paid">Paid</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Fee (₹)</label>
+              <input type="number" id="feeAmount" placeholder="0" min="0" disabled />
+            </div>
+            <div class="f-group">
+              <label>Recruitment Status</label>
+              <select id="recruitmentStatus">
+                <option value="open">🔥 Open for Recruitment</option>
+                <option value="closed">Closed / Coming Soon</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="f-group">
+            <label><i class="fa-regular fa-calendar-xmark"></i> Registration Closing Deadline (Optional)</label>
+            <input type="date" id="clubDeadline" />
+            <span class="helper-text"><i class="fa-solid fa-clock"></i> Live countdown badge will display on club cards until this date.</span>
+          </div>
+
+          <div class="section-divider-title"><i class="fa-solid fa-crown"></i> 👥 Core Leadership Team & Mentors</div>
+
+          <!-- President / Boy Lead -->
+          <div class="leadership-input-card">
+            <div class="lic-header"><i class="fa-solid fa-crown" style="color: #facc15;"></i> Club President / Lead *</div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>President Full Name *</label>
+                <input type="text" id="presidentName" placeholder="e.g. Akash Dhakad" required />
+              </div>
+              <div class="f-group">
+                <label>President Phone / WhatsApp *</label>
+                <input type="tel" id="presidentPhone" placeholder="+91 XXXXX XXXXX" required />
+              </div>
+            </div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>College Email * (For login & portal ownership)</label>
+                <input type="email" id="presidentEmail" placeholder="president@mitsgwl.ac.in" required />
+              </div>
+              <div class="f-group">
+                <label>Instagram Handle / Profile URL</label>
+                <input type="url" id="presidentInsta" placeholder="https://instagram.com/username" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Vice President / Girl Lead / Co-Lead -->
+          <div class="leadership-input-card">
+            <div class="lic-header"><i class="fa-solid fa-star" style="color: #ec4899;"></i> Vice President / Co-Lead</div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>Vice President Name</label>
+                <input type="text" id="vpName" placeholder="e.g. Priya Sharma" />
+              </div>
+              <div class="f-group">
+                <label>Phone / WhatsApp</label>
+                <input type="tel" id="vpPhone" placeholder="+91 XXXXX XXXXX" />
+              </div>
+            </div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>College Email</label>
+                <input type="email" id="vpEmail" placeholder="vp@mitsgwl.ac.in" />
+              </div>
+              <div class="f-group">
+                <label>Instagram Handle / URL</label>
+                <input type="url" id="vpInsta" placeholder="https://instagram.com/username" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Media, PR & Promotions Lead -->
+          <div class="leadership-input-card">
+            <div class="lic-header"><i class="fa-solid fa-bullhorn" style="color: #06b6d4;"></i> Media, PR & Promotions Lead</div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>Media Lead Name</label>
+                <input type="text" id="mediaLeadName" placeholder="e.g. Rahul Verma" />
+              </div>
+              <div class="f-group">
+                <label>Phone / WhatsApp</label>
+                <input type="tel" id="mediaLeadPhone" placeholder="+91 XXXXX XXXXX" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Technical & Events Lead -->
+          <div class="leadership-input-card">
+            <div class="lic-header"><i class="fa-solid fa-laptop-code" style="color: #a855f7;"></i> Technical & Events Lead</div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>Technical Lead Name</label>
+                <input type="text" id="techLeadName" placeholder="e.g. Aman Gupta" />
+              </div>
+              <div class="f-group">
+                <label>Phone / WhatsApp</label>
+                <input type="tel" id="techLeadPhone" placeholder="+91 XXXXX XXXXX" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Videography & Creative Design Lead -->
+          <div class="leadership-input-card">
+            <div class="lic-header"><i class="fa-solid fa-video" style="color: #10b981;"></i> Videography & Creative Design Lead</div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>Creative Lead Name</label>
+                <input type="text" id="videographyLeadName" placeholder="e.g. Rohit Jain" />
+              </div>
+              <div class="f-group">
+                <label>Phone / WhatsApp</label>
+                <input type="tel" id="videographyLeadPhone" placeholder="+91 XXXXX XXXXX" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Corporate Outreach & Sponsorships Lead -->
+          <div class="leadership-input-card">
+            <div class="lic-header"><i class="fa-solid fa-handshake" style="color: #f59e0b;"></i> Corporate Outreach & Sponsorships Lead</div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>Outreach Lead Name</label>
+                <input type="text" id="sponsorshipLeadName" placeholder="e.g. Neha Singh" />
+              </div>
+              <div class="f-group">
+                <label>Phone / WhatsApp</label>
+                <input type="tel" id="sponsorshipLeadPhone" placeholder="+91 XXXXX XXXXX" />
+              </div>
+            </div>
+          </div>
+
+          <div class="section-divider-title"><i class="fa-solid fa-share-nodes"></i> Official Social & Community Channels</div>
+
+          <div class="form-grid-2">
+            <div class="f-group">
+              <label>Official WhatsApp Group Link</label>
+              <input type="url" id="clubWhatsapp" placeholder="https://chat.whatsapp.com/..." />
+            </div>
+            <div class="f-group">
+              <label>Official Instagram Page URL</label>
+              <input type="url" id="clubInsta" placeholder="https://instagram.com/..." />
+            </div>
+          </div>
+
+          <div class="section-divider-title"><i class="fa-solid fa-user-graduate"></i> Faculty In-Charge</div>
+
+          <div class="f-group">
+            <label>Coordinator Professor Email * (Must approve before club goes live)</label>
+            <input type="email" id="coordinatorEmail" placeholder="professor@mitsgwl.ac.in" required />
+          </div>
+
+          <button type="submit" class="btn btn-submit-3d" id="submitClubBtn">
+            <i class="fa-solid fa-paper-plane"></i> Submit Club for Faculty Approval
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== EDIT CLUB MODAL (President & Authorized Co-Leads Only) ===== -->
+    <div id="editClubModal" class="modal hidden">
+      <div class="modal-box-3d">
+        <div class="modal-top">
+          <div class="modal-icon-title">
+            <div class="m-icon" style="background: linear-gradient(135deg, #a855f7, #6366f1);"><i class="fa-solid fa-pen-to-square"></i></div>
+            <div>
+              <h2 id="editModalHeading">Edit Club Details & Photos</h2>
+              <p>Changes will be published live instantly across MITS Club Hub.</p>
+            </div>
+          </div>
+          <button id="closeEditModalBtn" class="btn-close-modal">&times;</button>
+        </div>
+
+        <form id="editClubForm" class="modal-form-3d">
+          <input type="hidden" id="editClubId" />
+
+          <div class="form-grid-2">
+            <div class="f-group">
+              <label>Category</label>
+              <select id="editCategory">
+                <option value="Technical">💻 Technical & Coding</option>
+                <option value="Cultural">🎭 Cultural & Arts</option>
+                <option value="Sports">🏆 Sports & Athletics</option>
+                <option value="Social">🤝 Social & NSS</option>
+                <option value="Literary">📚 Literary & Media</option>
+                <option value="Innovation">🚀 E-Cell & Innovation</option>
+                <option value="Other">➕ Other / Custom Category...</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Club Tagline</label>
+              <input type="text" id="editTagline" required />
+            </div>
+          </div>
+
+          <div id="editCustomCategoryWrap" class="f-group hidden">
+            <label>✨ Enter Custom Category Name *</label>
+            <input type="text" id="editCustomCategoryInput" placeholder="e.g. Robotics & AI, Gaming, Photography, Theatre" />
+          </div>
+
+          <div class="f-group">
+            <label>Cover / Banner Image URL</label>
+            <input type="url" id="editCoverImg" placeholder="https://..." />
+          </div>
+
+          <div class="f-group">
+            <label>📸 Add More Club Event Photos (Select Multiple)</label>
+            <input type="file" id="editPhotoFiles" accept="image/*" multiple class="file-upload-input" />
+            <span class="helper-text"><i class="fa-solid fa-plus-circle"></i> Upload more event moments, workshops and celebrations!</span>
+          </div>
+
+          <!-- Existing Photos Preview in Edit Mode -->
+          <div class="f-group">
+            <label>Current Gallery Photos (<span id="editPhotoCount">0</span> photos)</label>
+            <div id="editGalleryThumbnails" class="edit-thumbnails-grid"></div>
+          </div>
+
+          <div class="f-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label style="margin-bottom:0;">📢 Live Notice / Announcement (Shows on Club Card & Page)</label>
+              <button type="button" id="aiNoticeGenBtn" class="btn-ai-sparkle-sm" title="Draft catchy notice with AI">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> ✨ AI Auto-Draft Notice
+              </button>
+            </div>
+            <input type="text" id="editAnnouncement" placeholder="e.g. Hackathon registrations open till Sept 20 in SAC Auditorium!" />
+          </div>
+
+          <div class="f-group">
+            <label id="lblEditClubDesc">📖 Club Mission & Overview</label>
+            <textarea id="editDescription" rows="3" required></textarea>
+          </div>
+
+          <div class="f-group">
+            <label id="lblEditClubWhy">🎯 Vision & Why Join (Key Benefits)</label>
+            <textarea id="editWhyJoin" rows="3" required></textarea>
+          </div>
+
+          <div class="form-grid-3">
+            <div class="f-group">
+              <label>Recruitment</label>
+              <select id="editRecruitmentStatus">
+                <option value="open">🔥 Open for Recruitment</option>
+                <option value="closed">Closed / Coming Soon</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Fee Status</label>
+              <select id="editFeeType">
+                <option value="free">Free</option>
+                <option value="paid">Paid</option>
+              </select>
+            </div>
+            <div class="f-group">
+              <label>Fee Amount (₹)</label>
+              <input type="number" id="editFeeAmount" min="0" />
+            </div>
+          </div>
+
+          <div class="f-group">
+            <label><i class="fa-regular fa-calendar-xmark"></i> Registration Closing Deadline (Optional)</label>
+            <input type="date" id="editDeadline" />
+            <span class="helper-text"><i class="fa-solid fa-clock"></i> Live countdown banner will be displayed on the club page until this date.</span>
+          </div>
+
+          <div class="section-divider-title"><i class="fa-solid fa-crown"></i> 👥 Core Leadership Team & Mentors</div>
+
+          <!-- President / Boy Lead -->
+          <div class="leadership-input-card">
+            <div class="lic-header"><i class="fa-solid fa-crown" style="color: #facc15;"></i> Club President / Lead *</div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>President Full Name *</label>
+                <input type="text" id="editPresidentName" required />
+              </div>
+              <div class="f-group">
+                <label>President Phone / WhatsApp *</label>
+                <input type="tel" id="editPresidentPhone" required />
+              </div>
+            </div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>President College Email</label>
+                <input type="email" id="editPresidentEmail" disabled style="opacity: 0.7;" />
+              </div>
+              <div class="f-group">
+                <label>President Instagram Handle / URL</label>
+                <input type="url" id="editPresidentInsta" placeholder="https://instagram.com/..." />
+              </div>
+            </div>
+          </div>
+
+          <!-- Vice President / Girl Lead -->
+          <div class="leadership-input-card">
+            <div class="lic-header"><i class="fa-solid fa-star" style="color: #ec4899;"></i> Vice President / Co-Lead</div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>Vice President Name</label>
+                <input type="text" id="editVpName" placeholder="e.g. Priya Sharma" />
+              </div>
+              <div class="f-group">
+                <label>Phone / WhatsApp</label>
+                <input type="tel" id="editVpPhone" placeholder="+91 XXXXX XXXXX" />
+              </div>
+            </div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>College Email</label>
+                <input type="email" id="editVpEmail" placeholder="vp@mitsgwl.ac.in" />
+              </div>
+              <div class="f-group">
+                <label>Instagram Handle / URL</label>
+                <input type="url" id="editVpInsta" placeholder="https://instagram.com/..." />
+              </div>
+            </div>
+          </div>
+
+          <!-- Media, PR & Promotions Lead -->
+          <div class="leadership-input-card">
+            <div class="lic-header"><i class="fa-solid fa-bullhorn" style="color: #06b6d4;"></i> Media, PR & Promotions Lead</div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>Media Lead Name</label>
+                <input type="text" id="editMediaLeadName" placeholder="e.g. Rahul Verma" />
+              </div>
+              <div class="f-group">
+                <label>Phone / WhatsApp</label>
+                <input type="tel" id="editMediaLeadPhone" placeholder="+91 XXXXX XXXXX" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Technical & Events Lead -->
+          <div class="leadership-input-card">
+            <div class="lic-header"><i class="fa-solid fa-laptop-code" style="color: #a855f7;"></i> Technical & Events Lead</div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>Technical Lead Name</label>
+                <input type="text" id="editTechLeadName" placeholder="e.g. Aman Gupta" />
+              </div>
+              <div class="f-group">
+                <label>Phone / WhatsApp</label>
+                <input type="tel" id="editTechLeadPhone" placeholder="+91 XXXXX XXXXX" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Videography & Creative Design Lead -->
+          <div class="leadership-input-card">
+            <div class="lic-header"><i class="fa-solid fa-video" style="color: #10b981;"></i> Videography & Creative Design Lead</div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>Creative Lead Name</label>
+                <input type="text" id="editVideographyLeadName" placeholder="e.g. Rohit Jain" />
+              </div>
+              <div class="f-group">
+                <label>Phone / WhatsApp</label>
+                <input type="tel" id="editVideographyLeadPhone" placeholder="+91 XXXXX XXXXX" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Corporate Outreach & Sponsorships Lead -->
+          <div class="leadership-input-card">
+            <div class="lic-header"><i class="fa-solid fa-handshake" style="color: #f59e0b;"></i> Corporate Outreach & Sponsorships Lead</div>
+            <div class="form-grid-2">
+              <div class="f-group">
+                <label>Outreach Lead Name</label>
+                <input type="text" id="editSponsorshipLeadName" placeholder="e.g. Neha Singh" />
+              </div>
+              <div class="f-group">
+                <label>Phone / WhatsApp</label>
+                <input type="tel" id="editSponsorshipLeadPhone" placeholder="+91 XXXXX XXXXX" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Co-Lead / Collaborator Delegation Section -->
+          <div class="collab-management-box">
+            <div class="collab-box-header">
+              <div>
+                <h4 style="color: #38bdf8; font-size: 14px; font-weight: 800;"><i class="fa-solid fa-user-plus"></i> Co-Lead &amp; Editor Permissions</h4>
+                <p style="font-size: 12px; color: #94a3b8;">Grant management access to other core team members using their @mitsgwl.ac.in email.</p>
+              </div>
+            </div>
+            <div class="form-grid-2" style="margin-top: 10px;">
+              <div class="f-group">
+                <label>Co-Lead Member Email (@mitsgwl.ac.in)</label>
+                <input type="email" id="newCollabEmail" placeholder="colead@mitsgwl.ac.in" />
+              </div>
+              <div class="f-group">
+                <label>Member Role / Designation</label>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="newCollabRole" placeholder="e.g. Co-Lead / Media Head" />
+                  <button type="button" id="btnAddCollabMember" class="btn btn-add-collab"><i class="fa-solid fa-plus"></i> Add</button>
+                </div>
+              </div>
+            </div>
+            <div id="collabListContainer" class="collab-list-tags"></div>
+          </div>
+
+          <div class="section-divider-title"><i class="fa-solid fa-share-nodes"></i> Official Channels & Community Links</div>
+
+          <div class="form-grid-2">
+            <div class="f-group">
+              <label>WhatsApp Group URL</label>
+              <input type="url" id="editWhatsapp" />
+            </div>
+            <div class="f-group">
+              <label>Instagram URL</label>
+              <input type="url" id="editInsta" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-submit-3d">
+            <i class="fa-solid fa-floppy-disk"></i> Save & Broadcast Changes
+          </button>
+
+          <!-- Transfer Club Leadership / Handover Section (For 4th Year Presidents Graduating) -->
+          <div class="tenure-transfer-container">
+            <div class="tenure-header">
+              <div class="tenure-icon-wrap"><i class="fa-solid fa-arrows-rotate"></i></div>
+              <div>
+                <h4 class="tenure-title">🔄 Handover Tenure / Transfer Club Leadership</h4>
+                <p class="tenure-subtitle">Graduating from college or stepping down? Transfer full administrative ownership of this club to another verified student's @mitsgwl.ac.in email.</p>
+              </div>
+            </div>
+
+            <div class="form-grid-2" style="margin-top: 14px;">
+              <div class="f-group">
+                <label>New President Full Name</label>
+                <input type="text" id="transferNewName" placeholder="e.g. Rahul Sharma" />
+              </div>
+              <div class="f-group">
+                <label>New President WhatsApp / Phone</label>
+                <input type="tel" id="transferNewPhone" placeholder="+91 XXXXX XXXXX" />
+              </div>
+            </div>
+
+            <div class="f-group">
+              <label>New President Official College Email *</label>
+              <input type="email" id="transferNewEmail" placeholder="newpresident@mitsgwl.ac.in" />
+              <span class="helper-text" style="color: #f59e0b;"><i class="fa-solid fa-triangle-exclamation"></i> <strong>Important:</strong> Once transferred, your admin permissions will be transferred immediately to this email.</span>
+            </div>
+
+            <button type="button" id="btnTransferLeadership" class="btn btn-transfer-action">
+              <i class="fa-solid fa-right-left"></i> Confirm Leadership Handover
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== PRESIDENT-ONLY REGISTERED MEMBERS & APPLICANTS MODAL ===== -->
+    <div id="viewApplicantsModal" class="modal hidden">
+      <div class="modal-box-3d applicants-modal-box">
+        <div class="modal-top">
+          <div class="modal-icon-title">
+            <div class="m-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fa-solid fa-users-gear"></i></div>
+            <div>
+              <div class="president-auth-pill"><i class="fa-solid fa-shield-check"></i> President Portal &bull; Privacy Protected</div>
+              <h2 id="applicantsClubTitle">Registered Members & Applicants</h2>
+              <p>Manage membership applications, quick-chat via WhatsApp, and export student rosters.</p>
+            </div>
+          </div>
+          <button id="closeApplicantsModalBtn" class="btn-close-modal">&times;</button>
+        </div>
+
+        <div class="applicants-body">
+          <!-- Summary Counters -->
+          <div class="applicants-stats-grid">
+            <div class="app-stat-card">
+              <span class="app-stat-num" id="appStatTotal">0</span>
+              <span class="app-stat-lbl">Total Applicants</span>
+            </div>
+            <div class="app-stat-card stat-pending">
+              <span class="app-stat-num" id="appStatPending">0</span>
+              <span class="app-stat-lbl">Pending Review</span>
+            </div>
+            <div class="app-stat-card stat-shortlisted">
+              <span class="app-stat-num" id="appStatShortlisted">0</span>
+              <span class="app-stat-lbl">Shortlisted</span>
+            </div>
+            <div class="app-stat-card stat-approved">
+              <span class="app-stat-num" id="appStatApproved">0</span>
+              <span class="app-stat-lbl">Selected Members</span>
+            </div>
+          </div>
+
+          <!-- Controls Toolbar: Search, Status Filter & CSV Export -->
+          <div class="applicants-toolbar">
+            <div class="app-search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="appSearchInput" placeholder="Search by name, roll no, branch..." />
+            </div>
+            
+            <div class="app-actions-group">
+              <select id="appStatusFilter" class="app-select-filter">
+                <option value="all">All Applicants</option>
+                <option value="Pending">⏳ Pending</option>
+                <option value="Shortlisted">🌟 Shortlisted</option>
+                <option value="Approved">✅ Selected Members</option>
+                <option value="Rejected">❌ Rejected</option>
+              </select>
+
+              <button type="button" id="btnExportApplicantsCSV" class="btn-export-csv" title="Download Excel/CSV Spreadsheet">
+                <i class="fa-solid fa-file-excel"></i> Export CSV Roster
+              </button>
+            </div>
+          </div>
+
+          <!-- Applicants Table / Cards Container -->
+          <div class="applicants-table-container">
+            <div id="applicantsListWrapper">
+              <!-- Rendered dynamically by app.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== STUDENT MEMBERSHIP APPLICATION MODAL ===== -->
+    <div id="applyMembershipModal" class="modal hidden">
+      <div class="modal-box-3d apply-modal-box">
+        <div class="modal-top">
+          <div class="modal-icon-title">
+            <div class="m-icon" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);"><i class="fa-solid fa-file-signature"></i></div>
+            <div>
+              <span class="apply-club-tag" id="applyModalClubTag">MITS Club Recruitment</span>
+              <h2 id="applyModalClubName">Apply for Club Membership</h2>
+              <p>Your submission will be routed directly to the Club President & Core Leadership.</p>
+            </div>
+          </div>
+          <button id="closeApplyModalBtn" class="btn-close-modal">&times;</button>
+        </div>
+
+        <form id="applyMembershipModalForm" class="modal-form-3d">
+          <input type="hidden" id="applyClubId" />
+          <input type="hidden" id="applyClubNameHidden" />
+          <input type="hidden" id="applyPresidentEmailHidden" />
+
+          <div class="form-grid-2">
+            <div class="f-group">
+              <label>Student Full Name *</label>
+              <input type="text" id="modalAppName" placeholder="Your Full Name" required />
+            </div>
+            <div class="f-group">
+              <label>College Enrollment / Roll No *</label>
+              <input type="text" id="modalAppRoll" placeholder="e.g. 0901AI231001 or 26AI..." required />
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="f-group">
+              <label>Branch & Semester/Year *</label>
+              <input type="text" id="modalAppBranch" placeholder="e.g. Artificial Intelligence 1st Year" required />
+            </div>
+            <div class="f-group">
+              <label>WhatsApp Contact Number *</label>
+              <input type="tel" id="modalAppPhone" placeholder="+91 XXXXX XXXXX" required />
+            </div>
+          </div>
+
+          <div class="f-group">
+            <label>Official MITS College Email *</label>
+            <input type="email" id="modalAppEmail" placeholder="student@mitsgwl.ac.in" required />
+          </div>
+
+          <div class="f-group">
+            <label>Statement of Purpose & Skills * (Why do you want to join?)</label>
+            <textarea id="modalAppSop" rows="3" placeholder="Explain your interest, past coding/design/event experience, or what you want to learn..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-submit-3d" id="modalAppSubmitBtn">
+            <i class="fa-solid fa-paper-plane"></i> Submit Official Application
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== MY CLUBS & MEMBERSHIPS MODAL (#myClubsModal) ===== -->
+    <div id="myClubsModal" class="modal hidden">
+      <div class="modal-box-3d my-clubs-modal-box">
+        <div class="modal-top">
+          <div class="modal-icon-title">
+            <div class="m-icon" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);"><i class="fa-solid fa-layer-group"></i></div>
+            <div>
+              <h2 id="myClubsModalHeading">My Clubs & Applications</h2>
+              <p id="myClubsModalSub">Track your active memberships, review application statuses, or leave a club.</p>
+            </div>
+          </div>
+          <button id="closeMyClubsModalBtn" class="btn-close-modal">&times;</button>
+        </div>
+
+        <!-- Filter tabs for My Clubs -->
+        <div class="my-clubs-tabs-row">
+          <button class="my-clubs-tab active" data-filter="all">All (<span id="myTabCountAll">0</span>)</button>
+          <button class="my-clubs-tab" data-filter="Approved">Active Members (<span id="myTabCountApproved">0</span>)</button>
+          <button class="my-clubs-tab" data-filter="Pending">In Review (<span id="myTabCountPending">0</span>)</button>
+          <button class="my-clubs-tab" data-filter="Shortlisted">Shortlisted (<span id="myTabCountShortlisted">0</span>)</button>
+        </div>
+
+        <div id="myClubsListContainer" class="my-clubs-list-container">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== HANDOVER GMAIL DISPATCH MODAL (#handoverGmailModal) ===== -->
+    <div id="handoverGmailModal" class="modal hidden">
+      <div class="modal-box-3d handover-modal-box">
+        <div class="modal-top">
+          <div class="modal-icon-title">
+            <div class="m-icon" style="background: linear-gradient(135deg, #ea4335, #fbbc05);"><i class="fa-solid fa-envelope-circle-check"></i></div>
+            <div>
+              <h2>Send Handover Email via Gmail</h2>
+              <p>Official leadership nomination recorded. Notify successor via Gmail.</p>
+            </div>
+          </div>
+          <button id="closeHandoverGmailModalBtn" class="btn-close-modal">&times;</button>
+        </div>
+        <div class="handover-mail-preview">
+          <p class="mail-lead-text">An official leadership invitation email has been pre-formatted for <strong id="handoverMailRecipient">student@mitsgwl.ac.in</strong>. Click below to open your Gmail app:</p>
+          <div class="mail-preview-card">
+            <div class="mail-field"><strong>To:</strong> <span id="prevMailTo"></span></div>
+            <div class="mail-field"><strong>Subject:</strong> <span id="prevMailSubject"></span></div>
+            <div class="mail-body-preview" id="prevMailBody"></div>
+          </div>
+          <div class="handover-mail-actions">
+            <a id="btnOpenGmailApp" href="#" target="_blank" class="btn btn-gmail-action">
+              <i class="fa-brands fa-google"></i> Open in Gmail App & Send
+            </a>
+            <a id="btnOpenDefaultMail" href="#" class="btn btn-secondary-action">
+              <i class="fa-solid fa-paper-plane"></i> Open Default Mail
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MITS AI SMART CLUB ADVISOR & MATCHMAKER MODAL ===== -->
+    <div id="aiAdvisorModal" class="modal hidden">
+      <div class="modal-box-3d ai-modal-box">
+        <div class="modal-top">
+          <div class="modal-icon-title">
+            <div class="m-icon ai-glow-icon"><i class="fa-solid fa-brain"></i></div>
+            <div>
+              <div class="ai-header-badge"><span class="pulse-dot"></span> AI Club Intelligence</div>
+              <h2>MITS AI Smart Club Matchmaker</h2>
+              <p>Engineered by Akash Dhakad (1st Year AI) &bull; Find the perfect clubs for your skills & passion.</p>
+            </div>
+          </div>
+          <button id="closeAiModalBtn" class="btn-close-modal">&times;</button>
+        </div>
+
+        <div class="ai-advisor-body">
+          <div class="ai-intro-prompt">
+            <label><i class="fa-solid fa-wand-magic-sparkles"></i> What are your interests, skills or college goals?</label>
+            <textarea id="aiUserInput" rows="3" placeholder="e.g. I am interested in web development, AI, and winning hackathons... OR I love photography and event management... OR I want to play badminton and stay fit..."></textarea>
+          </div>
+
+          <!-- Quick AI Prompt Tags -->
+          <div class="ai-quick-tags-wrap">
+            <span class="ai-tag-hint">Quick Select:</span>
+            <button type="button" class="ai-quick-tag" data-query="Coding, Web Development, Hackathons & Python">💻 Coding & Hackathons</button>
+            <button type="button" class="ai-quick-tag" data-query="Artificial Intelligence, Robotics, Machine Learning & Drones">🤖 AI & Robotics</button>
+            <button type="button" class="ai-quick-tag" data-query="Drama, Acting, Music, Dance & Cultural Fests">🎭 Drama & Cultural</button>
+            <button type="button" class="ai-quick-tag" data-query="Cricket, Football, Athletics, Fitness & Sports">🏆 Sports & Athletics</button>
+            <button type="button" class="ai-quick-tag" data-query="Public Speaking, Debating, Writing & Literature">📚 Debate & Literary</button>
+            <button type="button" class="ai-quick-tag" data-query="Startups, E-Cell, Business, Marketing & Innovation">🚀 Startups & Innovation</button>
+            <button type="button" class="ai-quick-tag" data-query="Social Work, NSS, Blood Donation & Community Service">🤝 Social Service</button>
+          </div>
+
+          <button type="button" id="aiRunMatchBtn" class="btn btn-ai-run-match">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> ✨ Run AI Club Match Analysis
+          </button>
+
+          <!-- AI Results Output -->
+          <div id="aiMatchResults" class="ai-results-container hidden">
+            <div class="ai-results-header">
+              <span class="ai-match-headline"><i class="fa-solid fa-circle-check"></i> Top Recommended Clubs for You</span>
+              <span class="ai-confidence-pill" id="aiConfidencePill">⚡ AI Match Computed</span>
+            </div>
+            <div id="aiClubCardsList" class="ai-recommended-cards-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== USER PROFILE & DETAILS EDITOR MODAL ===== -->
+    <div id="userProfileModal" class="modal hidden">
+      <div class="modal-box-3d user-profile-box">
+        <div class="modal-top">
+          <div class="modal-icon-title">
+            <div class="m-icon" style="background: linear-gradient(135deg, #0284c7, #38bdf8);"><i class="fa-solid fa-user-gear"></i></div>
+            <div>
+              <div class="student-auth-pill"><i class="fa-solid fa-shield-check"></i> MITS Student Profile &bull; Domain Verified</div>
+              <h2>Student Profile &amp; Verification</h2>
+              <p>Manage your campus details, clean display name, and verified 2FA contact.</p>
+            </div>
+          </div>
+          <button id="closeUserProfileModalBtn" class="btn-close-modal">&times;</button>
+        </div>
+
+        <form id="userProfileForm" class="modal-form-3d">
+          <div class="profile-header-card">
+            <div class="profile-avatar-wrapper">
+              <div class="profile-avatar-circle" id="profileModalAvatar">M</div>
+            </div>
+            <div class="profile-header-info">
+              <h3 id="profileHeaderName">Student Name</h3>
+              <p id="profileHeaderEmail">student@mitsgwl.ac.in</p>
+              <span id="profileRoleBadge" class="badge-role">🎓 Verified Student</span>
+            </div>
+          </div>
+
+          <div class="f-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label style="margin-bottom:0;">Full Student Name *</label>
+              <button type="button" id="btnAutoCleanName" class="btn-clean-name-sm" title="Remove enrollment/roll prefix from name">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Clean Roll Prefix
+              </button>
+            </div>
+            <input type="text" id="profileNameInput" placeholder="e.g. Akash Dhakad" required />
+          </div>
+
+          <div class="form-grid-2">
+            <div class="f-group">
+              <label>College Enrollment / Roll No</label>
+              <input type="text" id="profileRollInput" placeholder="e.g. 0901AI231001 or 26AI..." />
+            </div>
+            <div class="f-group">
+              <label>Branch &amp; Year</label>
+              <input type="text" id="profileBranchInput" placeholder="e.g. Artificial Intelligence 1st Year" />
+            </div>
+          </div>
+
+          <div class="f-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label style="margin-bottom:0;">WhatsApp Contact Number</label>
+              <span id="profile2faBadge" class="badge-2fa-unverified"><i class="fa-solid fa-circle-exclamation"></i> 2FA Unverified</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <input type="tel" id="profilePhoneInput" placeholder="+91 XXXXX XXXXX" />
+              <button type="button" id="btnTriggerPhone2FA" class="btn btn-2fa-verify">
+                <i class="fa-solid fa-shield-halved"></i> Verify 2FA
+              </button>
+            </div>
+          </div>
+
+          <div class="f-group">
+            <label>Official MITS Email (Locked to Google Account)</label>
+            <input type="email" id="profileEmailInput" disabled style="opacity: 0.7;" />
+          </div>
+
+          <button type="submit" class="btn btn-submit-3d" id="btnSaveProfile">
+            <i class="fa-solid fa-floppy-disk"></i> Save Profile Details
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== 2FA PHONE & OTP VERIFICATION MODAL ===== -->
+    <div id="phoneVerifyModal" class="modal hidden">
+      <div class="modal-box-3d phone-verify-box">
+        <div class="modal-top">
+          <div class="modal-icon-title">
+            <div class="m-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-shield-halved"></i></div>
+            <div>
+              <h2>2FA Phone Number Verification</h2>
+              <p>Verify your phone number with a 6-digit OTP code to enable direct leadership contact.</p>
+            </div>
+          </div>
+          <button id="closePhoneVerifyModalBtn" class="btn-close-modal">&times;</button>
+        </div>
+
+        <div class="modal-form-3d" style="padding-top: 10px;">
+          <div class="otp-instruction-card">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+            <div>
+              <p>Real 6-digit OTP will be sent directly to your physical SIM card via SMS:</p>
+              <h4 id="otpTargetPhoneText">+91 XXXXX XXXXX</h4>
+            </div>
+          </div>
+
+          <!-- Real SMS Dispatch Status Box -->
+          <div id="otpSmsStatusCard" class="otp-sms-status-card hidden">
+            <div class="sms-status-icon"><i class="fa-solid fa-tower-broadcast"></i></div>
+            <div class="sms-status-info">
+              <div class="sms-status-head">
+                <span class="live-dot-pulse"></span>
+                <strong>SMS Dispatched to Mobile SIM</strong>
+              </div>
+              <p id="otpSmsStatusDetail">6-digit code has been delivered via SMS. Check your messages inbox.</p>
+            </div>
+          </div>
+
+          <div id="otpInputSection" class="otp-input-section hidden">
+            <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #cbd5e1;">Enter 6-Digit SMS Code</label>
+            <div class="otp-code-wrap">
+              <input type="text" id="otpCodeInput" maxlength="6" placeholder="• • • • • •" class="otp-digit-field" autocomplete="one-time-code" />
+            </div>
+            <div class="otp-timer-row">
+              <span id="otpTimerText">Resend SMS in <strong>60s</strong></span>
+              <button type="button" id="btnResendOtp" class="btn-resend-otp hidden"><i class="fa-solid fa-rotate-right"></i> Resend SMS</button>
+            </div>
+          </div>
+
+          <!-- Invisible / Embedded Firebase reCAPTCHA Container -->
+          <div id="recaptcha-container" style="margin: 10px 0;"></div>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="button" id="btnSendOtpCode" class="btn btn-submit-3d" style="background: linear-gradient(135deg, #059669, #10b981);">
+              <i class="fa-solid fa-paper-plane"></i> Send SMS OTP
+            </button>
+            <button type="button" id="btnConfirmOtpCode" class="btn btn-submit-3d hidden" style="background: linear-gradient(135deg, #2563eb, #38bdf8);">
+              <i class="fa-solid fa-circle-check"></i> Verify & Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== INTERACTIVE CONTACT ACTION SHEET MODAL ===== -->
+    <div id="contactActionModal" class="modal hidden">
+      <div class="modal-box-3d contact-action-box">
+        <div class="modal-top">
+          <div class="modal-icon-title">
+            <div class="m-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fa-solid fa-address-card"></i></div>
+            <div>
+              <h2 id="contactModalHeading">Connect with Club Leader</h2>
+              <p id="contactModalSub">Choose your preferred channel to reach out directly.</p>
+            </div>
+          </div>
+          <button id="closeContactActionModalBtn" class="btn-close-modal">&times;</button>
+        </div>
+
+        <div class="contact-sheet-body">
+          <div class="contact-leader-card">
+            <div class="contact-leader-avatar" id="contactSheetAvatar"><i class="fa-solid fa-user"></i></div>
+            <div class="contact-leader-info">
+              <h3 id="contactSheetName">Leader Name</h3>
+              <span class="contact-sheet-role" id="contactSheetRole">Club Role</span>
+              <p class="contact-sheet-club" id="contactSheetClub">Club Name</p>
+            </div>
+          </div>
+
+          <div class="contact-actions-list">
+            <a href="#" id="contactActionWa" target="_blank" class="contact-action-btn action-wa">
+              <div class="cab-icon"><i class="fa-brands fa-whatsapp"></i></div>
+              <div class="cab-text">
+                <strong>Chat on WhatsApp</strong>
+                <span>Instant direct messaging</span>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square cab-arrow"></i>
+            </a>
+
+            <a href="#" id="contactActionCall" class="contact-action-btn action-call">
+              <div class="cab-icon"><i class="fa-solid fa-phone"></i></div>
+              <div class="cab-text">
+                <strong>Direct Phone Call</strong>
+                <span id="contactActionCallNum">+91 XXXXX XXXXX</span>
+              </div>
+              <i class="fa-solid fa-phone-volume cab-arrow"></i>
+            </a>
+
+            <a href="#" id="contactActionEmail" class="contact-action-btn action-email">
+              <div class="cab-icon"><i class="fa-solid fa-envelope"></i></div>
+              <div class="cab-text">
+                <strong>Send Official Email</strong>
+                <span id="contactActionEmailAddr">email@mitsgwl.ac.in</span>
+              </div>
+              <i class="fa-solid fa-paper-plane cab-arrow"></i>
+            </a>
+
+            <a href="#" id="contactActionInsta" target="_blank" class="contact-action-btn action-insta hidden">
+              <div class="cab-icon"><i class="fa-brands fa-instagram"></i></div>
+              <div class="cab-text">
+                <strong>Instagram Profile</strong>
+                <span>Connect &amp; Follow</span>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square cab-arrow"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FACULTY MENTOR NOTIFICATION ACTION MODAL ===== -->
+    <div id="mentorNotifyModal" class="modal hidden">
+      <div class="modal-box-3d mentor-notify-box">
+        <div class="modal-top">
+          <div class="modal-icon-title">
+            <div class="m-icon" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div>
+              <h2 id="mentorNotifyHeading">Notify Faculty Coordinator</h2>
+              <p id="mentorNotifySub">Send an official approval request to your faculty mentor.</p>
+            </div>
+          </div>
+          <button id="closeMentorNotifyModalBtn" class="btn-close-modal">&times;</button>
+        </div>
+
+        <div class="mentor-notify-body">
+          <div class="notify-club-card">
+            <div class="notify-club-icon"><i class="fa-solid fa-envelope-circle-check"></i></div>
+            <div class="notify-club-details">
+              <h3 id="notifyClubName">Club Name</h3>
+              <p><i class="fa-solid fa-user-tie"></i> <strong>Assigned Faculty:</strong> <span id="notifyProfessorEmail" class="highlight-mentor-email">professor@mitsgwl.ac.in</span></p>
+              <p><i class="fa-solid fa-shield-halved"></i> <strong>Status:</strong> <span class="tag-3d" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);">Pending Faculty Approval</span></p>
+            </div>
+          </div>
+
+          <div class="notify-instructions">
+            <p><i class="fa-solid fa-circle-info"></i> Your club is securely submitted in Firestore. To notify your professor so they can log in and authorize it on the portal, choose a channel below:</p>
+          </div>
+
+          <div class="contact-actions-list">
+            <a href="#" id="notifyGmailBtn" target="_blank" class="contact-action-btn action-email" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(15, 23, 42, 0.6)); border-color: rgba(239, 68, 68, 0.4);">
+              <div class="cab-icon" style="background: rgba(239, 68, 68, 0.2); color: #f87171;"><i class="fa-solid fa-envelope-open-text"></i></div>
+              <div class="cab-text">
+                <strong style="color: #fca5a5;">Send Official Request via Gmail (1-Click)</strong>
+                <span>Pre-composed formal request letter to Professor</span>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square cab-arrow"></i>
+            </a>
+
+            <a href="#" id="notifyWhatsAppBtn" target="_blank" class="contact-action-btn action-wa">
+              <div class="cab-icon"><i class="fa-brands fa-whatsapp"></i></div>
+              <div class="cab-text">
+                <strong>Forward Request on WhatsApp</strong>
+                <span>Quick message with portal approval link</span>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square cab-arrow"></i>
+            </a>
+
+            <button type="button" id="notifyCopyBtn" class="contact-action-btn action-call" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.6)); border-color: rgba(56, 189, 248, 0.35); text-align: left; width: 100%;">
+              <div class="cab-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;"><i class="fa-regular fa-copy"></i></div>
+              <div class="cab-text">
+                <strong style="color: #7dd3fc;">Copy Formal Request Text</strong>
+                <span>Copy formatted message to clipboard</span>
+              </div>
+              <i class="fa-solid fa-clone cab-arrow"></i>
+            </button>
+          </div>
+
+          <div style="margin-top: 18px; text-align: right;">
+            <button type="button" id="closeMentorNotifyDoneBtn" class="btn btn-submit-3d" style="background: linear-gradient(135deg, #10b981, #059669); padding: 10px 24px; font-size: 13.5px;">
+              <i class="fa-solid fa-check"></i> Done &amp; Return to Directory
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FOOTER (Clean & Minimal Portal Footer) ===== -->
+    <footer class="footer-3d">
+      <div class="footer-container">
+        <div class="footer-grid-layout footer-clean-layout">
+          <div class="footer-brand">
+            <div class="f-logo"><i class="fa-solid fa-shapes"></i> MITS Club Hub</div>
+            <p>The centralized digital ecosystem for students, club leaders & faculty mentors at Madhav Institute of Technology & Science, Gwalior.</p>
+            <span class="f-badge"><i class="fa-solid fa-shield-check"></i> Secured with @mitsgwl.ac.in Domain RBAC</span>
+          </div>
+
+          <div class="footer-links-col">
+            <h4>Quick Links</h4>
+            <div class="footer-nav-links">
+              <a href="#"><i class="fa-solid fa-compass"></i> Explore Clubs Directory</a>
+              <a href="#developer"><i class="fa-solid fa-code"></i> Lead Developer Profile</a>
+              <a href="https://swasthya-setu-akash.netlify.app/" target="_blank"><i class="fa-solid fa-heart-pulse"></i> Swasthya Setu (Live App)</a>
+              <a href="https://github.com/akashcyber02" target="_blank"><i class="fa-brands fa-github"></i> Developer GitHub (@akashcyber02)</a>
+              <a href="https://web.mitsgwalior.in" target="_blank"><i class="fa-solid fa-building-columns"></i> Official MITS Gwalior Portal</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <span>&copy; 2026 MITS Club Hub &bull; Architected by Akash Dhakad & Team of 4 (1st Year AI @ MITS Gwalior).</span>
+          <span>Domain: mitsgwlclubhub.com &bull; Realtime Cloud Firestore</span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ===== Firebase SDKs (v10 compat) ===== -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
