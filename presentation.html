@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MITS Club Hub — Official Project Presentation Deck (20 Slides)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-hover: rgba(30, 41, 59, 0.85);
+      --border-glass: rgba(255, 255, 255, 0.12);
+      --border-accent: rgba(56, 189, 248, 0.4);
+      --primary: #38bdf8;
+      --primary-gradient: linear-gradient(135deg, #38bdf8, #818cf8);
+      --success: #10b981;
+      --success-gradient: linear-gradient(135deg, #10b981, #059669);
+      --amber: #f59e0b;
+      --purple: #a855f7;
+      --rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.04) 0%, transparent 60%);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    /* Top Control Bar */
+    .top-controls {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      padding: 0 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(7, 10, 19, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-glass);
+      z-index: 1000;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .mits-crest-mini {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #1e3a8a, #0284c7);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    .brand-title span {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .deck-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slide-badge-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .btn-ctrl {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-glass);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-ctrl:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    /* Slider Container */
+    .deck-viewport {
+      width: 100vw;
+      height: calc(100vh - 60px);
+      margin-top: 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 36px 56px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.97) translateY(12px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+    }
+
+    /* Header within slide */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+    }
+
+    .slide-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .slide-category-tag {
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--primary);
+    }
+
+    .presenter-chip {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(99, 102, 241, 0.2));
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      color: #c084fc;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .slide-title {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .slide-subtitle {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Slide Content Layouts */
+    .slide-body {
+      flex: 1;
+      display: flex;
+      gap: 28px;
+      align-items: stretch;
+      margin-bottom: 16px;
+    }
+
+    .col-half {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .col-full {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* Cards & Components */
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      transition: all 0.25s ease;
+    }
+
+    .glass-card:hover {
+      border-color: var(--border-accent);
+      box-shadow: 0 12px 40px rgba(56, 189, 248, 0.12);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card-icon-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .c-blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .c-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .c-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .c-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .c-rose { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+
+    .card-head h4 {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bullet-list li {
+      position: relative;
+      padding-left: 22px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: #cbd5e1;
+    }
+
+    .bullet-list li::before {
+      content: "▹";
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: 900;
+      font-size: 16px;
+    }
+
+    .bullet-list li strong {
+      color: #fff;
+    }
+
+    /* Interactive Screenshot Placeholder */
+    .screenshot-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1.5px dashed rgba(56, 189, 248, 0.4);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-align: center;
+      flex: 1;
+      min-height: 220px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s ease;
+    }
+
+    .screenshot-box:hover {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.05);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.15);
+    }
+
+    .screenshot-box i {
+      font-size: 38px;
+      color: var(--primary);
+    }
+
+    .screenshot-box span {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #cbd5e1;
+    }
+
+    .screenshot-box p {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    /* Workflow Diagram Engine */
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-glass);
+      border-radius: 12px;
+    }
+
+    .flow-node {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .flow-node h5 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .flow-node p {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .flow-arrow {
+      color: var(--primary);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Footer in Slide */
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Speaker Notes Drawer */
+    .speaker-notes-drawer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #0b1120;
+      border-top: 2px solid var(--primary);
+      padding: 18px 32px;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 9999;
+      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .speaker-notes-drawer.open {
+      transform: translateY(0);
+    }
+
+    .notes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .notes-header h5 {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--primary);
+    }
+
+    .notes-content {
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #e2e8f0;
+      font-family: var(--font-body);
+    }
+
+    /* Progress Bar */
+    .deck-progress-bar {
+      position: fixed;
+      top: 58px;
+      left: 0;
+      height: 3px;
+      background: var(--primary-gradient);
+      width: 5%;
+      transition: width 0.3s ease;
+      z-index: 1001;
+    }
+
+    /* Grid layout shortcuts */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    /* Title Slide Specifics */
+    .title-crest-large {
+      width: 100px;
+      height: 100px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #1e3a8a, #0284c7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 48px;
+      box-shadow: 0 0 35px rgba(56, 189, 248, 0.4);
+      margin-bottom: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 52px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .hero-subtitle {
+      font-size: 20px;
+      color: #94a3b8;
+      max-width: 820px;
+      line-height: 1.45;
+      margin-bottom: 24px;
+    }
+
+    .team-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .team-member-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      padding: 10px 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tmp-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .tmp-info strong {
+      display: block;
+      font-size: 13.5px;
+      color: #fff;
+    }
+
+    .tmp-info span {
+      font-size: 11px;
+      color: var(--primary);
+    }
+
+    /* Print styling for direct PDF Export */
+    @media print {
+      body {
+        overflow: visible;
+        height: auto;
+      }
+      .top-controls, .speaker-notes-drawer, .deck-progress-bar {
+        display: none !important;
+      }
+      .deck-viewport {
+        height: auto;
+        margin-top: 0;
+        overflow: visible;
+      }
+      .slide {
+        position: relative;
+        display: flex !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        page-break-after: always;
+        height: 100vh;
+        padding: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Fixed Control Bar -->
+  <header class="top-controls">
+    <div class="brand-group">
+      <div class="mits-crest-mini">M</div>
+      <div class="brand-title">MITS <span>Club Hub</span> &bull; Final Project Defense Deck</div>
+    </div>
+
+    <div class="deck-nav-actions">
+      <button class="btn-ctrl" id="btnNotesToggle" title="Toggle Speaker Notes (Key: N)"><i class="fa-solid fa-microphone-lines"></i> Notes (N)</button>
+      <button class="btn-ctrl" id="btnPrevSlide" title="Previous Slide (Left Arrow)"><i class="fa-solid fa-arrow-left"></i></button>
+      <div class="slide-badge-pill" id="slideIndicator">Slide 01 / 20</div>
+      <button class="btn-ctrl" id="btnNextSlide" title="Next Slide (Right Arrow)"><i class="fa-solid fa-arrow-right"></i></button>
+      <button class="btn-ctrl" id="btnFullscreen" title="Fullscreen (Key: F)"><i class="fa-solid fa-expand"></i> Fullscreen (F)</button>
+      <button class="btn-ctrl" onclick="window.print()" title="Print / Export to PDF"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="deck-progress-bar" id="deckProgressBar"></div>
+
+  <!-- Viewport for 20 Slides -->
+  <main class="deck-viewport" id="deckViewport">
+
+    <!-- ========================================================
+         SLIDE 01: TITLE SLIDE
+         ======================================================== -->
+    <section class="slide active" data-slide="1" data-presenter="Akash Dhakad (Team Lead) & Full Team" data-notes="Opening remarks: Introduce MITS Club Hub as the centralized digital ecosystem for 5,000+ MITS Gwalior students, club leaders, and faculty mentors. Mention that this solves years of unorganized WhatsApp group notifications and scattered registration forms.">
+      <div class="slide-header">
+        <div class="slide-meta-row">
+          <span class="slide-category-tag">Project Defense Presentation</span>
+          <span class="presenter-chip"><i class="fa-solid fa-users"></i> Team Presentation (4 Members)</span>
+        </div>
+        <div style="text-align: right; font-size: 13px; color: var(--primary); font-weight: 700;">Madhav Institute of Technology & Science, Gwalior</div>
+      </div>
+
+      <div class="slide-body" style="flex-direction: column; justify-content: center; align-items: flex-start;">
+        <div class="title-crest-large">
+          <i class="fa-solid fa-shapes"></i>
+        </div>
+        <h1 class="hero-title">MITS CLUB HUB</h1>
+        <p class="hero-subtitle">The Centralized Digital Ecosystem for Student Clubs, Recruitment Pipelines, 2FA Phone Security & Faculty Approvals.</p>
+
+        <div style="display: flex; gap: 30px; width: 100%; margin-top: 10px;">
+          <!-- Team Details -->
+          <div class="glass-card" style="flex: 2;">
+            <h4 style="font-size: 15px; color: var(--primary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <i class="fa-solid fa-laptop-code"></i> Engineering Team (1st Year Artificial Intelligence)
+            </h4>
+            <div class="team-badge-row">
+              <div class="team-member-pill">
+                <div class="tmp-avatar">AD</div>
+                <div class="tmp-info">
+                  <strong>Akash Dhakad</strong>
+                  <span>Lead Architect & Security Engineer</span>
+                </div>
+              </div>
+
+              <div class="team-member-pill">
+                <div class="tmp-avatar" style="background: linear-gradient(135deg, #10b981, #059669);">AM</div>
+                <div class="tmp-info">
+                  <strong>Alok Mahor</strong>
+                  <span>Club Research & Directory Lead</span>
+                </div>
+              </div>
+
+              <div class="team-member-pill">
+                <div class="tmp-avatar" style="background: linear-gradient(135deg, #f59e0b, #d97706);">AS</div>
+                <div class="tmp-info">
+                  <strong>Aman Singh</strong>
+                  <span>Recruitment & Application Lead</span>
+                </div>
+              </div>
+
+              <div class="team-member-pill">
+                <div class="tmp-avatar" style="background: linear-gradient(135deg, #ec4899, #be185d);">AG</div>
+                <div class="tmp-info">
+                  <strong>Akash Gupta</strong>
+                  <span>Faculty Workflow & Approval Lead</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic & Mentorship Details Placeholder -->
+          <div class="glass-card" style="flex: 1.2;">
+            <h4 style="font-size: 15px; color: var(--amber); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <i class="fa-solid fa-graduation-cap"></i> Academic Supervision
+            </h4>
+            <div style="font-size: 13.5px; line-height: 1.8; color: #cbd5e1;">
+              <div><strong>Institution:</strong> MITS Gwalior (Deemed University)</div>
+              <div><strong>Department:</strong> Department of Artificial Intelligence</div>
+              <div><strong>Faculty Mentor:</strong> Prof. [_______________________]</div>
+              <div><strong>Head of Dept (HOD):</strong> Dr. [_______________________]</div>
+              <div><strong>Academic Session:</strong> 2026 – 2027</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>MITS Club Hub &bull; Final Semester Major Project</span>
+        <span>Domain: mitsgwlclubhub.com &bull; Netlify &amp; GitHub Pages</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 02: VISION & PROBLEM STATEMENT
+         ======================================================== -->
+    <section class="slide" data-slide="2" data-presenter="Joint Introduction" data-notes="Highlight the contrast: Earlier, students had to rely on random WhatsApp forwards, dead Google Forms, unverified leaders, and no official approval tracking. MITS Club Hub provides verified domain authentication, structured recruitment, and transparent faculty authorization.">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Problem &amp; Motivation</span>
+          </div>
+          <h2 class="slide-title">Campus Life Fragmentation vs Centralized Hub</h2>
+          <p class="slide-subtitle">Why 5,000+ MITSians needed a single authoritative digital home for student activities.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card" style="border-left: 4px solid var(--rose);">
+            <div class="card-head">
+              <div class="card-icon-badge c-rose"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <h4>The Traditional Campus Chaos</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Scattered WhatsApp Groups:</strong> Vital recruitment deadlines & announcements get buried under thousands of chat messages.</li>
+              <li><strong>Unverified Registrations:</strong> Anyone could create fake posters or solicit registration fees without college authorization.</li>
+              <li><strong>Zero Faculty Oversight:</strong> Coordinators had no dashboard to monitor active members, fees, or event schedules.</li>
+              <li><strong>Lost Club Knowledge:</strong> When seniors graduate, club social handles, assets, and records disappear into thin air.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="glass-card" style="border-left: 4px solid var(--success);">
+            <div class="card-head">
+              <div class="card-icon-badge c-green"><i class="fa-solid fa-circle-check"></i></div>
+              <h4>The MITS Club Hub Solution</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Strict College Authentication:</strong> Only verified <code>@mitsgwl.ac.in</code> Google emails can access the portal.</li>
+              <li><strong>Two-Factor Phone SMS Security:</strong> Presidents and core members must verify physical mobile numbers with real OTP.</li>
+              <li><strong>Official Professor Approvals Queue:</strong> Every club is audited by a designated faculty mentor before going public.</li>
+              <li><strong>Permanent Digital Legacy:</strong> Complete historical archive of leaders, past galleries, and active rosters.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 02 / 20</span>
+        <span>MITS Club Hub &bull; System Motivation</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 03: SYSTEM ARCHITECTURE & TECH STACK
+         ======================================================== -->
+    <section class="slide" data-slide="3" data-presenter="Akash Dhakad (Lead Architect)" data-notes="Explain the serverless architecture. Emphasize why Firebase v10 compat SDK was chosen with Firestore real-time onSnapshot listeners, giving zero-latency updates to thousands of users simultaneously.">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Architecture &amp; Stack</span>
+            <span class="presenter-chip"><i class="fa-solid fa-user-shield"></i> Akash Dhakad (Lead Architect)</span>
+          </div>
+          <h2 class="slide-title">Modern Serverless Cloud Architecture</h2>
+          <p class="slide-subtitle">High performance, zero maintenance, real-time reactive infrastructure.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-blue"><i class="fa-solid fa-layer-group"></i></div>
+              <h4>Full-Stack Technical Foundation</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Frontend Engine:</strong> HTML5 Semantic SPA, CSS3 Glassmorphism variables, Vanilla ES2022 JavaScript (zero bulky build bloat).</li>
+              <li><strong>Authentication Layer:</strong> Firebase v10 Google OAuth domain-locked to <code>@mitsgwl.ac.in</code>.</li>
+              <li><strong>Real-Time Database:</strong> Google Cloud Firestore with real-time WebSocket <code>onSnapshot</code> synchronizers.</li>
+              <li><strong>SMS Telecom Gateway:</strong> Firebase Phone Authentication with Invisible Google reCAPTCHA.</li>
+              <li><strong>Hosting &amp; Edge CDN:</strong> Netlify Global Edge + GitHub Pages automated CI/CD pipeline.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-purple"><i class="fa-solid fa-diagram-project"></i></div>
+              <h4>Visual Architecture Pipeline</h4>
+            </div>
+            <div class="flow-diagram" style="flex-direction: column; gap: 14px;">
+              <div class="flow-node" style="width: 100%;">
+                <h5>1. Client Browser (PWA / Responsive)</h5>
+                <p>MITSian Login &bull; 3D Glassmorphism UI &bull; SPA Router</p>
+              </div>
+              <div class="flow-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+              <div class="flow-node" style="width: 100%; border-color: rgba(56, 189, 248, 0.4);">
+                <h5>2. Security Gate &amp; RBAC Validation</h5>
+                <p>@mitsgwl.ac.in Domain Filter &bull; Firestore Security Rules &bull; 2FA SMS</p>
+              </div>
+              <div class="flow-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+              <div class="flow-node" style="width: 100%; border-color: rgba(16, 185, 129, 0.4);">
+                <h5>3. Cloud Firestore &amp; Edge Network</h5>
+                <p>Real-time Listeners &bull; Instant Multi-Device Sync &bull; Netlify CDN</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 03 / 20</span>
+        <span>Architecture &amp; Cloud Infrastructure</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 04: SPEAKER 1 (AKASH DHAKAD) - DOMAIN RBAC
+         ======================================================== -->
+    <section class="slide" data-slide="4" data-presenter="Akash Dhakad (Slide 1 of 3)" data-notes="Akash Dhakad speaks: 'I designed the Role-Based Access Control and privacy gatekeeper. Anyone trying to log in with a regular @gmail.com is immediately bounced out with a security alert. Only @mitsgwl.ac.in addresses are accepted, safeguarding campus safety.'">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Security &amp; Auth</span>
+            <span class="presenter-chip"><i class="fa-solid fa-microphone"></i> Speaker 1: Akash Dhakad</span>
+          </div>
+          <h2 class="slide-title">Domain-Restricted Privacy Gatekeeper Screen</h2>
+          <p class="slide-subtitle">Mandatory authentication restricting portal access strictly to verified MITSians.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-blue"><i class="fa-solid fa-shield-halved"></i></div>
+              <h4>Enterprise Security Principles</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Zero External Intrusion:</strong> Non-college Google accounts (e.g. <code>@gmail.com</code>, <code>@yahoo.com</code>) are automatically disconnected with an audit alert.</li>
+              <li><strong>Institutional Roll &amp; Branch Extraction:</strong> Enrollment numbers (e.g. <code>26ai1al11</code>) and branch codes are parsed automatically to establish student context.</li>
+              <li><strong>Role Auto-Detection:</strong> System dynamically classifies the logged-in user into:
+                <div style="margin-top: 6px; display: flex; gap: 8px;">
+                  <span class="slide-category-tag">Student</span>
+                  <span class="slide-category-tag" style="color: #fbbf24; border-color: #f59e0b;">Club President</span>
+                  <span class="slide-category-tag" style="color: #c084fc; border-color: #a855f7;">Faculty Coordinator</span>
+                </div>
+              </li>
+              <li><strong>Firestore Security Rules:</strong> Backend validation rejects any write attempt not bearing an authorized college email claim.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="screenshot-box">
+            <i class="fa-solid fa-id-badge"></i>
+            <span>[ 📸 Insert Screenshot: Privacy Login Gatekeeper Screen ]</span>
+            <p>Show the Google Login Gatekeeper with @mitsgwl.ac.in restriction banner</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 04 / 20</span>
+        <span>Presenter 1: Akash Dhakad &bull; RBAC Architecture</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 05: SPEAKER 1 (AKASH DHAKAD) - 2FA PHONE SMS
+         ======================================================== -->
+    <section class="slide" data-slide="5" data-presenter="Akash Dhakad (Slide 2 of 3)" data-notes="Akash Dhakad speaks: 'I engineered the real telecom SMS OTP verification. By integrating Firebase Invisible reCAPTCHA with standard E.164 phone formatting (+91), real SMS codes are dispatched to physical SIM cards, preventing spam and verifying real phone contact for club presidents.'">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Two-Factor Authentication</span>
+            <span class="presenter-chip"><i class="fa-solid fa-microphone"></i> Speaker 1: Akash Dhakad</span>
+          </div>
+          <h2 class="slide-title">Real Telecom SMS 2FA Phone Verification</h2>
+          <p class="slide-subtitle">Physical SIM authentication protecting student leadership and direct contact channels.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-green"><i class="fa-solid fa-mobile-screen-button"></i></div>
+              <h4>Engineering Real SMS Delivery</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>E.164 Automated Formatter:</strong> Converts raw 10-digit Indian mobile inputs into international standard (<code>+91XXXXXXXXXX</code>).</li>
+              <li><strong>Invisible Google reCAPTCHA:</strong> Background verification algorithm blocks bots without annoying image puzzles.</li>
+              <li><strong>Dynamic Carrier Dispatch:</strong> Leverages Google Cloud telecom routing to deliver real 6-digit SMS OTPs directly to Airtel, Jio, Vi, and BSNL numbers.</li>
+              <li><strong>Auto-Recovery Mechanism:</strong> Handles reCAPTCHA DOM reuse gracefully, ensuring zero runtime exceptions for the user.</li>
+              <li><strong>Firestore Verified Badge:</strong> Successful confirmations permanently unlock the verified <code>2FA Verified</code> leadership badge.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="screenshot-box">
+            <i class="fa-solid fa-shield-check"></i>
+            <span>[ 📸 Insert Screenshot: 2FA Phone Verification Modal ]</span>
+            <p>Show the 6-Digit OTP SMS Input, Timer, and Verified Status</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 05 / 20</span>
+        <span>Presenter 1: Akash Dhakad &bull; 2FA Phone Engineering</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 06: SPEAKER 1 (AKASH DHAKAD) - FIRESTORE SYNC & SPA
+         ======================================================== -->
+    <section class="slide" data-slide="6" data-presenter="Akash Dhakad (Slide 3 of 3)" data-notes="Akash Dhakad speaks: 'I implemented the SPA hash routing and real-time state listeners. When a professor authorizes a club or a student submits an application, the UI updates instantly across all connected screens via onSnapshot without needing a page refresh.'">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Realtime Engine</span>
+            <span class="presenter-chip"><i class="fa-solid fa-microphone"></i> Speaker 1: Akash Dhakad</span>
+          </div>
+          <h2 class="slide-title">Cloud Firestore Realtime Sync &amp; SPA Routing</h2>
+          <p class="slide-subtitle">Instant multi-device broadcast with zero-reload single-page navigation.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-purple"><i class="fa-solid fa-bolt"></i></div>
+              <h4>Reactive State Architecture</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>WebSocket onSnapshot Listeners:</strong> Live subscriptions automatically push database changes to the client in &lt;100ms.</li>
+              <li><strong>Hash-Based SPA Routing:</strong> Deep linking support for individual clubs (<code>#club/{id}</code>) and profiles (<code>#developer</code>) with browser history support.</li>
+              <li><strong>Multi-Client Live Reflection:</strong> When a club announcement is updated by a President, all students currently browsing see the new banner immediately.</li>
+              <li><strong>Offline Cache Resilience:</strong> Local state persistence ensures lightning-fast initial load times even on slow campus Wi-Fi.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="screenshot-box">
+            <i class="fa-solid fa-network-wired"></i>
+            <span>[ 📸 Insert Screenshot: Real-time Live Toast &amp; Dynamic UI Sync ]</span>
+            <p>Show real-time updates and seamless SPA transitions</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 06 / 20</span>
+        <span>Presenter 1: Akash Dhakad &bull; Realtime Cloud Sync</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 07: SPEAKER 2 (ALOK MAHOR) - CLUB RESEARCH & DATA
+         ======================================================== -->
+    <section class="slide" data-slide="7" data-presenter="Alok Mahor (Slide 1 of 3)" data-notes="Alok Mahor speaks: 'I spearheaded the official club research and taxonomy. I gathered data on 10+ core clubs including Aerospace MITS, Team Scavengers, Querecia, and ISTE, categorizing them into Technical, Cultural, Sports, Social, Literary, and Innovation domains.'">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Data Taxonomy</span>
+            <span class="presenter-chip"><i class="fa-solid fa-microphone"></i> Speaker 2: Alok Mahor</span>
+          </div>
+          <h2 class="slide-title">Campus Clubs Research &amp; Categorization Matrix</h2>
+          <p class="slide-subtitle">Structuring the official student society database into a standardized college ontology.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-blue"><i class="fa-solid fa-sitemap"></i></div>
+              <h4>Researched Society Ontology</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Technical &amp; Robotics:</strong> Aerospace MITS, Team Scavengers (Motorsports), AI Club, ISTE MITS Chapter.</li>
+              <li><strong>Literary &amp; Debate:</strong> mits.querecia (Literary Society), Hindi Samiti MITS.</li>
+              <li><strong>Cultural &amp; Music:</strong> Bandish MITS (Music Society), Dance &amp; Dramatics Club.</li>
+              <li><strong>Sports &amp; Athletics:</strong> MITS.FC (Football Club), Cricket &amp; Badminton Societies.</li>
+              <li><strong>Health &amp; Wellness:</strong> Holistic Health Club MITS.</li>
+              <li><strong>Institutional Cells:</strong> alumnicell.mech_mits (Departmental Alumni Relations).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="screenshot-box">
+            <i class="fa-solid fa-table-cells"></i>
+            <span>[ 📸 Insert Screenshot: Category Pills &amp; Directory Overview ]</span>
+            <p>Show the 6 category badges and active club cards count</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 07 / 20</span>
+        <span>Presenter 2: Alok Mahor &bull; Data Research &amp; Taxonomy</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 08: SPEAKER 2 (ALOK MAHOR) - 3D FILTER CONSOLE
+         ======================================================== -->
+    <section class="slide" data-slide="8" data-presenter="Alok Mahor (Slide 2 of 3)" data-notes="Alok Mahor speaks: 'I worked on the 3D Filter Console and smart search experience. Students can instantly filter clubs by category, fee type—such as Free versus Paid—and recruitment status, finding their ideal club in under two seconds.'">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Search &amp; Discovery</span>
+            <span class="presenter-chip"><i class="fa-solid fa-microphone"></i> Speaker 2: Alok Mahor</span>
+          </div>
+          <h2 class="slide-title">Interactive 3D Multi-Filter Discovery Console</h2>
+          <p class="slide-subtitle">Multi-dimensional search algorithms enabling instant club discovery.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-green"><i class="fa-solid fa-sliders"></i></div>
+              <h4>Search &amp; Filtering Capabilities</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Real-time Keyword Search:</strong> Filters across club titles, taglines, keywords, and president names simultaneously as you type.</li>
+              <li><strong>Category Pills:</strong> 1-click toggling between All, Technical, Cultural, Sports, Social, Literary, and Innovation.</li>
+              <li><strong>Recruitment Status Filter:</strong> View currently open recruitment drives (<code>Recruitment Open</code> vs <code>Closed</code>).</li>
+              <li><strong>Financial Transparency Filter:</strong> Instant sorting between <code>100% Free Clubs</code> and <code>Paid Membership</code> clubs.</li>
+              <li><strong>One-Click Reset:</strong> Dedicated reset button restores default view instantly.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="screenshot-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>[ 📸 Insert Screenshot: 3D Filter Console &amp; Search Bar ]</span>
+            <p>Show the search input, category chips, and dropdown filters</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 08 / 20</span>
+        <span>Presenter 2: Alok Mahor &bull; Filter Console Engineering</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 09: SPEAKER 2 (ALOK MAHOR) - CLUB SHOWCASE
+         ======================================================== -->
+    <section class="slide" data-slide="9" data-presenter="Alok Mahor (Slide 3 of 3)" data-notes="Alok Mahor speaks: 'I designed the comprehensive club breakdown pages. Every club features the three golden questions: Kya Hai, Kyu Hai, and Kaise Join Karein, along with past photo galleries and verified leadership contact cards.'">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">User Experience</span>
+            <span class="presenter-chip"><i class="fa-solid fa-microphone"></i> Speaker 2: Alok Mahor</span>
+          </div>
+          <h2 class="slide-title">Dedicated Single Page Club Breakdown Showcase</h2>
+          <p class="slide-subtitle">"Kya Hai, Kyu Hai, Kaise Join Karein" structured narrative for every society.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-purple"><i class="fa-solid fa-newspaper"></i></div>
+              <h4>Deep Club Content Architecture</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>"Kya Hai" (About the Club):</strong> Clear mission statement, founding vision, and weekly activities.</li>
+              <li><strong>"Kyu Hai" (Why Join):</strong> Value proposition, skill growth, workshops, certificates, and networking perks.</li>
+              <li><strong>"Kaise Join Karein" (How to Join):</strong> Clear recruitment timeline, fee details, and 1-click application trigger.</li>
+              <li><strong>Interactive 3D Lightbox Gallery:</strong> High-resolution photos of past orientation events, hackathons, and sports tournaments.</li>
+              <li><strong>Leadership Grid:</strong> Direct avatars and roles for President, Vice President, Tech Lead, Media Lead, and PR.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="screenshot-box">
+            <i class="fa-solid fa-images"></i>
+            <span>[ 📸 Insert Screenshot: Dedicated Club Detail View ]</span>
+            <p>Show the cover hero banner, gallery grid, and leadership roster</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 09 / 20</span>
+        <span>Presenter 2: Alok Mahor &bull; Club Showcase Architecture</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 10: SPEAKER 3 (AMAN SINGH) - RECRUITMENT PIPELINE
+         ======================================================== -->
+    <section class="slide" data-slide="10" data-presenter="Aman Singh (Slide 1 of 3)" data-notes="Aman Singh speaks: 'I implemented the student membership and recruitment pipeline. Students can apply to open clubs with their statement of purpose, portfolio links, and preferred roles, while countdown badges remind them of approaching deadlines.'">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Recruitment Engine</span>
+            <span class="presenter-chip"><i class="fa-solid fa-microphone"></i> Speaker 3: Aman Singh</span>
+          </div>
+          <h2 class="slide-title">Student Membership &amp; Application Engine</h2>
+          <p class="slide-subtitle">Structured recruitment pipelines replacing unorganized Google Forms.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-blue"><i class="fa-solid fa-file-signature"></i></div>
+              <h4>Application Processing Pipeline</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Structured Application Modal:</strong> Collects student roll number, year, branch, primary role preference, and statement of interest.</li>
+              <li><strong>Portfolio &amp; GitHub Integration:</strong> Fields for GitHub profiles, LinkedIn handles, and design portfolios.</li>
+              <li><strong>Deadline Countdown Timers:</strong> Dynamic badges highlight <code>3 Days Left</code> or <code>Deadline Today</code> to drive urgency.</li>
+              <li><strong>Duplicate Prevention:</strong> Prevents multiple concurrent submissions to the same club from one student.</li>
+              <li><strong>"My Applications" Student Hub:</strong> Students can track their application state (Pending, Shortlisted, Approved) in real-time.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="screenshot-box">
+            <i class="fa-solid fa-clipboard-question"></i>
+            <span>[ 📸 Insert Screenshot: Club Application Form &amp; Deadline Badges ]</span>
+            <p>Show the membership form modal and dynamic countdown pill</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 10 / 20</span>
+        <span>Presenter 3: Aman Singh &bull; Recruitment Architecture</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 11: SPEAKER 3 (AMAN SINGH) - PRESIDENT OPERATIONS
+         ======================================================== -->
+    <section class="slide" data-slide="11" data-presenter="Aman Singh (Slide 2 of 3)" data-notes="Aman Singh speaks: 'I built the President Operations Command Center. Verified Presidents can review student applications, shortlist or accept members with custom remarks, and broadcast emergency notices to all campus members.'">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Leadership Portal</span>
+            <span class="presenter-chip"><i class="fa-solid fa-microphone"></i> Speaker 3: Aman Singh</span>
+          </div>
+          <h2 class="slide-title">President Operations &amp; Review Command Center</h2>
+          <p class="slide-subtitle">A comprehensive administrative workstation for club presidents and core teams.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-amber"><i class="fa-solid fa-user-gear"></i></div>
+              <h4>Presidential Powers &amp; Controls</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Live Applicant Roster:</strong> Real-time table displaying all submitted candidate applications with contact info.</li>
+              <li><strong>One-Click State Transitions:</strong> Presidents can mark candidates as <code>Shortlist</code>, <code>Approve</code>, or <code>Reject</code> with feedback notes.</li>
+              <li><strong>Live Campus Announcement Broadcast:</strong> Post instant alerts (e.g. <em>"Orientation this Thursday at 4 PM in Audi-1"</em>) that appear on the main directory card.</li>
+              <li><strong>Recruitment Status Toggle:</strong> Switch recruitment drives from Open to Closed in one tap once capacity is reached.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="screenshot-box">
+            <i class="fa-solid fa-users-gear"></i>
+            <span>[ 📸 Insert Screenshot: Applicants Management Modal ]</span>
+            <p>Show candidate review cards with Shortlist, Approve, and Reject buttons</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 11 / 20</span>
+        <span>Presenter 3: Aman Singh &bull; President Operations</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 12: SPEAKER 3 (AMAN SINGH) - LEADERSHIP TRANSFER
+         ======================================================== -->
+    <section class="slide" data-slide="12" data-presenter="Aman Singh (Slide 3 of 3)" data-notes="Aman Singh speaks: 'I designed the safe leadership handover and delegation system. Graduating seniors can securely nominate the next president. The transfer only completes when the successor accepts, preventing unauthorized club takeovers.'">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Governance</span>
+            <span class="presenter-chip"><i class="fa-solid fa-microphone"></i> Speaker 3: Aman Singh</span>
+          </div>
+          <h2 class="slide-title">Safe Leadership Handover &amp; Delegation Engine</h2>
+          <p class="slide-subtitle">Solving the annual senior graduation succession problem with verified handovers.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-purple"><i class="fa-solid fa-handshake"></i></div>
+              <h4>Secure Handover Workflow</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Nomination Protocol:</strong> The current president enters the successor's official college email, phone, and name.</li>
+              <li><strong>Pending Handover State:</strong> The club enters a protected pending handover state; existing leadership retains control until acceptance.</li>
+              <li><strong>Successor Acceptance Banner:</strong> When the junior logs in, an interactive handover modal lets them <code>Accept Leadership</code> or <code>Decline</code>.</li>
+              <li><strong>Cryptographic Ownership Transfer:</strong> Once accepted, Firestore updates the ownership pointer and clears pending tokens.</li>
+              <li><strong>Co-Lead Delegation:</strong> Add trusted team members as collaborators with editing permissions.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="screenshot-box">
+            <i class="fa-solid fa-people-arrows"></i>
+            <span>[ 📸 Insert Screenshot: Leadership Handover Modal ]</span>
+            <p>Show the President Transfer Nomination card and Accept/Decline action</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 12 / 20</span>
+        <span>Presenter 3: Aman Singh &bull; Governance &amp; Handover</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 13: SPEAKER 4 (AKASH GUPTA) - FACULTY APPROVALS
+         ======================================================== -->
+    <section class="slide" data-slide="13" data-presenter="Akash Gupta (Slide 1 of 3)" data-notes="Akash Gupta speaks: 'I developed the Faculty Coordinator Authorization workflow. No club can go live without official approval. When a coordinator professor logs in with their college email, their pending approvals queue appears with one-click authorization.'">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Faculty Governance</span>
+            <span class="presenter-chip"><i class="fa-solid fa-microphone"></i> Speaker 4: Akash Gupta</span>
+          </div>
+          <h2 class="slide-title">Faculty Coordinator Authorization Queue</h2>
+          <p class="slide-subtitle">Mandatory professor approval workflow upholding institutional academic standards.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-blue"><i class="fa-solid fa-building-columns"></i></div>
+              <h4>Faculty Approval Security Model</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Mandatory Pre-Live State:</strong> Newly created clubs are saved with <code>status: "pending"</code>, completely hidden from the public directory.</li>
+              <li><strong>Automated Coordinator Routing:</strong> Filtered dynamically by <code>coordinatorEmail == currentUser.email</code>.</li>
+              <li><strong>Faculty Dashboard:</strong> When the designated professor logs in, the <em>Official Professor Approvals Queue</em> appears prominently at the top.</li>
+              <li><strong>Remarks &amp; Feedback:</strong> Professors can add official remarks (e.g. <em>"Authorized for 2026 academic calendar"</em>).</li>
+              <li><strong>Instant Directory Publishing:</strong> Clicking <code>Authorize &amp; Publish</code> broadcasts the club live to all campus students immediately.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="screenshot-box">
+            <i class="fa-solid fa-stamp"></i>
+            <span>[ 📸 Insert Screenshot: Official Professor Approvals Queue ]</span>
+            <p>Show the Professor Approval Card with Authorize and Reject buttons</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 13 / 20</span>
+        <span>Presenter 4: Akash Gupta &bull; Faculty Approvals</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 14: SPEAKER 4 (AKASH GUPTA) - MENTOR NOTIFICATIONS
+         ======================================================== -->
+    <section class="slide" data-slide="14" data-presenter="Akash Gupta (Slide 2 of 3)" data-notes="Akash Gupta speaks: 'I created the multi-channel Faculty Mentor Notification Dispatcher. As soon as a student registers a club, an action sheet opens offering a 1-click pre-filled formal letter via Gmail, WhatsApp, or formatted clipboard copy.'">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Notification Systems</span>
+            <span class="presenter-chip"><i class="fa-solid fa-microphone"></i> Speaker 4: Akash Gupta</span>
+          </div>
+          <h2 class="slide-title">Multi-Channel Mentor Notification Dispatcher</h2>
+          <p class="slide-subtitle">Bridging students and professors through instantaneous notification protocols.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-green"><i class="fa-solid fa-paper-plane"></i></div>
+              <h4>Notification Dispatcher Channels</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>1-Click Gmail Pre-Composed Letter:</strong> Generates a formal request email addressed to the professor with club title, category, description, and portal URL.</li>
+              <li><strong>WhatsApp Direct Forwarding:</strong> Formats clean WhatsApp markdown messages with portal deep links for quick faculty review.</li>
+              <li><strong>Instant Clipboard Exporter:</strong> Copies standard formal letter text to paste into official college mail threads.</li>
+              <li><strong>Status Indicator Card:</strong> Clear visual feedback informing students that their submission is safely queued in Firestore awaiting approval.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="screenshot-box">
+            <i class="fa-solid fa-envelope-open-text"></i>
+            <span>[ 📸 Insert Screenshot: Faculty Mentor Notification Action Modal ]</span>
+            <p>Show the 1-Click Gmail, WhatsApp, and Copy Request buttons</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 14 / 20</span>
+        <span>Presenter 4: Akash Gupta &bull; Mentor Dispatcher</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 15: SPEAKER 4 (AKASH GUPTA) - CONTACT ACTION SHEET
+         ======================================================== -->
+    <section class="slide" data-slide="15" data-presenter="Akash Gupta (Slide 3 of 3)" data-notes="Akash Gupta speaks: 'I engineered the interactive Leader Contact Action Sheet. Students can connect with any verified club leader with a single tap—opening WhatsApp, initiating a direct phone call, drafting an email, or browsing Instagram.'">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Direct Communication</span>
+            <span class="presenter-chip"><i class="fa-solid fa-microphone"></i> Speaker 4: Akash Gupta</span>
+          </div>
+          <h2 class="slide-title">Interactive Leader Contact Action Sheet</h2>
+          <p class="slide-subtitle">Frictionless peer-to-leader connectivity across all preferred communication channels.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-purple"><i class="fa-solid fa-address-book"></i></div>
+              <h4>Direct Connectivity Channels</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>WhatsApp API Integration:</strong> Auto-populates pre-filled greeting: <em>"Namaste Leader, connecting via MITS Club Hub regarding the club."</em></li>
+              <li><strong>Direct Cellular Phone Call:</strong> Triggers device dialer directly with the 2FA-verified contact number.</li>
+              <li><strong>College Webmail Dispatcher:</strong> Generates formatted email draft in college webmail.</li>
+              <li><strong>Social Media Bridge:</strong> Direct external links to verified club Instagram handles and showcase reels.</li>
+              <li><strong>Leader Identity Card:</strong> Shows leader avatar, official society designation, and verified 2FA badge.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="screenshot-box">
+            <i class="fa-solid fa-comments"></i>
+            <span>[ 📸 Insert Screenshot: Interactive Contact Action Sheet ]</span>
+            <p>Show WhatsApp, Phone, Email, and Instagram direct trigger buttons</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 15 / 20</span>
+        <span>Presenter 4: Akash Gupta &bull; Contact Sheet Architecture</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 16: END-TO-END WORKFLOW DIAGRAM
+         ======================================================== -->
+    <section class="slide" data-slide="16" data-presenter="Joint Technical Walkthrough" data-notes="Review the complete lifecycle: 1. Student registers club -> 2. Enters coordinator email -> 3. Mentor notified via Gmail -> 4. Professor authorizes in portal -> 5. Club published to directory -> 6. Students apply -> 7. President reviews and shortlists candidates.">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">System Data Flow</span>
+          </div>
+          <h2 class="slide-title">Complete End-to-End Club Lifecycle Workflow</h2>
+          <p class="slide-subtitle">From initial student registration through faculty authorization and member enrollment.</p>
+        </div>
+      </div>
+
+      <div class="slide-body" style="flex-direction: column; justify-content: center;">
+        <div class="grid-4" style="margin-bottom: 12px;">
+          <div class="glass-card" style="text-align: center; border-color: rgba(56, 189, 248, 0.4);">
+            <div style="font-size: 24px; color: var(--primary); margin-bottom: 6px;"><i class="fa-solid fa-pen-to-square"></i></div>
+            <h4 style="font-size: 15px; color: #fff; margin-bottom: 4px;">Phase 1: Club Creation</h4>
+            <p style="font-size: 12px; color: var(--text-muted);">Student President fills form with details, photos, &amp; designated Coordinator Professor email.</p>
+          </div>
+
+          <div class="glass-card" style="text-align: center; border-color: rgba(245, 158, 11, 0.4);">
+            <div style="font-size: 24px; color: var(--amber); margin-bottom: 6px;"><i class="fa-solid fa-envelope-circle-check"></i></div>
+            <h4 style="font-size: 15px; color: #fff; margin-bottom: 4px;">Phase 2: Mentor Alert</h4>
+            <p style="font-size: 12px; color: var(--text-muted);">Saved as <code>pending</code>; Action modal dispatches 1-Click Gmail &amp; WhatsApp notice to Professor.</p>
+          </div>
+
+          <div class="glass-card" style="text-align: center; border-color: rgba(16, 185, 129, 0.4);">
+            <div style="font-size: 24px; color: var(--success); margin-bottom: 6px;"><i class="fa-solid fa-stamp"></i></div>
+            <h4 style="font-size: 15px; color: #fff; margin-bottom: 4px;">Phase 3: Authorization</h4>
+            <p style="font-size: 12px; color: var(--text-muted);">Professor logs in with @mitsgwl.ac.in, reviews proposal, adds remarks, and clicks <strong>Authorize</strong>.</p>
+          </div>
+
+          <div class="glass-card" style="text-align: center; border-color: rgba(168, 85, 247, 0.4);">
+            <div style="font-size: 24px; color: var(--purple); margin-bottom: 6px;"><i class="fa-solid fa-user-plus"></i></div>
+            <h4 style="font-size: 15px; color: #fff; margin-bottom: 4px;">Phase 4: Recruitment</h4>
+            <p style="font-size: 12px; color: var(--text-muted);">Club is published live; Students explore &amp; apply; President manages admissions on dashboard.</p>
+          </div>
+        </div>
+
+        <div class="flow-diagram">
+          <div class="flow-node"><strong>Student President</strong><br/><small>Registers Club</small></div>
+          <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+          <div class="flow-node"><strong>Firestore Cloud</strong><br/><small>Status: "pending"</small></div>
+          <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+          <div class="flow-node"><strong>Mentor Notification</strong><br/><small>1-Click Gmail / WA</small></div>
+          <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+          <div class="flow-node"><strong>Faculty Queue</strong><br/><small>Authorize &amp; Publish</small></div>
+          <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+          <div class="flow-node"><strong>Directory Live</strong><br/><small>5,000+ MITSians</small></div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 16 / 20</span>
+        <span>End-to-End System Flow</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 17: USER MANUAL & STEP-BY-STEP GUIDE
+         ======================================================== -->
+    <section class="slide" data-slide="17" data-presenter="Operational Guide" data-notes="Explain the quick 3-step guide for each role: Regular Student, Club President, and Faculty Coordinator. This makes the platform immediately accessible for college orientation.">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">User Manual</span>
+          </div>
+          <h2 class="slide-title">Three-Tier User Operational Manual</h2>
+          <p class="slide-subtitle">Clear operational instructions for Students, Club Leaders, and Faculty Mentors.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-3" style="width: 100%;">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-blue"><i class="fa-solid fa-user-graduate"></i></div>
+              <h4>For MITS Students</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Step 1:</strong> Click <em>Login with College Email</em> using your <code>@mitsgwl.ac.in</code> account.</li>
+              <li><strong>Step 2:</strong> Use the 3D Filter Console to browse clubs by category, fee, and recruitment status.</li>
+              <li><strong>Step 3:</strong> Open any club, inspect "Kya Hai, Kyu Hai", and tap <em>Join Club / Apply Now</em>.</li>
+              <li><strong>Step 4:</strong> Track your application status under <em>My Applications</em>.</li>
+            </ul>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-amber"><i class="fa-solid fa-crown"></i></div>
+              <h4>For Club Presidents</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Step 1:</strong> Tap <em>+ Register Official Club</em> and enter your society details and gallery photos.</li>
+              <li><strong>Step 2:</strong> Input your designated Coordinator Professor's official email address.</li>
+              <li><strong>Step 3:</strong> Use the 1-Click Gmail dispatcher to send the formal review letter to your mentor.</li>
+              <li><strong>Step 4:</strong> Once authorized, open <em>Manage Applicants</em> to review candidate submissions.</li>
+            </ul>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-purple"><i class="fa-solid fa-chalkboard-user"></i></div>
+              <h4>For Faculty Mentors</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Step 1:</strong> Sign in with your official faculty <code>@mitsgwl.ac.in</code> credentials.</li>
+              <li><strong>Step 2:</strong> The <em>Official Professor Approvals Queue</em> will highlight all clubs assigned to you.</li>
+              <li><strong>Step 3:</strong> Review the club description, leadership contact, and proposed membership fee.</li>
+              <li><strong>Step 4:</strong> Add remarks and click <em>Authorize &amp; Publish</em> to launch the club.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 17 / 20</span>
+        <span>Operational User Manual</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 18: DEPLOYMENT & PRODUCTION SPECS
+         ======================================================== -->
+    <section class="slide" data-slide="18" data-presenter="Akash Dhakad (Lead Architect)" data-notes="Demonstrate production readiness: Netlify deployment, GitHub Pages automation with zero errors, custom domain readiness, and live performance metrics.">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">DevOps &amp; Hosting</span>
+            <span class="presenter-chip"><i class="fa-solid fa-server"></i> Production Deployment</span>
+          </div>
+          <h2 class="slide-title">Live Production Infrastructure &amp; Deployment</h2>
+          <p class="slide-subtitle">Globally distributed, highly available, and verified on modern cloud edge networks.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="col-half">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-green"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+              <h4>Production Verification Matrix</h4>
+            </div>
+            <ul class="bullet-list">
+              <li><strong>Primary Live Portal:</strong> <code>https://mits-gwl-club-hub.netlify.app</code> (Deployed on Netlify Edge CDN).</li>
+              <li><strong>Automated CI/CD Mirror:</strong> <code>https://akashcyber02.github.io/mits-club-hub/</code> (GitHub Actions workflow passing with 100% green status).</li>
+              <li><strong>Custom Institutional Domain:</strong> Configured for <code>mitsgwlclubhub.com</code> via DNS CNAME and HTTPS SSL certification.</li>
+              <li><strong>Performance Metrics:</strong> 98+ Google Lighthouse Performance Score; sub-second First Contentful Paint (&lt;800ms).</li>
+              <li><strong>Zero Build Server Dependency:</strong> Clean vanilla client architecture runs without node build failures or heavy runtime memory overhead.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-half">
+          <div class="screenshot-box">
+            <i class="fa-solid fa-globe"></i>
+            <span>[ 📸 Insert Screenshot: Netlify &amp; GitHub Actions Green Deployments ]</span>
+            <p>Show the production Netlify URL and GitHub Actions successful run badge</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 18 / 20</span>
+        <span>Live Production Infrastructure</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 19: FUTURE ROADMAP & INSTITUTIONAL IMPACT
+         ======================================================== -->
+    <section class="slide" data-slide="19" data-presenter="Future Scope" data-notes="Outline future enhancements: Digital QR attendance for campus events, automated NAAC/NIRF activity report generation, and inter-club collaboration hackathons.">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Strategic Roadmap</span>
+          </div>
+          <h2 class="slide-title">Future Expansion &amp; Institutional Impact</h2>
+          <p class="slide-subtitle">Scaling MITS Club Hub to support accreditation, event ticketing, and inter-college summits.</p>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-3" style="width: 100%;">
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-blue"><i class="fa-solid fa-qrcode"></i></div>
+              <h4>QR Code Event Attendance</h4>
+            </div>
+            <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5; margin-bottom: 10px;">Automated dynamic QR check-ins for workshops, hackathons, and orientations, recording verified student attendance in Firestore.</p>
+            <span class="slide-category-tag" style="font-size: 10px;">Phase 2 Feature</span>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-purple"><i class="fa-solid fa-chart-line"></i></div>
+              <h4>NAAC / NIRF Reporting Engine</h4>
+            </div>
+            <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5; margin-bottom: 10px;">One-click automated PDF export for college authorities summarizing club activities, participant counts, and faculty mentorship records.</p>
+            <span class="slide-category-tag" style="font-size: 10px; color: #c084fc; border-color: #a855f7;">Accreditation Utility</span>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-head">
+              <div class="card-icon-badge c-green"><i class="fa-solid fa-ticket"></i></div>
+              <h4>Integrated Event Ticketing</h4>
+            </div>
+            <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5; margin-bottom: 10px;">UPI QR payment verification for paid fest passes and merchandise orders with cryptographic digital tickets.</p>
+            <span class="slide-category-tag" style="font-size: 10px; color: #34d399; border-color: #10b981;">Campus Commerce</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 19 / 20</span>
+        <span>Institutional Roadmap</span>
+      </div>
+    </section>
+
+
+    <!-- ========================================================
+         SLIDE 20: CREDITS, ACKNOWLEDGMENTS & Q&A
+         ======================================================== -->
+    <section class="slide" data-slide="20" data-presenter="Full Team & Defense Closing" data-notes="Concluding slide: Thank the faculty guide, HOD, and audience. Open the floor for live demonstration and Q&A. Provide the live demo links on screen.">
+      <div class="slide-header">
+        <div>
+          <div class="slide-meta-row">
+            <span class="slide-category-tag">Project Defense Closing</span>
+            <span class="presenter-chip"><i class="fa-solid fa-comments"></i> Questions &amp; Answers</span>
+          </div>
+          <h2 class="slide-title">Acknowledgments, Project Credits &amp; Live Demo</h2>
+          <p class="slide-subtitle">Thank you for your guidance, mentorship, and support.</p>
+        </div>
+      </div>
+
+      <div class="slide-body" style="align-items: center; justify-content: center;">
+        <div style="max-width: 900px; width: 100%; display: flex; flex-direction: column; gap: 20px;">
+          
+          <div class="glass-card" style="text-align: center; padding: 28px;">
+            <h3 style="font-family: var(--font-display); font-size: 28px; color: #fff; margin-bottom: 8px;">
+              Ready for Live Demonstration &amp; Questions
+            </h3>
+            <p style="font-size: 15px; color: var(--text-muted); max-width: 650px; margin: 0 auto 20px;">
+              Explore the live portal, create a new club, test Google OAuth domain restrictions, and trigger real-time faculty approval.
+            </p>
+
+            <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+              <a href="https://mits-gwl-club-hub.netlify.app" target="_blank" class="btn-ctrl" style="background: var(--primary-gradient); color: #070a13; font-weight: 800; padding: 12px 24px; font-size: 14px;">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Live Netlify Portal
+              </a>
+              <a href="https://github.com/akashcyber02/mits-club-hub" target="_blank" class="btn-ctrl" style="padding: 12px 24px; font-size: 14px;">
+                <i class="fa-brands fa-github"></i> GitHub Source Code Repository
+              </a>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="glass-card">
+              <h5 style="color: var(--primary); font-size: 13px; text-transform: uppercase; margin-bottom: 8px;">Core Engineering Team</h5>
+              <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6;">
+                &bull; <strong>Akash Dhakad</strong> (Lead Architect &amp; Security Engineer)<br/>
+                &bull; <strong>Alok Mahor</strong> (Club Research &amp; Filter Console Lead)<br/>
+                &bull; <strong>Aman Singh</strong> (Recruitment &amp; Application Pipeline Lead)<br/>
+                &bull; <strong>Akash Gupta</strong> (Faculty Workflow &amp; Approval Lead)
+              </p>
+            </div>
+
+            <div class="glass-card">
+              <h5 style="color: var(--amber); font-size: 13px; text-transform: uppercase; margin-bottom: 8px;">Institutional Mentorship</h5>
+              <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6;">
+                &bull; <strong>Faculty Guide:</strong> Prof. [________________________]<br/>
+                &bull; <strong>Department Head:</strong> Dr. [________________________]<br/>
+                &bull; <strong>Institution:</strong> Madhav Institute of Technology &amp; Science, Gwalior<br/>
+                &bull; <strong>Department:</strong> Department of Artificial Intelligence
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 20 / 20 &bull; Final Defense</span>
+        <span>&copy; 2026 MITS Club Hub &bull; All Rights Reserved</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Speaker Notes Drawer -->
+  <aside class="speaker-notes-drawer" id="speakerNotesDrawer">
+    <div class="notes-header">
+      <h5 id="notesPresenterBadge">Speaker Notes</h5>
+      <button class="btn-ctrl" id="btnCloseNotes" style="padding: 4px 10px; font-size: 12px;">Close (N)</button>
+    </div>
+    <div class="notes-content" id="notesContentText">
+      Welcome to the MITS Club Hub Presentation Deck.
+    </div>
+  </aside>
+
+  <script>
+    // Presentation Deck Logic
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentSlide = 1;
+
+    const slideIndicator = document.getElementById('slideIndicator');
+    const deckProgressBar = document.getElementById('deckProgressBar');
+    const speakerNotesDrawer = document.getElementById('speakerNotesDrawer');
+    const notesPresenterBadge = document.getElementById('notesPresenterBadge');
+    const notesContentText = document.getElementById('notesContentText');
+
+    function updateSlide(newIndex) {
+      if (newIndex < 1 || newIndex > totalSlides) return;
+      
+      slides.forEach((s) => s.classList.remove('active'));
+      currentSlide = newIndex;
+      const targetSlide = slides[currentSlide - 1];
+      targetSlide.classList.add('active');
+
+      // Update UI
+      slideIndicator.textContent = `Slide ${String(currentSlide).padStart(2, '0')} / ${totalSlides}`;
+      deckProgressBar.style.width = `${(currentSlide / totalSlides) * 100}%`;
+
+      // Update Notes
+      const presenter = targetSlide.getAttribute('data-presenter') || 'General';
+      const notes = targetSlide.getAttribute('data-notes') || 'No additional notes for this slide.';
+      notesPresenterBadge.innerHTML = `<i class="fa-solid fa-microphone"></i> ${presenter}`;
+      notesContentText.textContent = notes;
+    }
+
+    // Keyboard Navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        updateSlide(currentSlide + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        updateSlide(currentSlide - 1);
+      } else if (e.key.toLowerCase() === 'n') {
+        speakerNotesDrawer.classList.toggle('open');
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullScreen();
+      }
+    });
+
+    document.getElementById('btnPrevSlide').addEventListener('click', () => updateSlide(currentSlide - 1));
+    document.getElementById('btnNextSlide').addEventListener('click', () => updateSlide(currentSlide + 1));
+    document.getElementById('btnNotesToggle').addEventListener('click', () => speakerNotesDrawer.classList.toggle('open'));
+    document.getElementById('btnCloseNotes').addEventListener('click', () => speakerNotesDrawer.classList.remove('open'));
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    document.getElementById('btnFullscreen').addEventListener('click', toggleFullScreen);
+
+    // Initialize
+    updateSlide(1);
+  </script>
+</body>
+</html>
