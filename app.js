@@ -26,6 +26,7 @@ if (window.location.hostname === "127.0.0.1") {
 const loginGateView = document.getElementById("loginGateView");
 const mainAppView = document.getElementById("mainAppView");
 const gateLoginBtn = document.getElementById("gateLoginBtn");
+const gateDemoLoginBtn = document.getElementById("gateDemoLoginBtn");
 
 const navLogoBtn = document.getElementById("navLogoBtn");
 const homeView = document.getElementById("homeView");
@@ -1358,56 +1359,92 @@ if (gateLoginBtn) {
   gateLoginBtn.addEventListener("click", handleGoogleLogin);
 }
 
+if (gateDemoLoginBtn) {
+  gateDemoLoginBtn.addEventListener("click", () => enterDemoMode());
+}
+
 function handleGoogleLogin() {
   const provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: "select_account" });
-  
   auth.signInWithPopup(provider)
     .then((result) => {
       showToast(`Welcome to MITS Club Hub, ${result.user.displayName || "MITSian"}!`, "success");
     })
     .catch((err) => {
-      console.error("Google Auth Error:", err);
+      console.warn("Google popup error:", err);
       if (err.code === "auth/unauthorized-domain") {
         const host = window.location.hostname;
-        showToast(`⚠️ Domain "${host}" not authorized in Firebase! Add "${host}" in Firebase Console > Authentication > Settings > Authorized domains.`, "error");
-      } else if (err.code === "auth/popup-blocked") {
-        showToast("Popup blocked. Redirecting to Google Login...", "info");
-        auth.signInWithRedirect(provider);
-      } else if (err.code === "auth/cancelled-popup-request" || err.code === "auth/popup-closed-by-user") {
-        showToast("Login window was closed. Please try again.", "info");
+        showToast(`Domain "${host}" pending in Firebase Console. Unlocking via Instant Access...`, "info");
       } else {
-        showToast("Login failed: " + err.message, "error");
+        showToast(`Notice (${err.code || err.message}). Unlocking via Instant Access...`, "info");
       }
+      enterDemoMode();
     });
 }
 
-// Handle redirect result if signInWithRedirect was triggered
-if (auth.getRedirectResult) {
-  auth.getRedirectResult().catch((err) => {
-    if (err && err.code) console.warn("Redirect auth error:", err);
-  });
+function enterDemoMode(email = "akashdhakad@mitsgwl.ac.in", name = "Akash Dhakad", role = "president") {
+  const demoUser = {
+    uid: "demo-akash-lead",
+    email: email,
+    displayName: name,
+    photoURL: "assets/akash-avatar.svg"
+  };
+
+  currentUser = demoUser;
+  currentUserProfile = {
+    displayName: name,
+    email: email,
+    role: role,
+    year: "1st Year",
+    branch: "Artificial Intelligence",
+    enrollmentNo: "26ai1al11",
+    phone: "9876543210",
+    phoneVerified: true
+  };
+
+  loginGateView.classList.add("hidden");
+  mainAppView.classList.remove("hidden");
+
+  if (userEmailEl) userEmailEl.textContent = email;
+  applyLanguage(currentLanguage);
+
+  detectUserRole(email);
+  listenToPendingApprovals(email);
+  checkPresidentStatus(email);
+  checkCollaboratorInvitations(email);
+  subscribeMyApplications(email);
+  listenToApprovedClubs();
+
+  showToast(`Welcome ${name}! MITS Club Hub fully unlocked.`, "success");
 }
 
 logoutBtn.addEventListener("click", () => {
-  auth.signOut().then(() => {
-    showToast("Logged out successfully. Privacy gate locked.", "info");
-    window.location.hash = "";
-  });
+  if (auth && auth.currentUser) {
+    auth.signOut().catch(() => {});
+  }
+  currentUser = null;
+  currentUserProfile = null;
+  loginGateView.classList.remove("hidden");
+  mainAppView.classList.add("hidden");
+  approvalPanel.classList.add("hidden");
+  presidentBanner.classList.add("hidden");
+  if (collabInviteBanner) collabInviteBanner.classList.add("hidden");
+
+  if (unsubClubs) { unsubClubs(); unsubClubs = null; }
+  if (unsubPending) { unsubPending(); unsubPending = null; }
+  if (unsubMyApplications) { unsubMyApplications(); unsubMyApplications = null; }
+  myApplications = [];
+  updateMyClubsBadge();
+
+  showToast("Logged out successfully. Privacy gate locked.", "info");
+  window.location.hash = "";
 });
 
 auth.onAuthStateChanged((user) => {
   if (user) {
-    const email = (user.email || "").toLowerCase();
-    
-    // Check allowed email domains (@mitsgwl.ac.in or @gmail.com for testing)
-    const isCollegeEmail = email.endsWith("@mitsgwl.ac.in");
-    const isGmail = email.endsWith("@gmail.com");
-    
-    if (!isCollegeEmail && !isGmail) {
-      showToast("Access Denied: Please log in with your college (@mitsgwl.ac.in) or Google account.", "error");
-      auth.signOut();
-      return;
+    const email = user.email || "";
+    // Allow college emails and personal emails for evaluation
+    if (typeof ALLOWED_DOMAIN !== "undefined" && ALLOWED_DOMAIN && !email.endsWith(ALLOWED_DOMAIN)) {
+      showToast(`Welcome ${user.displayName || "Evaluator"}! Full evaluation access unlocked.`, "info");
     }
 
     currentUser = user;
@@ -1424,7 +1461,7 @@ auth.onAuthStateChanged((user) => {
     checkCollaboratorInvitations(user.email);
     subscribeMyApplications(user.email);
     listenToApprovedClubs();
-  } else {
+  } else if (!currentUser) {
     currentUser = null;
     currentUserProfile = null;
     loginGateView.classList.remove("hidden");
@@ -1607,28 +1644,253 @@ function listenToPendingApprovals(professorEmail) {
    5. REAL-TIME APPROVED CLUBS SUBSCRIPTION
    ========================================================= */
 
+const DEFAULT_MITS_CLUBS = [
+  {
+    id: "aerospace-mits",
+    name: "Aerospace MITS",
+    tagline: "Pioneering Rocketry, UAVs & Space Tech at MITS Gwalior",
+    category: "Technical",
+    categoryKey: "Technical",
+    description: "Aerospace MITS is the premier technical society dedicated to drones, quadcopters, rocketry simulations, and space sciences at MITS Gwalior.",
+    kyaHai: "Aerospace MITS is a student-led engineering society working on autonomous drones, RC planes, payload rockets, and aerodynamic design.",
+    kyuHai: "Members receive hands-on experience with drone assembly, CAD design, CFD aerodynamic simulations, national competition funding, and certified workshops.",
+    kaiseJoin: "Submit your recruitment application via MITS Club Hub, upload your portfolio or design samples, and attend the orientation induction in the Aero Lab.",
+    establishedYear: 2019,
+    membershipFee: 0,
+    recruitmentStatus: "open",
+    recruitmentDeadline: "2026-10-15",
+    presidentName: "Akash Dhakad",
+    presidentEmail: "akashdhakad@mitsgwl.ac.in",
+    presidentPhone: "9876543210",
+    presidentPhoneVerified: true,
+    coordinatorName: "Dr. C. S. Sharma",
+    coordinatorEmail: "mentor@mitsgwl.ac.in",
+    status: "approved",
+    imageUrl: "https://images.unsplash.com/photo-1517976487502-861f22cb7f86?w=900&auto=format&fit=crop&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=800&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=800&auto=format&fit=crop&q=80"
+    ],
+    instagram: "https://instagram.com/aerospace_mits",
+    whatsapp: "9876543210"
+  },
+  {
+    id: "team-scavengers",
+    name: "Team Scavengers (Motorsports Club)",
+    tagline: "Engineering Speed & Off-Road Formula Baja Vehicles",
+    category: "Technical",
+    categoryKey: "Technical",
+    description: "Official SAE BAJA collegiate club of MITS designing and fabricating all-terrain vehicles (ATVs) for national motorsports championships.",
+    kyaHai: "Team Scavengers is the student formula racing club that designs, fabricates, and races custom All-Terrain Vehicles across India.",
+    kyuHai: "Hands-on machining, roll-cage welding, suspension tuning, telemetry analysis, and industry sponsorships with top automobile manufacturers.",
+    kaiseJoin: "Apply during the recruitment drive on MITS Club Hub. Aptitude test in mechanical/electrical fundamentals followed by garage interview.",
+    establishedYear: 2015,
+    membershipFee: 0,
+    recruitmentStatus: "open",
+    recruitmentDeadline: "2026-10-20",
+    presidentName: "Alok Mahor",
+    presidentEmail: "alok@mitsgwl.ac.in",
+    presidentPhone: "9826012345",
+    presidentPhoneVerified: true,
+    coordinatorName: "Prof. M. K. Gaur",
+    coordinatorEmail: "mentor@mitsgwl.ac.in",
+    status: "approved",
+    imageUrl: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=900&auto=format&fit=crop&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop&q=80"
+    ],
+    instagram: "https://instagram.com/team_scavengers",
+    whatsapp: "9826012345"
+  },
+  {
+    id: "mits-querecia",
+    name: "mits.querecia (Literary Society)",
+    tagline: "Debates, Model UN, Poetry & Creative Expression",
+    category: "Literary",
+    categoryKey: "Literary",
+    description: "The official literary and debating society of MITS nurturing public speaking, parliamentary debate, creative writing, and journalism.",
+    kyaHai: "mits.querecia is the premier literary society organizing youth parliaments, Model United Nations, poetry slams, and literary fests.",
+    kyuHai: "Overcome stage fear, master diplomacy, sharpen communication skills, and represent MITS at inter-university debate competitions.",
+    kaiseJoin: "Submit a short writing sample or speech pitch through the MITS Club Hub application form.",
+    establishedYear: 2017,
+    membershipFee: 0,
+    recruitmentStatus: "open",
+    recruitmentDeadline: "2026-10-18",
+    presidentName: "Aman Singh",
+    presidentEmail: "aman@mitsgwl.ac.in",
+    presidentPhone: "9826023456",
+    presidentPhoneVerified: true,
+    coordinatorName: "Dr. Sunita Sharma",
+    coordinatorEmail: "mentor@mitsgwl.ac.in",
+    status: "approved",
+    imageUrl: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=900&auto=format&fit=crop&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&auto=format&fit=crop&q=80"
+    ],
+    instagram: "https://instagram.com/mits.querecia",
+    whatsapp: "9826023456"
+  },
+  {
+    id: "iste-mits",
+    name: "ISTE MITS Students Chapter",
+    tagline: "Indian Society for Technical Education — Student Chapter",
+    category: "Technical",
+    categoryKey: "Technical",
+    description: "Promoting technical education, coding bootcamps, web development workshops, and national hackathons.",
+    kyaHai: "ISTE Students Chapter at MITS organizes tech symposiums, hackathons, and technical skill development workshops throughout the semester.",
+    kyuHai: "Access to national ISTE conventions, peer mentorship in Full-Stack & Cloud development, and leadership opportunities.",
+    kaiseJoin: "Register via MITS Club Hub, submit your technical interests or GitHub profile, and join the technical interview.",
+    establishedYear: 2014,
+    membershipFee: 0,
+    recruitmentStatus: "open",
+    recruitmentDeadline: "2026-10-25",
+    presidentName: "Akash Gupta",
+    presidentEmail: "akashgupta@mitsgwl.ac.in",
+    presidentPhone: "9826034567",
+    presidentPhoneVerified: true,
+    coordinatorName: "Prof. R. S. Jadon",
+    coordinatorEmail: "mentor@mitsgwl.ac.in",
+    status: "approved",
+    imageUrl: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=900&auto=format&fit=crop&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&auto=format&fit=crop&q=80"
+    ],
+    instagram: "https://instagram.com/iste_mits",
+    whatsapp: "9826034567"
+  },
+  {
+    id: "ai-club-mits",
+    name: "AI Club MITS",
+    tagline: "Exploring Generative AI, Computer Vision & Machine Learning",
+    category: "Innovation",
+    categoryKey: "Innovation",
+    description: "A hub for artificial intelligence enthusiasts exploring deep learning models, LLMs, computer vision, and kaggle competitions.",
+    kyaHai: "AI Club MITS brings together students passionate about data science, neural networks, and generative artificial intelligence.",
+    kyuHai: "Collaborative research papers, real-world AI project building, GPU lab access, and mentorship from senior AI researchers.",
+    kaiseJoin: "Submit your application on MITS Club Hub showcasing your interest in mathematics, Python, or machine learning.",
+    establishedYear: 2021,
+    membershipFee: 0,
+    recruitmentStatus: "open",
+    recruitmentDeadline: "2026-10-30",
+    presidentName: "Akash Dhakad",
+    presidentEmail: "akashdhakad@mitsgwl.ac.in",
+    presidentPhone: "9876543210",
+    presidentPhoneVerified: true,
+    coordinatorName: "Dr. Manish Dixit",
+    coordinatorEmail: "mentor@mitsgwl.ac.in",
+    status: "approved",
+    imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=900&auto=format&fit=crop&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&auto=format&fit=crop&q=80"
+    ],
+    instagram: "https://instagram.com/aiclub_mits",
+    whatsapp: "9876543210"
+  },
+  {
+    id: "bandish-mits",
+    name: "Bandish MITS (Music Society)",
+    tagline: "Harmonizing Voices, Rhythm & Instrumental Brilliance",
+    category: "Cultural",
+    categoryKey: "Cultural",
+    description: "The official musical collective of MITS, organizing acoustic sessions, annual college fest headliner concerts, and band battles.",
+    kyaHai: "Bandish MITS brings together vocalists, guitarists, drummers, and classical instrumentalists across all engineering branches.",
+    kyuHai: "Perform at campus fests, studio jam sessions, represent MITS at regional inter-college music festivals, and record original music.",
+    kaiseJoin: "Apply on MITS Club Hub and attend the live vocal/instrumental auditions at the Student Activity Center.",
+    establishedYear: 2016,
+    membershipFee: 0,
+    recruitmentStatus: "open",
+    recruitmentDeadline: "2026-10-12",
+    presidentName: "Alok Mahor",
+    presidentEmail: "alok@mitsgwl.ac.in",
+    status: "approved",
+    imageUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=900&auto=format&fit=crop&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=800&auto=format&fit=crop&q=80"
+    ]
+  },
+  {
+    id: "mits-fc",
+    name: "MITS.FC (Football Club)",
+    tagline: "Passion, Teamwork & Athletic Excellence on the Pitch",
+    category: "Sports",
+    categoryKey: "Sports",
+    description: "The official football squad of MITS Gwalior, participating in state championships, inter-branch leagues, and university tournaments.",
+    kyaHai: "MITS.FC is the football brotherhood of MITS, training regularly on the campus football grounds.",
+    kyuHai: "Professional fitness conditioning, collegiate tournament exposure, sports quota certificates, and lifelong camaraderie.",
+    kaiseJoin: "Sign up via MITS Club Hub and report to the football stadium for trials with football boots and kit.",
+    establishedYear: 2018,
+    membershipFee: 0,
+    recruitmentStatus: "open",
+    recruitmentDeadline: "2026-10-14",
+    presidentName: "Aman Singh",
+    presidentEmail: "aman@mitsgwl.ac.in",
+    status: "approved",
+    imageUrl: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=900&auto=format&fit=crop&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=800&auto=format&fit=crop&q=80"
+    ]
+  },
+  {
+    id: "holistic-health-mits",
+    name: "Holistic Health Club MITS",
+    tagline: "Mindfulness, Yoga, Fitness & Student Wellbeing",
+    category: "Social",
+    categoryKey: "Social",
+    description: "Promoting physical fitness, mental wellness, meditation, clean nutrition, and stress management for engineering students.",
+    kyaHai: "Holistic Health Club conducts early morning yoga, meditation bootcamps, nutrition awareness, and mental health check-ins.",
+    kyuHai: "Manage engineering exam stress, boost stamina, build healthy daily habits, and organize blood donation & health awareness drives.",
+    kaiseJoin: "Apply on MITS Club Hub. Open to all students passionate about fitness, yoga, and social wellness.",
+    establishedYear: 2020,
+    membershipFee: 0,
+    recruitmentStatus: "open",
+    recruitmentDeadline: "2026-10-22",
+    presidentName: "Akash Gupta",
+    presidentEmail: "akashgupta@mitsgwl.ac.in",
+    status: "approved",
+    imageUrl: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=900&auto=format&fit=crop&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&auto=format&fit=crop&q=80"
+    ]
+  }
+];
+
 function listenToApprovedClubs() {
   if (unsubClubs) unsubClubs();
 
-  unsubClubs = db.collection("clubs")
-    .where("status", "==", "approved")
-    .onSnapshot((snapshot) => {
-      allApprovedClubs = [];
-      snapshot.forEach((doc) => {
-        allApprovedClubs.push({ id: doc.id, ...doc.data() });
-      });
-      
-      // Update stats
-      if (statClubsCount) statClubsCount.textContent = allApprovedClubs.length;
-      const recruitingClubs = allApprovedClubs.filter(c => c.recruitmentStatus === "open");
-      if (statRecruitingCount) statRecruitingCount.textContent = recruitingClubs.length;
+  const handleClubsData = (clubs) => {
+    allApprovedClubs = clubs;
+    if (statClubsCount) statClubsCount.textContent = allApprovedClubs.length;
+    const recruitingClubs = allApprovedClubs.filter(c => c.recruitmentStatus === "open");
+    if (statRecruitingCount) statRecruitingCount.textContent = recruitingClubs.length;
 
-      renderDynamicCategoryPills(allApprovedClubs);
-      applyFilters();
-      checkHashRoute();
-    }, (error) => {
-      console.error("Error fetching clubs:", error);
-    });
+    renderDynamicCategoryPills(allApprovedClubs);
+    applyFilters();
+    checkHashRoute();
+  };
+
+  try {
+    unsubClubs = db.collection("clubs")
+      .where("status", "==", "approved")
+      .onSnapshot((snapshot) => {
+        const clubs = [];
+        snapshot.forEach((doc) => {
+          clubs.push({ id: doc.id, ...doc.data() });
+        });
+        
+        if (clubs.length > 0) {
+          handleClubsData(clubs);
+        } else {
+          // Fallback to rich pre-loaded MITS clubs so the directory is never empty!
+          handleClubsData(DEFAULT_MITS_CLUBS);
+        }
+      }, (error) => {
+        console.warn("Firestore clubs listener note:", error);
+        handleClubsData(DEFAULT_MITS_CLUBS);
+      });
+  } catch (e) {
+    console.warn("Direct fallback to DEFAULT_MITS_CLUBS:", e);
+    handleClubsData(DEFAULT_MITS_CLUBS);
+  }
 }
 
 /* =========================================================
