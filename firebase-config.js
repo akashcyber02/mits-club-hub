@@ -24,6 +24,5 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Email domains allowed to log in (Official college domain + Gmail for dev testing)
-const ALLOWED_DOMAINS = ["@mitsgwl.ac.in", "@gmail.com"];
-const ALLOWED_DOMAIN = ""; // empty so it does not restrict to a single domain
+// Only these email domains are allowed to log in
+const ALLOWED_DOMAIN = "@mitsgwl.ac.in";

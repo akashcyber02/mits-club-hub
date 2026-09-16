@@ -1644,253 +1644,28 @@ function listenToPendingApprovals(professorEmail) {
    5. REAL-TIME APPROVED CLUBS SUBSCRIPTION
    ========================================================= */
 
-const DEFAULT_MITS_CLUBS = [
-  {
-    id: "aerospace-mits",
-    name: "Aerospace MITS",
-    tagline: "Pioneering Rocketry, UAVs & Space Tech at MITS Gwalior",
-    category: "Technical",
-    categoryKey: "Technical",
-    description: "Aerospace MITS is the premier technical society dedicated to drones, quadcopters, rocketry simulations, and space sciences at MITS Gwalior.",
-    kyaHai: "Aerospace MITS is a student-led engineering society working on autonomous drones, RC planes, payload rockets, and aerodynamic design.",
-    kyuHai: "Members receive hands-on experience with drone assembly, CAD design, CFD aerodynamic simulations, national competition funding, and certified workshops.",
-    kaiseJoin: "Submit your recruitment application via MITS Club Hub, upload your portfolio or design samples, and attend the orientation induction in the Aero Lab.",
-    establishedYear: 2019,
-    membershipFee: 0,
-    recruitmentStatus: "open",
-    recruitmentDeadline: "2026-10-15",
-    presidentName: "Akash Dhakad",
-    presidentEmail: "akashdhakad@mitsgwl.ac.in",
-    presidentPhone: "9876543210",
-    presidentPhoneVerified: true,
-    coordinatorName: "Dr. C. S. Sharma",
-    coordinatorEmail: "mentor@mitsgwl.ac.in",
-    status: "approved",
-    imageUrl: "https://images.unsplash.com/photo-1517976487502-861f22cb7f86?w=900&auto=format&fit=crop&q=80",
-    gallery: [
-      "https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=800&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=800&auto=format&fit=crop&q=80"
-    ],
-    instagram: "https://instagram.com/aerospace_mits",
-    whatsapp: "9876543210"
-  },
-  {
-    id: "team-scavengers",
-    name: "Team Scavengers (Motorsports Club)",
-    tagline: "Engineering Speed & Off-Road Formula Baja Vehicles",
-    category: "Technical",
-    categoryKey: "Technical",
-    description: "Official SAE BAJA collegiate club of MITS designing and fabricating all-terrain vehicles (ATVs) for national motorsports championships.",
-    kyaHai: "Team Scavengers is the student formula racing club that designs, fabricates, and races custom All-Terrain Vehicles across India.",
-    kyuHai: "Hands-on machining, roll-cage welding, suspension tuning, telemetry analysis, and industry sponsorships with top automobile manufacturers.",
-    kaiseJoin: "Apply during the recruitment drive on MITS Club Hub. Aptitude test in mechanical/electrical fundamentals followed by garage interview.",
-    establishedYear: 2015,
-    membershipFee: 0,
-    recruitmentStatus: "open",
-    recruitmentDeadline: "2026-10-20",
-    presidentName: "Alok Mahor",
-    presidentEmail: "alok@mitsgwl.ac.in",
-    presidentPhone: "9826012345",
-    presidentPhoneVerified: true,
-    coordinatorName: "Prof. M. K. Gaur",
-    coordinatorEmail: "mentor@mitsgwl.ac.in",
-    status: "approved",
-    imageUrl: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=900&auto=format&fit=crop&q=80",
-    gallery: [
-      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format&fit=crop&q=80"
-    ],
-    instagram: "https://instagram.com/team_scavengers",
-    whatsapp: "9826012345"
-  },
-  {
-    id: "mits-querecia",
-    name: "mits.querecia (Literary Society)",
-    tagline: "Debates, Model UN, Poetry & Creative Expression",
-    category: "Literary",
-    categoryKey: "Literary",
-    description: "The official literary and debating society of MITS nurturing public speaking, parliamentary debate, creative writing, and journalism.",
-    kyaHai: "mits.querecia is the premier literary society organizing youth parliaments, Model United Nations, poetry slams, and literary fests.",
-    kyuHai: "Overcome stage fear, master diplomacy, sharpen communication skills, and represent MITS at inter-university debate competitions.",
-    kaiseJoin: "Submit a short writing sample or speech pitch through the MITS Club Hub application form.",
-    establishedYear: 2017,
-    membershipFee: 0,
-    recruitmentStatus: "open",
-    recruitmentDeadline: "2026-10-18",
-    presidentName: "Aman Singh",
-    presidentEmail: "aman@mitsgwl.ac.in",
-    presidentPhone: "9826023456",
-    presidentPhoneVerified: true,
-    coordinatorName: "Dr. Sunita Sharma",
-    coordinatorEmail: "mentor@mitsgwl.ac.in",
-    status: "approved",
-    imageUrl: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=900&auto=format&fit=crop&q=80",
-    gallery: [
-      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&auto=format&fit=crop&q=80"
-    ],
-    instagram: "https://instagram.com/mits.querecia",
-    whatsapp: "9826023456"
-  },
-  {
-    id: "iste-mits",
-    name: "ISTE MITS Students Chapter",
-    tagline: "Indian Society for Technical Education — Student Chapter",
-    category: "Technical",
-    categoryKey: "Technical",
-    description: "Promoting technical education, coding bootcamps, web development workshops, and national hackathons.",
-    kyaHai: "ISTE Students Chapter at MITS organizes tech symposiums, hackathons, and technical skill development workshops throughout the semester.",
-    kyuHai: "Access to national ISTE conventions, peer mentorship in Full-Stack & Cloud development, and leadership opportunities.",
-    kaiseJoin: "Register via MITS Club Hub, submit your technical interests or GitHub profile, and join the technical interview.",
-    establishedYear: 2014,
-    membershipFee: 0,
-    recruitmentStatus: "open",
-    recruitmentDeadline: "2026-10-25",
-    presidentName: "Akash Gupta",
-    presidentEmail: "akashgupta@mitsgwl.ac.in",
-    presidentPhone: "9826034567",
-    presidentPhoneVerified: true,
-    coordinatorName: "Prof. R. S. Jadon",
-    coordinatorEmail: "mentor@mitsgwl.ac.in",
-    status: "approved",
-    imageUrl: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=900&auto=format&fit=crop&q=80",
-    gallery: [
-      "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&auto=format&fit=crop&q=80"
-    ],
-    instagram: "https://instagram.com/iste_mits",
-    whatsapp: "9826034567"
-  },
-  {
-    id: "ai-club-mits",
-    name: "AI Club MITS",
-    tagline: "Exploring Generative AI, Computer Vision & Machine Learning",
-    category: "Innovation",
-    categoryKey: "Innovation",
-    description: "A hub for artificial intelligence enthusiasts exploring deep learning models, LLMs, computer vision, and kaggle competitions.",
-    kyaHai: "AI Club MITS brings together students passionate about data science, neural networks, and generative artificial intelligence.",
-    kyuHai: "Collaborative research papers, real-world AI project building, GPU lab access, and mentorship from senior AI researchers.",
-    kaiseJoin: "Submit your application on MITS Club Hub showcasing your interest in mathematics, Python, or machine learning.",
-    establishedYear: 2021,
-    membershipFee: 0,
-    recruitmentStatus: "open",
-    recruitmentDeadline: "2026-10-30",
-    presidentName: "Akash Dhakad",
-    presidentEmail: "akashdhakad@mitsgwl.ac.in",
-    presidentPhone: "9876543210",
-    presidentPhoneVerified: true,
-    coordinatorName: "Dr. Manish Dixit",
-    coordinatorEmail: "mentor@mitsgwl.ac.in",
-    status: "approved",
-    imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=900&auto=format&fit=crop&q=80",
-    gallery: [
-      "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&auto=format&fit=crop&q=80"
-    ],
-    instagram: "https://instagram.com/aiclub_mits",
-    whatsapp: "9876543210"
-  },
-  {
-    id: "bandish-mits",
-    name: "Bandish MITS (Music Society)",
-    tagline: "Harmonizing Voices, Rhythm & Instrumental Brilliance",
-    category: "Cultural",
-    categoryKey: "Cultural",
-    description: "The official musical collective of MITS, organizing acoustic sessions, annual college fest headliner concerts, and band battles.",
-    kyaHai: "Bandish MITS brings together vocalists, guitarists, drummers, and classical instrumentalists across all engineering branches.",
-    kyuHai: "Perform at campus fests, studio jam sessions, represent MITS at regional inter-college music festivals, and record original music.",
-    kaiseJoin: "Apply on MITS Club Hub and attend the live vocal/instrumental auditions at the Student Activity Center.",
-    establishedYear: 2016,
-    membershipFee: 0,
-    recruitmentStatus: "open",
-    recruitmentDeadline: "2026-10-12",
-    presidentName: "Alok Mahor",
-    presidentEmail: "alok@mitsgwl.ac.in",
-    status: "approved",
-    imageUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=900&auto=format&fit=crop&q=80",
-    gallery: [
-      "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=800&auto=format&fit=crop&q=80"
-    ]
-  },
-  {
-    id: "mits-fc",
-    name: "MITS.FC (Football Club)",
-    tagline: "Passion, Teamwork & Athletic Excellence on the Pitch",
-    category: "Sports",
-    categoryKey: "Sports",
-    description: "The official football squad of MITS Gwalior, participating in state championships, inter-branch leagues, and university tournaments.",
-    kyaHai: "MITS.FC is the football brotherhood of MITS, training regularly on the campus football grounds.",
-    kyuHai: "Professional fitness conditioning, collegiate tournament exposure, sports quota certificates, and lifelong camaraderie.",
-    kaiseJoin: "Sign up via MITS Club Hub and report to the football stadium for trials with football boots and kit.",
-    establishedYear: 2018,
-    membershipFee: 0,
-    recruitmentStatus: "open",
-    recruitmentDeadline: "2026-10-14",
-    presidentName: "Aman Singh",
-    presidentEmail: "aman@mitsgwl.ac.in",
-    status: "approved",
-    imageUrl: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=900&auto=format&fit=crop&q=80",
-    gallery: [
-      "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=800&auto=format&fit=crop&q=80"
-    ]
-  },
-  {
-    id: "holistic-health-mits",
-    name: "Holistic Health Club MITS",
-    tagline: "Mindfulness, Yoga, Fitness & Student Wellbeing",
-    category: "Social",
-    categoryKey: "Social",
-    description: "Promoting physical fitness, mental wellness, meditation, clean nutrition, and stress management for engineering students.",
-    kyaHai: "Holistic Health Club conducts early morning yoga, meditation bootcamps, nutrition awareness, and mental health check-ins.",
-    kyuHai: "Manage engineering exam stress, boost stamina, build healthy daily habits, and organize blood donation & health awareness drives.",
-    kaiseJoin: "Apply on MITS Club Hub. Open to all students passionate about fitness, yoga, and social wellness.",
-    establishedYear: 2020,
-    membershipFee: 0,
-    recruitmentStatus: "open",
-    recruitmentDeadline: "2026-10-22",
-    presidentName: "Akash Gupta",
-    presidentEmail: "akashgupta@mitsgwl.ac.in",
-    status: "approved",
-    imageUrl: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=900&auto=format&fit=crop&q=80",
-    gallery: [
-      "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&auto=format&fit=crop&q=80"
-    ]
-  }
-];
-
 function listenToApprovedClubs() {
   if (unsubClubs) unsubClubs();
 
-  const handleClubsData = (clubs) => {
-    allApprovedClubs = clubs;
-    if (statClubsCount) statClubsCount.textContent = allApprovedClubs.length;
-    const recruitingClubs = allApprovedClubs.filter(c => c.recruitmentStatus === "open");
-    if (statRecruitingCount) statRecruitingCount.textContent = recruitingClubs.length;
-
-    renderDynamicCategoryPills(allApprovedClubs);
-    applyFilters();
-    checkHashRoute();
-  };
-
-  try {
-    unsubClubs = db.collection("clubs")
-      .where("status", "==", "approved")
-      .onSnapshot((snapshot) => {
-        const clubs = [];
-        snapshot.forEach((doc) => {
-          clubs.push({ id: doc.id, ...doc.data() });
-        });
-        
-        if (clubs.length > 0) {
-          handleClubsData(clubs);
-        } else {
-          // Fallback to rich pre-loaded MITS clubs so the directory is never empty!
-          handleClubsData(DEFAULT_MITS_CLUBS);
-        }
-      }, (error) => {
-        console.warn("Firestore clubs listener note:", error);
-        handleClubsData(DEFAULT_MITS_CLUBS);
+  unsubClubs = db.collection("clubs")
+    .where("status", "==", "approved")
+    .onSnapshot((snapshot) => {
+      allApprovedClubs = [];
+      snapshot.forEach((doc) => {
+        allApprovedClubs.push({ id: doc.id, ...doc.data() });
       });
-  } catch (e) {
-    console.warn("Direct fallback to DEFAULT_MITS_CLUBS:", e);
-    handleClubsData(DEFAULT_MITS_CLUBS);
-  }
+      
+      // Update stats
+      if (statClubsCount) statClubsCount.textContent = allApprovedClubs.length;
+      const recruitingClubs = allApprovedClubs.filter(c => c.recruitmentStatus === "open");
+      if (statRecruitingCount) statRecruitingCount.textContent = recruitingClubs.length;
+
+      renderDynamicCategoryPills(allApprovedClubs);
+      applyFilters();
+      checkHashRoute();
+    }, (error) => {
+      console.error("Error fetching clubs from Firestore:", error);
+    });
 }
 
 /* =========================================================
@@ -2355,6 +2130,48 @@ function renderFullClubView(club) {
         </div>
       ` : ""}
 
+      <!-- 🎓 ACADEMIC CREDITS & CERTIFICATION PERKS -->
+      <div class="bento-card credits-certification-section" style="margin-bottom: 30px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 18px;">
+          <h3 class="bento-card-title" style="margin-bottom: 0;">
+            <i class="fa-solid fa-graduation-cap bento-ico" style="color: #38bdf8;"></i> 🎓 ${isHindi ? "शैक्षणिक क्रेडिट एवं सर्टिफिकेट विवरण" : "Academic Credits & Certification Perks"}
+          </h3>
+          <span style="font-size: 12px; color: #94a3b8;"><i class="fa-solid fa-award"></i> Official MITS Student Benefits</span>
+        </div>
+
+        <div class="credits-grid-3d">
+          <div class="credit-perk-card">
+            <div class="cpc-badge-icon" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35);">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <div>
+              <div class="cpc-label">${isHindi ? "एक्टिविटी क्रेडिट" : "Activity / Academic Credits"}</div>
+              <div class="cpc-value">${club.credits || "2 AICTE Activity Points / Semester"}</div>
+            </div>
+          </div>
+
+          <div class="credit-perk-card">
+            <div class="cpc-badge-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35);">
+              <i class="fa-solid fa-stamp"></i>
+            </div>
+            <div>
+              <div class="cpc-label">${isHindi ? "सर्टिफिकेट का माध्यम" : "Certificate Delivery Format"}</div>
+              <div class="cpc-value">${club.certificateType || "Hard Copy (Physical Stamped) + Digital Soft Copy"}</div>
+            </div>
+          </div>
+
+          <div class="credit-perk-card">
+            <div class="cpc-badge-icon" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35);">
+              <i class="fa-solid fa-certificate"></i>
+            </div>
+            <div>
+              <div class="cpc-label">${isHindi ? "पार्टिसिपेशन सर्टिफिकेट" : "Participation Policy"}</div>
+              <div class="cpc-value">${club.participationPolicy || "Yes — Certificate of Participation for all active attendees/members"}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 👥 CORE LEADERSHIP TEAM & MENTORS SHOWCASE -->
       <div class="bento-card leadership-showcase-section">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
@@ -2372,7 +2189,7 @@ function renderFullClubView(club) {
               <div class="lead-avatar-circle" style="background: linear-gradient(135deg, #059669, #10b981);"><i class="fa-solid fa-user-graduate"></i></div>
               <div>
                 <div class="lead-name">MITS Faculty Mentor</div>
-                <div style="font-size: 12px; color: #94a3b8;">Faculty In-Charge</div>
+                <div class="lead-role-title">Faculty In-Charge</div>
               </div>
             </div>
             <div class="lead-contact-row">
@@ -2387,7 +2204,7 @@ function renderFullClubView(club) {
               <div class="lead-avatar-circle" style="background: linear-gradient(135deg, #d97706, #f59e0b);"><i class="fa-solid fa-user-tie"></i></div>
               <div>
                 <div class="lead-name">${club.presidentName || "Lead Organizer"}</div>
-                <div style="font-size: 12px; color: #94a3b8;">Club President</div>
+                <div class="lead-role-title">Club President</div>
               </div>
             </div>
             <div class="lead-contact-row">
@@ -2407,7 +2224,7 @@ function renderFullClubView(club) {
                 <div class="lead-avatar-circle" style="background: linear-gradient(135deg, #db2777, #ec4899);"><i class="fa-solid fa-user"></i></div>
                 <div>
                   <div class="lead-name">${club.vpName}</div>
-                  <div style="font-size: 12px; color: #94a3b8;">Vice President</div>
+                  <div class="lead-role-title">Vice President</div>
                 </div>
               </div>
               <div class="lead-contact-row">
@@ -2428,7 +2245,7 @@ function renderFullClubView(club) {
                 <div class="lead-avatar-circle" style="background: linear-gradient(135deg, #0891b2, #06b6d4);"><i class="fa-solid fa-camera"></i></div>
                 <div>
                   <div class="lead-name">${club.mediaLeadName}</div>
-                  <div style="font-size: 12px; color: #94a3b8;">Public Relations &amp; Outreach</div>
+                  <div class="lead-role-title">Public Relations &amp; Outreach</div>
                 </div>
               </div>
               <div class="lead-contact-row">
@@ -2989,6 +2806,9 @@ createClubForm.addEventListener("submit", async (e) => {
       sponsorshipLeadName: sponsorshipLeadNameInput ? sponsorshipLeadNameInput.value.trim() : "",
       sponsorshipLeadPhone: sponsorshipLeadPhoneInput ? sponsorshipLeadPhoneInput.value.trim() : "",
       collaborators: [],
+      credits: document.getElementById("clubCredits") ? document.getElementById("clubCredits").value.trim() : "2 AICTE Activity Points / Semester",
+      certificateType: document.getElementById("clubCertificateType") ? document.getElementById("clubCertificateType").value.trim() : "Hard Copy (Physical Stamped) + Digital Soft Copy",
+      participationPolicy: document.getElementById("clubParticipationPolicy") ? document.getElementById("clubParticipationPolicy").value.trim() : "Yes — Certificate of Participation for all active attendees/members",
       whatsapp: document.getElementById("clubWhatsapp").value.trim(),
       insta: document.getElementById("clubInsta").value.trim(),
       coordinatorEmail: document.getElementById("coordinatorEmail").value.trim(),
@@ -3149,6 +2969,17 @@ function openEditModal(club) {
   document.getElementById("editWhatsapp").value = club.whatsapp || "";
   document.getElementById("editInsta").value = club.insta || "";
 
+  // Academic Credits & Certification Perks in edit modal
+  if (document.getElementById("editClubCredits")) {
+    document.getElementById("editClubCredits").value = club.credits || "2 AICTE Activity Points / Semester";
+  }
+  if (document.getElementById("editClubCertificateType")) {
+    document.getElementById("editClubCertificateType").value = club.certificateType || "Hard Copy (Physical Stamped) + Digital Soft Copy";
+  }
+  if (document.getElementById("editClubParticipationPolicy")) {
+    document.getElementById("editClubParticipationPolicy").value = club.participationPolicy || "Yes — Certificate of Participation for all active attendees/members";
+  }
+
   // Reset transfer form
   if (document.getElementById("transferNewName")) document.getElementById("transferNewName").value = "";
   if (document.getElementById("transferNewPhone")) document.getElementById("transferNewPhone").value = "";
@@ -3306,6 +3137,9 @@ editClubForm.addEventListener("submit", async (e) => {
       sponsorshipLeadName: editSponsorshipLeadNameInput ? editSponsorshipLeadNameInput.value.trim() : "",
       sponsorshipLeadPhone: editSponsorshipLeadPhoneInput ? editSponsorshipLeadPhoneInput.value.trim() : "",
       collaborators: currentEditingClubCollabs,
+      credits: document.getElementById("editClubCredits") ? document.getElementById("editClubCredits").value.trim() : "2 AICTE Activity Points / Semester",
+      certificateType: document.getElementById("editClubCertificateType") ? document.getElementById("editClubCertificateType").value.trim() : "Hard Copy (Physical Stamped) + Digital Soft Copy",
+      participationPolicy: document.getElementById("editClubParticipationPolicy") ? document.getElementById("editClubParticipationPolicy").value.trim() : "Yes — Certificate of Participation for all active attendees/members",
       whatsapp: document.getElementById("editWhatsapp").value.trim(),
       insta: document.getElementById("editInsta").value.trim(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
